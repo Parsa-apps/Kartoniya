@@ -130,6 +130,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       builder: (context, child) {
                         double delta = 0;
                         if (_pageController.hasClients &&
+                            _pageController.position.hasContentDimensions &&
                             context.motion.enabled) {
                           final pageValue = _pageController.page ?? index.toDouble();
                           delta = (pageValue - index).clamp(-1.0, 1.0);
