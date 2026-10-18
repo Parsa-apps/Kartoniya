@@ -48,12 +48,21 @@ class _GradientButtonState extends State<GradientButton> {
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(debugLabel: 'Kartoniya primary action');
+    _focusNode = FocusNode(debugLabel: 'Kartoniya primary action')
+      ..addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    final focused = _focusNode.hasFocus;
+    if (!mounted || _focused == focused) return;
+    setState(() => _focused = focused);
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _focusNode
+      ..removeListener(_handleFocusChange)
+      ..dispose();
     super.dispose();
   }
 
@@ -136,10 +145,6 @@ class _GradientButtonState extends State<GradientButton> {
         mouseCursor: enabled
             ? SystemMouseCursors.click
             : SystemMouseCursors.basic,
-        onShowFocusHighlight: (value) {
-          if (!mounted || _focused == value) return;
-          setState(() => _focused = value);
-        },
         shortcuts: const <ShortcutActivator, Intent>{
           SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
           SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
