@@ -13,8 +13,11 @@ on:
           - debug
           - both
   push:
-    tags:
-      - 'v*'
+    branches: ["**"]
+    tags: ["v*"]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
 
 concurrency:
   group: build-apk-${{ github.ref }}
@@ -26,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      artifacts: write
+      actions: write
 
     steps:
       - name: دریافت کدها (Checkout)
@@ -48,13 +51,12 @@ jobs:
       - name: نصب پکیج‌ها (pub get)
         run: flutter pub get
 
-      # تست‌ها غیرمسدودکننده‌اند؛ برای اجباری‌کردن، continue-on-error را حذف کنید
       - name: تست‌ها (غیرمسدودکننده)
         continue-on-error: true
         run: flutter test --reporter expanded
 
       - name: بیلد release APK (تفکیک ABI)
-        if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'both' }}
+        if: ${{ github.event.inputs.build_type != 'debug' }}
         run: flutter build apk --release --split-per-abi
 
       - name: بیلد debug APK
@@ -62,7 +64,7 @@ jobs:
         run: flutter build apk --debug
 
       - name: انتشار release APKها (Artifact)
-        if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'both' }}
+        if: ${{ github.event.inputs.build_type != 'debug' }}
         uses: actions/upload-artifact@v4
         with:
           name: kartoniya-release-apks
