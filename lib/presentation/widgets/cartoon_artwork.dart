@@ -35,12 +35,23 @@ class CartoonArtwork extends StatelessWidget {
   final bool emphasis;
 
   /// تگ Hero مشترک بین کارت انتخاب‌شده و صفحهٔ جزئیات.
-  static String heroTagFor(CartoonModel cartoon) => AppMotion.heroTag(cartoon.id);
+  static String heroTagFor(CartoonModel cartoon) =>
+      AppMotion.heroTag(cartoon.id);
+
+  static int _stableSeed(String value) {
+    var hash = 0x811C9DC5;
+    for (final unit in value.codeUnits) {
+      hash = ((hash ^ unit) * 0x01000193) & 0x7FFFFFFF;
+    }
+    return hash;
+  }
 
   @override
   Widget build(BuildContext context) {
     final baseColor = cartoon.artworkColor;
+    final accentForeground = AppColors.readableOnLightSurface(baseColor);
     final isDark = context.isDarkMode;
+    final seed = _stableSeed(cartoon.id);
 
     return Semantics(
       image: true,
@@ -53,14 +64,14 @@ class CartoonArtwork extends StatelessWidget {
             CustomPaint(
               painter: PosterScenePainter(
                 baseColor: baseColor,
-                seed: cartoon.id.hashCode.abs(),
+                seed: seed,
                 isDark: isDark,
               ),
             ),
             // مدالیون شخصیت با هالهٔ نرم.
             Center(
               child: Transform.rotate(
-                angle: cartoon.id.hashCode.isEven ? -.05 : .05,
+                angle: seed.isEven ? -.05 : .05,
                 child: Container(
                   width: emphasis ? 128 : 96,
                   height: emphasis ? 128 : 96,
@@ -74,7 +85,8 @@ class CartoonArtwork extends StatelessWidget {
                       stops: const [.55, 1],
                     ),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(.38), width: 1.6),
+                    border: Border.all(
+                        color: Colors.white.withOpacity(.38), width: 1.6),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(.16),
@@ -99,16 +111,16 @@ class CartoonArtwork extends StatelessWidget {
                 start: 12,
                 child: _ArtworkBadge(
                   label: 'جدید',
-                  color: baseColor,
+                  color: accentForeground,
                   icon: Icons.auto_awesome_rounded,
                 ),
               ),
-            if (showAgeBadge && cartoon.ageRange.trim().isNotEmpty)
+            if (showAgeBadge && (cartoon.ageRange?.trim().isNotEmpty ?? false))
               PositionedDirectional(
                 top: 12,
                 end: 12,
                 child: _ArtworkBadge(
-                  label: 'سن ${cartoon.ageRange}',
+                  label: 'سن ${cartoon.ageRange!.trim()}',
                   color: Colors.black54,
                   icon: Icons.child_care_rounded,
                   lightOnDark: true,
@@ -134,7 +146,7 @@ class CartoonArtwork extends StatelessWidget {
                   ),
                   child: Icon(
                     Icons.play_arrow_rounded,
-                    color: baseColor,
+                    color: accentForeground,
                     size: emphasis ? 28 : 23,
                   ),
                 ),
@@ -164,11 +176,11 @@ class CartoonArtwork extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.white,
-                                  shadows: const [
-                                    Shadow(color: Colors.black38, blurRadius: 5),
-                                  ],
-                                ),
+                          color: Colors.white,
+                          shadows: const [
+                            Shadow(color: Colors.black38, blurRadius: 5),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -238,7 +250,8 @@ class _ArtworkBadge extends StatelessWidget {
 
 /// نقاش صحنهٔ پوستر: گرادیان آسمانی + تپه، ابر، ستاره و پرتوهای نور؛
 /// ترکیب عناصر از seed شناسهٔ کارتون می‌آید تا هر پوستر امضای خودش را داشته
-/// باشد. نقاشی کاملاً سبک است (چند path، بدون blur گران).
+/// باشد. عمق آن تصویرسازی برداریِ شبه‌سه‌بعدی است، نه مدل سه‌بعدی؛ چند path،
+/// گرادیان و سایهٔ داخلی Canvas به‌کار می‌رود، بدون asset یا فیلتر offscreen.
 class PosterScenePainter extends CustomPainter {
   const PosterScenePainter({
     required this.baseColor,
@@ -291,9 +304,7 @@ class PosterScenePainter extends CustomPainter {
       canvas.restore();
     }
 
-    // تپه‌های نرم پایین.
-    final hillPaint = Paint()
-      ..color = Colors.white.withOpacity(.13);
+    // تپهٔ دور با نور لبه‌ای؛ سایهٔ مسیر جلو حس عمق لایه‌ها را می‌سازد.
     final hillPath = Path()
       ..moveTo(0, size.height)
       ..quadraticBezierTo(
@@ -310,9 +321,43 @@ class PosterScenePainter extends CustomPainter {
       )
       ..lineTo(size.width, size.height)
       ..close();
+    final hillBounds = Rect.fromLTWH(
+      0,
+      size.height * .62,
+      size.width,
+      size.height * .38,
+    );
+    final hillPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.white.withOpacity(.2),
+          Colors.white.withOpacity(.06),
+        ],
+      ).createShader(hillBounds);
+    canvas.drawShadow(
+      hillPath,
+      Colors.black.withOpacity(.09),
+      size.shortestSide * .018,
+      false,
+    );
     canvas.drawPath(hillPath, hillPaint);
 
-    final hillPaint2 = Paint()..color = Colors.black.withOpacity(.07);
+    final hillPaint2 = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.black.withOpacity(.025),
+          Colors.black.withOpacity(.14),
+        ],
+      ).createShader(Rect.fromLTWH(
+        0,
+        size.height * .78,
+        size.width,
+        size.height * .22,
+      ));
     final hillPath2 = Path()
       ..moveTo(0, size.height)
       ..quadraticBezierTo(
@@ -321,22 +366,36 @@ class PosterScenePainter extends CustomPainter {
         size.width * .58,
         size.height * .92,
       )
-      ..quadraticBezierTo(size.width * .8, size.height, size.width, size.height * .9)
+      ..quadraticBezierTo(
+          size.width * .8, size.height, size.width, size.height * .9)
       ..lineTo(size.width, size.height)
       ..close();
     canvas.drawPath(hillPath2, hillPaint2);
 
-    // حباب‌های نور.
-    final bubblePaint = Paint()..color = Colors.white.withOpacity(.15);
+    // حباب‌های شیشه‌ای با برق کوچکِ یک‌طرفه؛ بدون تصویر bitmap یا فیلتر blur.
     final bubbleCount = 2 + (seed % 3);
     for (var i = 0; i < bubbleCount; i++) {
+      final center = Offset(
+        size.width * (.12 + _rand(20 + i) * .76),
+        size.height * (.1 + _rand(40 + i) * .5),
+      );
+      final radius = size.shortestSide * (.06 + _rand(60 + i) * .07);
+      final bubbleBounds = Rect.fromCircle(center: center, radius: radius);
+      final bubblePaint = Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-.35, -.4),
+          colors: [
+            Colors.white.withOpacity(.38),
+            Colors.white.withOpacity(.14),
+            Colors.white.withOpacity(.025),
+          ],
+          stops: const [0, .48, 1],
+        ).createShader(bubbleBounds);
+      canvas.drawCircle(center, radius, bubblePaint);
       canvas.drawCircle(
-        Offset(
-          size.width * (.12 + _rand(20 + i) * .76),
-          size.height * (.1 + _rand(40 + i) * .5),
-        ),
-        size.shortestSide * (.06 + _rand(60 + i) * .07),
-        bubblePaint,
+        center + Offset(-radius * .28, -radius * .3),
+        radius * .12,
+        Paint()..color = Colors.white.withOpacity(.34),
       );
     }
 

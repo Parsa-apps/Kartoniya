@@ -9,6 +9,7 @@ import 'app_colors.dart';
 /// در ویجت‌ها فقط برای جزئیات دقیق (مثلاً اندازهٔ آیکون) مجاز است.
 abstract final class AppTheme {
   static const fontFamily = 'Vazirmatn';
+  static const headingFontFamily = 'VazirmatnRoundDots';
 
   // ——— شعاع‌ها ———
   static const radiusSmall = 12.0;
@@ -38,15 +39,17 @@ abstract final class AppTheme {
       brightness: brightness,
     );
     final scheme = baseScheme.copyWith(
-      primary: AppColors.sky,
-      onPrimary: Colors.white,
+      primary: isDark ? AppColors.skyLight : AppColors.skyDeep,
+      onPrimary: isDark ? AppColors.darkBackground : Colors.white,
       primaryContainer: isDark ? const Color(0xFF0E3A5E) : AppColors.skySoft,
       onPrimaryContainer: isDark ? const Color(0xFFCDE8FF) : AppColors.skyDeep,
-      secondary: AppColors.teal,
-      onSecondary: Colors.white,
+      secondary: isDark ? AppColors.tealLight : AppColors.tealDeep,
+      onSecondary: isDark ? AppColors.darkBackground : Colors.white,
       secondaryContainer: isDark ? const Color(0xFF0C3F39) : AppColors.tealSoft,
-      onSecondaryContainer: isDark ? const Color(0xFFB5F2E6) : AppColors.tealDeep,
-      tertiary: AppColors.violet,
+      onSecondaryContainer:
+          isDark ? const Color(0xFFB5F2E6) : AppColors.tealDeep,
+      tertiary: isDark ? AppColors.violetLight : AppColors.violetDeep,
+      onTertiary: isDark ? AppColors.darkBackground : Colors.white,
       surface: isDark ? AppColors.darkSurface : AppColors.lightSurface,
       onSurface: isDark ? AppColors.darkInk : AppColors.lightInk,
       surfaceVariant:
@@ -54,83 +57,89 @@ abstract final class AppTheme {
       onSurfaceVariant:
           isDark ? const Color(0xFFB9C4DC) : const Color(0xFF55637C),
       outline: isDark ? const Color(0xFF8794B1) : const Color(0xFF5E6B84),
-      error: AppColors.error,
-      onError: Colors.white,
+      error: isDark ? AppColors.red : AppColors.redDeep,
+      onError: isDark ? AppColors.darkBackground : Colors.white,
     );
 
     final rawTextTheme =
         ThemeData(brightness: brightness, useMaterial3: true).textTheme;
-    final textTheme =
-        rawTextTheme.apply(
+    final baseTextTheme = rawTextTheme.apply(
       bodyColor: scheme.onSurface,
       displayColor: scheme.onSurface,
       fontFamily: fontFamily,
-    ).copyWith(
-      displayLarge: rawTextTheme.displayLarge?.copyWith(
+    );
+    final textTheme = baseTextTheme.copyWith(
+      displayLarge: baseTextTheme.displayLarge?.copyWith(
+        fontFamily: headingFontFamily,
         fontSize: 38,
         fontWeight: FontWeight.w900,
         height: 1.25,
       ),
-      displayMedium: rawTextTheme.displayMedium?.copyWith(
+      displayMedium: baseTextTheme.displayMedium?.copyWith(
+        fontFamily: headingFontFamily,
         fontSize: 30,
         fontWeight: FontWeight.w900,
         height: 1.3,
       ),
-      displaySmall: rawTextTheme.displaySmall?.copyWith(
+      displaySmall: baseTextTheme.displaySmall?.copyWith(
+        fontFamily: headingFontFamily,
         fontSize: 26,
         fontWeight: FontWeight.w900,
         height: 1.3,
       ),
-      headlineMedium: rawTextTheme.headlineMedium?.copyWith(
+      headlineMedium: baseTextTheme.headlineMedium?.copyWith(
+        fontFamily: headingFontFamily,
         fontSize: 23,
         fontWeight: FontWeight.w800,
         height: 1.4,
       ),
-      headlineSmall: rawTextTheme.headlineSmall?.copyWith(
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
+        fontFamily: headingFontFamily,
         fontSize: 20,
         fontWeight: FontWeight.w800,
         height: 1.42,
       ),
-      titleLarge: rawTextTheme.titleLarge?.copyWith(
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
+        fontFamily: headingFontFamily,
         fontSize: 17.5,
         fontWeight: FontWeight.w800,
         height: 1.5,
       ),
-      titleMedium: rawTextTheme.titleMedium?.copyWith(
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
         fontSize: 15.5,
         fontWeight: FontWeight.w700,
         height: 1.5,
       ),
-      titleSmall: rawTextTheme.titleSmall?.copyWith(
+      titleSmall: baseTextTheme.titleSmall?.copyWith(
         fontSize: 13.5,
         fontWeight: FontWeight.w700,
         height: 1.45,
       ),
-      bodyLarge: rawTextTheme.bodyLarge?.copyWith(
+      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         height: 1.75,
       ),
-      bodyMedium: rawTextTheme.bodyMedium?.copyWith(
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
         fontSize: 13.5,
         fontWeight: FontWeight.w400,
         height: 1.7,
       ),
-      bodySmall: rawTextTheme.bodySmall?.copyWith(
+      bodySmall: baseTextTheme.bodySmall?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         height: 1.55,
       ),
-      labelLarge: rawTextTheme.labelLarge?.copyWith(
+      labelLarge: baseTextTheme.labelLarge?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w700,
         height: 1.4,
       ),
-      labelMedium: rawTextTheme.labelMedium?.copyWith(
+      labelMedium: baseTextTheme.labelMedium?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
-      labelSmall: rawTextTheme.labelSmall?.copyWith(
+      labelSmall: baseTextTheme.labelSmall?.copyWith(
         fontSize: 10.5,
         fontWeight: FontWeight.w600,
       ),
@@ -158,13 +167,16 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         centerTitle: false,
         titleTextStyle: textTheme.titleLarge,
-        systemOverlayStyle: isDark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+        systemOverlayStyle:
+            isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       ),
       cardTheme: CardTheme(
         color: scheme.surface,
-        elevation: 0,
+        elevation: isDark ? 1.5 : 2.5,
+        shadowColor: isDark
+            ? Colors.black.withOpacity(.34)
+            : AppColors.skyDeep.withOpacity(.12),
+        surfaceTintColor: Colors.transparent,
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
@@ -196,7 +208,7 @@ abstract final class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           textStyle: textTheme.labelLarge,
-          foregroundColor: AppColors.skyDeep,
+          foregroundColor: isDark ? AppColors.skyLight : AppColors.skyDeep,
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
@@ -219,19 +231,22 @@ abstract final class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: const BorderSide(color: AppColors.sky, width: 2),
+          borderSide: BorderSide(
+            color: isDark ? AppColors.skyLight : AppColors.skyDeep,
+            width: 2,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.6),
+          borderSide: BorderSide(color: scheme.error, width: 1.6),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: const BorderSide(color: AppColors.error, width: 2),
+          borderSide: BorderSide(color: scheme.error, width: 2),
         ),
       ),
       sliderTheme: SliderThemeData(
-        activeTrackColor: AppColors.coral,
+        activeTrackColor: isDark ? AppColors.coralLight : AppColors.coralDeep,
         inactiveTrackColor: Colors.white38,
         thumbColor: Colors.white,
         overlayColor: AppColors.coral.withOpacity(.18),
@@ -242,8 +257,8 @@ abstract final class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: scheme.surface,
-        selectedColor: AppColors.sky,
-        secondarySelectedColor: AppColors.sky,
+        selectedColor: isDark ? AppColors.skyDeep : AppColors.skyLight,
+        secondarySelectedColor: isDark ? AppColors.skyDeep : AppColors.skyLight,
         labelStyle: textTheme.labelLarge?.copyWith(fontSize: 13),
         side: cardBorder,
         shape: RoundedRectangleBorder(
@@ -265,7 +280,7 @@ abstract final class AppTheme {
         contentTextStyle: textTheme.bodyMedium?.copyWith(
           color: isDark ? AppColors.lightInk : Colors.white,
         ),
-        actionTextColor: AppColors.goldLight,
+        actionTextColor: isDark ? AppColors.goldDark : AppColors.goldLight,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
         ),
@@ -319,7 +334,8 @@ abstract final class AppTheme {
       ];
 
   /// هالهٔ رنگی نرم برای دکمه‌ها و کارت‌های شاخص.
-  static List<BoxShadow> glow(Color color, {double opacity = .32, double lift = 10}) =>
+  static List<BoxShadow> glow(Color color,
+          {double opacity = .32, double lift = 10}) =>
       [
         BoxShadow(
           color: color.withOpacity(opacity),
@@ -336,10 +352,9 @@ extension KartoniyaThemeContext on BuildContext {
   Color get surfaceAltColor => Theme.of(this).colorScheme.surfaceVariant;
   Color get primaryTextColor => Theme.of(this).colorScheme.onSurface;
   Color get secondaryTextColor => Theme.of(this).colorScheme.onSurfaceVariant;
-  Color get softBorderColor =>
-      isDarkMode
-          ? Colors.white.withOpacity(.07)
-          : AppColors.skyDeep.withOpacity(.10);
+  Color get softBorderColor => isDarkMode
+      ? Colors.white.withOpacity(.07)
+      : AppColors.skyDeep.withOpacity(.10);
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
   ColorScheme get scheme => Theme.of(this).colorScheme;
   TextTheme get appText => Theme.of(this).textTheme;

@@ -54,8 +54,8 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final reduceMotion = ref.watch(reduceMotionProvider);
-    // هم‌سازی داده‌های محلی با کاتالوگ: شناسه‌های نامعتبر (محتوای حذف‌شده)
-    // نباید در شمارنده‌ها یا فهرست‌ها باقی بمانند.
+    // فقط شناسه‌های حذف‌شده از کاتالوگ پاک می‌شوند؛ محدودیت منبعِ پخش در
+    // providerهای ادامهٔ تماشا اعمال می‌شود، نه با حذف دادهٔ ذخیره‌شده.
     ref.listen(cartoonsProvider, (_, next) {
       _syncLocalData(next.value);
     });

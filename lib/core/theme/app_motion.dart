@@ -90,14 +90,14 @@ class MotionScope extends InheritedWidget {
 
 /// Wrapper یک‌بار‌مصرف برای ظاهر شدن پلکانی اجزا هنگام ورود صفحه.
 ///
-/// فقط شفافیت و جابه‌جایی عمودی را انیمیت می‌کند و پس از پایان، هیچ
-/// Ticker فعالی باقی نمی‌ماند؛ برای لیست‌های طولانی ارزان است.
+/// شفافیت، مقیاس بسیار ظریف و جابه‌جایی عمودی را انیمیت می‌کند؛ پس از پایان
+/// Ticker فعالی باقی نمی‌ماند و با کاهش حرکت در وضعیت نهایی می‌ایستد.
 class StaggeredReveal extends StatefulWidget {
   const StaggeredReveal({
     required this.index,
     required this.child,
     this.offsetY = 18,
-    this.scale = 1,
+    this.scale = .985,
     super.key,
   });
 
@@ -114,11 +114,12 @@ class _StaggeredRevealState extends State<StaggeredReveal>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final double _startFraction;
+  late bool _motionReduced;
 
   @override
   void initState() {
     super.initState();
-    final reduced = !context.motionEnabledAtInit;
+    _motionReduced = !context.motionEnabledAtInit;
     // تأخیر پلکانی با Interval ساخته می‌شود؛ forward پارامتر delay ندارد.
     final step = AppMotion.staggerStep * widget.index.clamp(0, 8);
     final total = AppMotion.entrance + step;
@@ -127,10 +128,24 @@ class _StaggeredRevealState extends State<StaggeredReveal>
       vsync: this,
       duration: total,
     );
-    if (reduced) {
+    if (_motionReduced) {
       _controller.value = 1;
     } else {
       _controller.forward();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduced = !context.motion.enabled;
+    if (reduced == _motionReduced) return;
+    _motionReduced = reduced;
+    if (reduced) {
+      _controller.stop();
+      _controller.value = 1;
+    } else {
+      _controller.forward(from: 0);
     }
   }
 
@@ -156,10 +171,12 @@ class _StaggeredRevealState extends State<StaggeredReveal>
         animation: curved,
         builder: (context, child) => Transform.translate(
           offset: Offset(0, (1 - curved.value) * widget.offsetY),
-          child: widget.scale == 1 ? child : Transform.scale(
-            scale: 1 - (1 - curved.value) * (1 - widget.scale),
-            child: child,
-          ),
+          child: widget.scale == 1
+              ? child
+              : Transform.scale(
+                  scale: 1 - (1 - curved.value) * (1 - widget.scale),
+                  child: child,
+                ),
         ),
         child: widget.child,
       ),
@@ -197,9 +214,8 @@ class _PressableScaleState extends State<PressableScale> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = _pressed && context.motion.enabled
-        ? widget.pressedScale
-        : 1.0;
+    final scale =
+        _pressed && context.motion.enabled ? widget.pressedScale : 1.0;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => _setPressed(true),
@@ -212,7 +228,9 @@ class _PressableScaleState extends State<PressableScale> {
       onLongPress: widget.onLongPress,
       child: AnimatedScale(
         scale: scale,
-        duration: _pressed ? AppMotion.micro : AppMotion.quick,
+        duration: context.motion.dur(
+          _pressed ? AppMotion.micro : AppMotion.quick,
+        ),
         curve: _pressed ? Curves.easeOut : AppMotion.curvePop,
         child: widget.child,
       ),

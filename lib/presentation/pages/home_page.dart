@@ -14,7 +14,7 @@ import '../widgets/aurora_background.dart';
 import '../widgets/cartoon_artwork.dart';
 import '../widgets/cartoon_card.dart';
 import '../widgets/featured_carousel.dart';
-import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_mascot.dart';
 import '../widgets/kartoniya_nav_bar.dart';
 import '../widgets/section_header.dart';
 import '../widgets/shimmer_loader.dart';
@@ -54,15 +54,31 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: IndexedStack(
             index: _selectedIndex,
             children: [
-              _DiscoverTab(
-                onOpenCategories: () => _selectTab(1),
-                onOpenProfile: () => _selectTab(4),
-                onOpenSearch: () => _selectTab(3),
+              TickerMode(
+                enabled: _selectedIndex == 0,
+                child: _DiscoverTab(
+                  onOpenCategories: () => _selectTab(1),
+                  onOpenFavorites: () => _selectTab(2),
+                  onOpenProfile: () => _selectTab(4),
+                  onOpenSearch: () => _selectTab(3),
+                ),
               ),
-              const CategoriesPage(),
-              FavoritesPage(onBrowse: () => _selectTab(0)),
-              const SearchPage(),
-              const ProfilePage(),
+              TickerMode(
+                enabled: _selectedIndex == 1,
+                child: const CategoriesPage(),
+              ),
+              TickerMode(
+                enabled: _selectedIndex == 2,
+                child: FavoritesPage(onBrowse: () => _selectTab(0)),
+              ),
+              TickerMode(
+                enabled: _selectedIndex == 3,
+                child: const SearchPage(),
+              ),
+              TickerMode(
+                enabled: _selectedIndex == 4,
+                child: const ProfilePage(),
+              ),
             ],
           ),
         ),
@@ -105,11 +121,13 @@ class _HomePageState extends ConsumerState<HomePage> {
 class _DiscoverTab extends ConsumerStatefulWidget {
   const _DiscoverTab({
     required this.onOpenCategories,
+    required this.onOpenFavorites,
     required this.onOpenProfile,
     required this.onOpenSearch,
   });
 
   final VoidCallback onOpenCategories;
+  final VoidCallback onOpenFavorites;
   final VoidCallback onOpenProfile;
   final VoidCallback onOpenSearch;
 
@@ -134,10 +152,14 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
     final cartoons = ref.watch(cartoonsProvider);
     final categories = ref.watch(categoriesProvider);
     final featured = ref.watch(featuredCartoonsProvider);
-    final newOnes = ref.watch(newCartoonsProvider);
-    final popular = ref.watch(popularCartoonsProvider);
     final continueWatching = ref.watch(continueWatchingProvider);
     final favorites = ref.watch(favoritesProvider);
+    final favoriteItems = cartoons.maybeWhen(
+      data: (items) => items
+          .where((cartoon) => favorites.contains(cartoon.id))
+          .toList(growable: false),
+      orElse: () => const <CartoonModel>[],
+    );
     final childProfile = ref.watch(childProfileProvider);
 
     return RefreshIndicator(
@@ -161,9 +183,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                 2,
               ),
               child: _HomeHeader(
-                childName: childProfile.hasName
-                    ? childProfile.name
-                    : null,
+                childName: childProfile.hasName ? childProfile.name : null,
                 onProfileTap: widget.onOpenProfile,
                 onSearchTap: widget.onOpenSearch,
               ),
@@ -181,14 +201,13 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                     onOpen: _openDetail,
                     onPlay: _play,
                     isFavorite: (cartoon) => favorites.contains(cartoon.id),
-                    onToggleFavorite: (cartoon) => ref
-                        .read(favoritesProvider.notifier)
-                        .toggle(cartoon.id),
+                    onToggleFavorite: (cartoon) =>
+                        ref.read(favoritesProvider.notifier).toggle(cartoon.id),
                   ),
                   loading: () => const ShimmerHeroBanner(height: 224),
                   error: (_, __) => ErrorStateView(
                     title: 'بنر منتخب باز نشد',
-                    message: 'اتصال یا فهرست محتوا را بررسی کنید.',
+                    message: 'فهرست پیشنهادها در دسترس نیست؛ دوباره تلاش کنید.',
                     onRetry: () => ref.invalidate(featuredCartoonsProvider),
                     compact: true,
                   ),
@@ -239,7 +258,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                             horizontal: AppTheme.pageMargin,
                           ),
                           itemCount: entries.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 12),
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 12),
                           itemBuilder: (context, index) => _ContinueCard(
                             entry: entries[index],
                             onPlay: () => pushAppPageFade<void>(
@@ -260,44 +280,27 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
               error: (_, __) => const SizedBox.shrink(),
             ),
           ),
-          // ——— تازه‌ها ———
-          SliverToBoxAdapter(
-            child: StaggeredReveal(
-              index: 3,
-              child: newOnes.maybeWhen(
-                data: (items) => items.isEmpty
-                    ? const SizedBox.shrink()
-                    : Column(
-                        children: [
-                          const SectionHeader(title: 'تازه‌ها'),
-                          _HorizontalCompactRow(
-                            cartoons: items,
-                            onTap: _openDetail,
-                          ),
-                        ],
-                      ),
-                orElse: () => const _CompactRowLoading(),
-              ),
-            ),
-          ),
-          // ——— محبوب‌ترین‌ها ———
-          SliverToBoxAdapter(
-            child: StaggeredReveal(
-              index: 4,
-              child: popular.maybeWhen(
-                data: (items) => Column(
-                  children: [
-                    const SectionHeader(title: 'محبوب‌ترین‌ها'),
-                    _HorizontalCompactRow(
-                      cartoons: items,
+          // ——— علاقه‌مندی‌های واقعی همین دستگاه ———
+          if (favoriteItems.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  SectionHeader(
+                    title: 'علاقه‌مندی‌های تو',
+                    subtitle: 'فهرست ذخیره‌شده روی همین دستگاه',
+                    actionLabel: 'دیدن همه',
+                    onAction: widget.onOpenFavorites,
+                  ),
+                  StaggeredReveal(
+                    index: 3,
+                    child: _HorizontalCompactRow(
+                      cartoons: favoriteItems,
                       onTap: _openDetail,
                     ),
-                  ],
-                ),
-                orElse: () => const _CompactRowLoading(),
+                  ),
+                ],
               ),
             ),
-          ),
           // ——— همهٔ کارتون‌ها ———
           const SliverToBoxAdapter(
             child: SectionHeader(title: 'همهٔ کارتون‌ها'),
@@ -313,7 +316,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                 padding: const EdgeInsets.only(top: 12, bottom: 40),
                 child: ErrorStateView(
                   title: 'کاتالوگ باز نشد',
-                  message: 'اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.',
+                  message: 'دادهٔ فهرست در دسترس نیست؛ دوباره تلاش کنید.',
                   onRetry: () => ref.invalidate(cartoonsProvider),
                 ),
               ),
@@ -350,7 +353,12 @@ class _HomeHeader extends StatelessWidget {
     final name = childName;
     return Row(
       children: [
-        const KartoniyaLogoMark(size: 44),
+        const KartoniyaMascot(
+          size: 48,
+          mood: MascotMood.happy,
+          float: false,
+          reactToTouch: true,
+        ),
         const SizedBox(width: 11),
         Expanded(
           child: Column(
@@ -429,7 +437,7 @@ class _CategoryChipRowState extends State<_CategoryChipRow> {
             },
             child: AnimatedScale(
               scale: _tapped == index ? .93 : 1,
-              duration: AppMotion.micro,
+              duration: context.motion.dur(AppMotion.micro),
               child: Container(
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -476,7 +484,10 @@ class _ContinueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percent = (entry.progress * 100).round();
-    final color = AppColors.categoryColor(entry.cartoon.category);
+    final color = AppColors.categoryForeground(
+      entry.cartoon.category,
+      brightness: Theme.of(context).brightness,
+    );
     return Semantics(
       button: true,
       label: 'ادامهٔ ${entry.cartoon.title}، ${entry.episode.title}، '
@@ -500,8 +511,7 @@ class _ContinueCard extends StatelessWidget {
                   width: 92,
                   height: 96,
                   child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.circular(AppTheme.radiusMedium),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     child: CartoonArtwork(
                       cartoon: entry.cartoon,
                       borderRadius: 0,
@@ -519,9 +529,10 @@ class _ContinueCard extends StatelessWidget {
                         entry.cartoon.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontSize: 14,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 14,
+                                ),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -540,14 +551,17 @@ class _ContinueCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               '${toFaDigits('$percent')}٪ تماشا شده',
-                              style:
-                                  Theme.of(context).textTheme.labelMedium?.copyWith(
-                                        color: color,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.copyWith(
+                                    color: color,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                           ),
-                          Icon(Icons.play_circle_fill_rounded, color: color, size: 22),
+                          Icon(Icons.play_circle_fill_rounded,
+                              color: color, size: 22),
                         ],
                       ),
                     ],
@@ -600,15 +614,6 @@ class _HorizontalCompactRow extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _CompactRowLoading extends StatelessWidget {
-  const _CompactRowLoading();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox(height: 212, child: ShimmerCompactRow(itemWidth: 176));
   }
 }
 

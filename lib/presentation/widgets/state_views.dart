@@ -113,7 +113,8 @@ class ErrorStateView extends StatelessWidget {
           icon: const Icon(Icons.refresh_rounded, size: 20),
           label: const Text('تلاش دوباره'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.skyDeep,
+            foregroundColor:
+                context.isDarkMode ? AppColors.skyLight : AppColors.skyDeep,
             side: BorderSide(
               color: AppColors.sky.withOpacity(.5),
             ),
@@ -123,7 +124,8 @@ class ErrorStateView extends StatelessWidget {
     );
 
     if (compact) {
-      return Center(child: Padding(padding: const EdgeInsets.all(16), child: content));
+      return Center(
+          child: Padding(padding: const EdgeInsets.all(16), child: content));
     }
     return Center(
       child: Padding(padding: const EdgeInsets.all(24), child: content),

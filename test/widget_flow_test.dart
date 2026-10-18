@@ -7,6 +7,8 @@ import 'package:kartoniya/main.dart';
 import 'package:kartoniya/presentation/global_widgets/parental_gate_widget.dart';
 import 'package:kartoniya/presentation/pages/onboarding_page.dart';
 import 'package:kartoniya/presentation/pages/home_page.dart';
+import 'package:kartoniya/presentation/pages/premium_readiness_page.dart';
+import 'package:kartoniya/presentation/pages/privacy_information_page.dart';
 import 'package:kartoniya/presentation/pages/settings_page.dart';
 import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/favorite_button.dart';
@@ -26,6 +28,18 @@ void main() {
     return SharedPreferences.getInstance();
   }
 
+  Future<void> revealTextInList(WidgetTester tester, String text) async {
+    final scrollable = find.descendant(
+      of: find.byType(ListView),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.textContaining(text),
+      240,
+      scrollable: scrollable.first,
+    );
+  }
+
   testWidgets('مسیر اولین اجرا: اسپلش → آن‌بوردینگ → خانه', (tester) async {
     usePhone(tester);
     final prefs = await initPrefs();
@@ -38,9 +52,9 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('دنیای شاد و امن کودکان'), findsOneWidget);
+    expect(find.text('قصه‌ها اینجا شروع می‌شوند'), findsOneWidget);
 
-    // اسپلش پس از ~۱٫۵ ثانیه جای خود را به آن‌بوردینگ می‌دهد.
+    // اسپلش کوتاه و قابل ردکردن است؛ در این جریان، زمان‌سنج خودکار آن را رد می‌کند.
     await tester.pump(const Duration(milliseconds: 1700));
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('رد کردن'), findsOneWidget);
@@ -57,6 +71,50 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(prefs.getBool('onboarding_completed'), isTrue);
   });
+
+  testWidgets('اسپلش با دکمهٔ ردکردن سریع به آن‌بوردینگ می‌رود',
+      (tester) async {
+    usePhone(tester);
+    final prefs = await initPrefs();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: const KartoniyaApp(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('قصه‌ها اینجا شروع می‌شوند'), findsOneWidget);
+    await tester.tap(find.text('رد کردن'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 450));
+
+    expect(find.byType(OnboardingPage), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'آن‌بوردینگ با بزرگ‌نمایی متن قابل پیمایش می‌ماند',
+    (tester) async {
+      usePhone(tester);
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(
+            home: MediaQuery(
+              data: MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: OnboardingPage(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      expect(find.text('ماجرای بعدی را پیدا کن'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('قلب کارت، علاقه‌مندی را ذخیره می‌کند', (tester) async {
     usePhone(tester);
@@ -93,7 +151,41 @@ void main() {
     expect(prefs.getStringList('favorite_cartoon_ids'), contains(cartoon.id));
   });
 
-  testWidgets('قفل والدین: پاسخ غلط دیالوگ را باز نگه می‌دارد و '
+  testWidgets('صفحهٔ وضعیت خرید قیمت یا تراکنش ساختگی ندارد', (tester) async {
+    usePhone(tester);
+    await tester.pumpWidget(
+      const MaterialApp(home: PremiumReadinessPage()),
+    );
+    await tester.pump();
+
+    expect(find.text('خرید هنوز فعال نیست'), findsOneWidget);
+    expect(find.text('انتخاب فروشگاه مقصد'), findsOneWidget);
+    await revealTextInList(tester, 'اعتبارسنجی و بازیابی');
+    expect(find.text('اعتبارسنجی و بازیابی'), findsOneWidget);
+    expect(find.textContaining('تومان'), findsNothing);
+    expect(find.textContaining('€'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('خلاصهٔ حریم خصوصی تفاوت ذخیرهٔ محلی و میزبان بیرونی را می‌گوید',
+      (tester) async {
+    usePhone(tester);
+    await tester.pumpWidget(
+      const MaterialApp(home: PrivacyInformationPage()),
+    );
+    await tester.pump();
+
+    expect(find.text('حریم خصوصی'), findsOneWidget);
+    expect(find.text('اطلاعات ذخیره‌شده روی دستگاه'), findsOneWidget);
+    await revealTextInList(tester, 'جایگزین سیاست حقوقی');
+    expect(find.textContaining('جایگزین سیاست حقوقی'), findsOneWidget);
+    await revealTextInList(tester, 'پخش و پیوندهای بیرونی');
+    expect(find.text('پخش و پیوندهای بیرونی'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+      'قفل والدین: پاسخ غلط دیالوگ را باز نگه می‌دارد و '
       'پاسخ درست اجازه ورود می‌دهد', (tester) async {
     usePhone(tester);
     final prefs = await initPrefs();
@@ -200,8 +292,8 @@ _Challenge _readChallenge(WidgetTester tester) {
   for (final element in find.textContaining('=').evaluate()) {
     final widget = element.widget;
     if (widget is Text && widget.data != null && widget.data!.contains('؟')) {
-      final match = RegExp(r'(\d+)\s*([+×−\-])\s*(\d+)')
-          .firstMatch(widget.data!);
+      final match =
+          RegExp(r'(\d+)\s*([+×−\-])\s*(\d+)').firstMatch(widget.data!);
       if (match == null) continue;
       final a = int.parse(match.group(1)!);
       final b = int.parse(match.group(3)!);

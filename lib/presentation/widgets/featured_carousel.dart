@@ -47,7 +47,9 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
   int _page = 0;
 
   bool get _autoAllowed =>
-      context.motion.enabled && widget.cartoons.length > 1;
+      context.motion.enabled &&
+      TickerMode.of(context) &&
+      widget.cartoons.length > 1;
 
   @override
   void didChangeDependencies() {
@@ -75,7 +77,7 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
       final next = (_page + 1) % widget.cartoons.length;
       _controller.animateToPage(
         next,
-        duration: AppMotion.soft,
+        duration: context.motion.dur(AppMotion.soft),
         curve: AppMotion.curveStandard,
       );
     });
@@ -91,7 +93,8 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
   bool _onScroll(ScrollNotification notification) {
     // کشیدن انگشت کاربر تایمر خودکار را قطع می‌کند؛ پس از توقف، از سر گرفته
     // می‌شود. اسکرول‌های برنامه‌ریزی‌شده (animateToPage) مزاحم نیستند.
-    if (notification is ScrollStartNotification && notification.dragDetails != null) {
+    if (notification is ScrollStartNotification &&
+        notification.dragDetails != null) {
       _autoTimer?.cancel();
     } else if (notification is ScrollEndNotification) {
       _restartAutoAdvance();
@@ -123,16 +126,19 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                       double delta = 0;
                       if (_controller.hasClients &&
                           _controller.position.hasContentDimensions) {
-                        final page =
-                            _controller.page ?? _controller.initialPage.toDouble();
+                        final page = _controller.page ??
+                            _controller.initialPage.toDouble();
                         delta = (page - index).clamp(-1.0, 1.0).abs();
                       }
                       final reduced = !context.motion.enabled;
                       return Opacity(
                         opacity: reduced ? 1 : 1 - .3 * delta,
-                        child: Transform.scale(
-                          scale: reduced ? 1 : 1 - .06 * delta,
-                          child: child,
+                        child: Transform.translate(
+                          offset: Offset(0, reduced ? 0 : delta * 4),
+                          child: Transform.scale(
+                            scale: reduced ? 1 : 1 - .06 * delta,
+                            child: child,
+                          ),
                         ),
                       );
                     },
@@ -146,7 +152,8 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                         onOpen: () => widget.onOpen(cartoon),
                         onPlay: () => widget.onPlay(cartoon),
                         isFavorite: widget.isFavorite(cartoon),
-                        onToggleFavorite: () => widget.onToggleFavorite(cartoon),
+                        onToggleFavorite: () =>
+                            widget.onToggleFavorite(cartoon),
                       ),
                     ),
                   );
@@ -235,24 +242,26 @@ class _FeaturedSlide extends StatelessWidget {
                 onPressed: onToggleFavorite,
               ),
             ),
-            if (cartoon.isNew)
+            if (cartoon.isFeatured)
               PositionedDirectional(
                 top: 12,
                 start: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(.94),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
+                    borderRadius:
+                        BorderRadius.circular(AppTheme.radiusCircular),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.auto_awesome_rounded,
-                          size: 13, color: AppColors.coral),
+                          size: 13, color: AppColors.coralDeep),
                       const SizedBox(width: 4),
                       Text(
-                        'منتخب این هفته',
+                        'پیشنهاد کارتونیا',
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               fontSize: 10.5,
                               color: AppColors.coralDeep,
@@ -270,58 +279,20 @@ class _FeaturedSlide extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          cartoon.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    color: Colors.white,
-                                    shadows: const [
-                                      Shadow(color: Colors.black38, blurRadius: 6),
-                                    ],
-                                  ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(.18),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white24),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star_rounded,
-                              size: 14,
-                              color: AppColors.gold,
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              toFaDigits(cartoon.rating.toStringAsFixed(1)),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Text(
+                    cartoon.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      shadows: const [
+                        Shadow(color: Colors.black38, blurRadius: 6),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '${cartoon.category} · ${toFaDigits('${cartoon.episodeCount}')} قسمت · سن ${cartoon.ageRange}',
+                    '${cartoon.category} · ${toFaDigits('${cartoon.episodeCount}')} قسمت',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -337,12 +308,7 @@ class _FeaturedSlide extends StatelessWidget {
                           icon: Icons.play_arrow_rounded,
                           compact: true,
                           height: 42,
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.lerp(accent, Colors.white, .3)!,
-                              accent,
-                            ],
-                          ),
+                          gradient: AppColors.actionGradient(accent),
                           glowColor: accent,
                           onPressed: onPlay,
                         ),

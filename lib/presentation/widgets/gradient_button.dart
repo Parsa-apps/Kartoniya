@@ -47,7 +47,8 @@ class _GradientButtonState extends State<GradientButton> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (widget.icon != null) ...[
-          Icon(widget.icon, color: Colors.white, size: widget.compact ? 20 : 24),
+          Icon(widget.icon,
+              color: Colors.white, size: widget.compact ? 20 : 24),
           const SizedBox(width: 8),
         ],
         Flexible(
@@ -85,10 +86,10 @@ class _GradientButtonState extends State<GradientButton> {
               : null,
           child: AnimatedScale(
             scale: _pressed && context.motion.enabled ? .97 : 1,
-            duration: AppMotion.micro,
+            duration: context.motion.dur(AppMotion.micro),
             curve: Curves.easeOut,
             child: AnimatedContainer(
-              duration: AppMotion.quick,
+              duration: context.motion.dur(AppMotion.quick),
               height: widget.height,
               width: widget.expand ? double.infinity : null,
               padding: EdgeInsets.symmetric(

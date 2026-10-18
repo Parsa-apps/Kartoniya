@@ -2,7 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartoniya/data/models/cartoon_model.dart';
 
 void main() {
-  EpisodeModel episode(int number, int minutes, {int seconds = 0}) => EpisodeModel(
+  EpisodeModel episode(int number, int minutes, {int seconds = 0}) =>
+      EpisodeModel(
         id: 'x-$number',
         title: 'قسمت $number',
         durationSeconds: minutes * 60 + seconds,
@@ -14,7 +15,6 @@ void main() {
         title: 'آزمون',
         description: 'توضیح آزمون',
         category: 'آموزشی',
-        duration: 12,
         rating: 4.5,
         ageRange: '۴ تا ۶',
         artworkEmoji: '🧪',
@@ -34,9 +34,35 @@ void main() {
 
     test('برچسب مدت و تعداد قسمت‌ها درست است', () {
       final value = cartoon();
-      expect(value.durationLabel, '12 دقیقه');
+      expect(value.totalDurationSeconds, 1530);
+      expect(value.durationLabel, '25:30 دقیقه');
       expect(value.episodeCount, 2);
       expect(value.firstEpisode.id, 'x-1');
+    });
+
+    test('کارت خلاصهٔ پیشرفت قسمت‌های embed را نادیده می‌گیرد', () {
+      final value = cartoon().copyWith(
+        episodes: const [
+          EpisodeModel(
+            id: 'embedded',
+            title: 'قسمت embed',
+            durationSeconds: 60,
+            videoUrl: 'https://www.aparat.com/v/abc123',
+          ),
+          EpisodeModel(
+            id: 'direct',
+            title: 'قسمت مستقیم',
+            durationSeconds: 60,
+            videoUrl: 'https://cdn.example.test/video.mp4',
+          ),
+        ],
+      );
+
+      expect(
+        value.maxDirectPlaybackProgress({'embedded': .86, 'direct': .34}),
+        .34,
+      );
+      expect(value.maxDirectPlaybackProgress({'embedded': .86}), 0);
     });
 
     test('رنگ artwork از مقدار عددی ساخته می‌شود', () {
@@ -44,10 +70,13 @@ void main() {
     });
   });
 
-  group('Aparat sources', () {
+  group('Playback source validation', () {
     EpisodeModel source(String url) => EpisodeModel(
-      id: 'source', title: 'منبع', durationSeconds: 60, videoUrl: url,
-    );
+          id: 'source',
+          title: 'منبع',
+          durationSeconds: 60,
+          videoUrl: url,
+        );
 
     test('watch page becomes the official embed URL, preserving hash case', () {
       final value = source('https://www.aparat.com/v/SfomR');
@@ -55,6 +84,20 @@ void main() {
       expect(value.aparatEmbedUri.toString(),
           'https://www.aparat.com/video/video/embed/videohash/SfomR/vt/frame');
       expect(source('https://aparat.com/v/ddy5427').aparatVideoHash, 'ddy5427');
+    });
+
+    test('only secure non-Aparat URLs are eligible for the native player', () {
+      const directUrl = 'https://cdn.example.test/video.mp4';
+      expect(source(directUrl).secureDirectVideoUri, Uri.parse(directUrl));
+      for (final url in [
+        'http://cdn.example.test/video.mp4',
+        'https://aparat.com/v/abc123',
+        'https://www.aparat.com/v/abc123',
+        'https://user:pass@cdn.example.test/video.mp4',
+        'not a URL',
+      ]) {
+        expect(source(url).secureDirectVideoUri, isNull, reason: url);
+      }
     });
 
     test('non-Aparat, malformed and insecure sources cannot enter WebView', () {

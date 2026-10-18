@@ -19,7 +19,13 @@ void showKartoniyaFeedback(
         duration: const Duration(milliseconds: 2300),
         content: Row(
           children: [
-            Icon(icon, color: isDark ? iconColor : AppColors.goldLight, size: 22),
+            Icon(
+              icon,
+              color: isDark
+                  ? AppColors.readableOnLightSurface(iconColor)
+                  : AppColors.goldLight,
+              size: 22,
+            ),
             const SizedBox(width: 10),
             Expanded(child: Text(message)),
           ],
@@ -40,10 +46,8 @@ Future<bool> confirmParentAction(
     context: context,
     builder: (dialogContext) => AlertDialog(
       icon: Icon(
-        destructive
-            ? Icons.warning_amber_rounded
-            : Icons.info_outline_rounded,
-        color: destructive ? AppColors.warning : AppColors.sky,
+        destructive ? Icons.warning_amber_rounded : Icons.info_outline_rounded,
+        color: destructive ? AppColors.warning : AppColors.skyDeep,
         size: 34,
       ),
       title: Text(title, textAlign: TextAlign.center),
@@ -56,7 +60,8 @@ Future<bool> confirmParentAction(
         ),
         FilledButton(
           style: FilledButton.styleFrom(
-            backgroundColor: destructive ? AppColors.error : AppColors.sky,
+            backgroundColor: destructive ? AppColors.error : AppColors.skyDeep,
+            foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             ),

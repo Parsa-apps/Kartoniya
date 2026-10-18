@@ -153,8 +153,7 @@ class _NavButton extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelSmall!.copyWith(
                       fontSize: 10,
                       color: selected ? activeColor : idleColor,
-                      fontWeight:
-                          selected ? FontWeight.w800 : FontWeight.w600,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                     ),
                 child: Text(item.label),
               ),

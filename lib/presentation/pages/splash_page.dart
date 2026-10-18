@@ -11,6 +11,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_mascot.dart';
 import 'home_page.dart';
 import 'onboarding_page.dart';
 
@@ -28,27 +29,67 @@ class _SplashPageState extends ConsumerState<SplashPage>
     with TickerProviderStateMixin {
   late final AnimationController _enter;
   late final AnimationController _drift;
+  late bool _motionEnabled;
+  Timer? _navigationTimer;
+  bool _didNavigate = false;
 
   @override
   void initState() {
     super.initState();
-    _enter = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
-      ..forward();
-    _drift = AnimationController(vsync: this, duration: const Duration(seconds: 9));
-    if (context.motionEnabledAtInit) _drift.repeat();
-    unawaited(_openNextPage());
+    _motionEnabled = !MotionScope.reducedGlobally;
+    _enter = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _drift = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 9),
+    );
+    if (_motionEnabled) {
+      _enter.forward();
+      _drift.repeat();
+    } else {
+      _enter.value = 1;
+    }
+    _navigationTimer = Timer(
+      const Duration(milliseconds: 1100),
+      _openNextPage,
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final enabled = context.motion.enabled;
+    if (enabled == _motionEnabled) return;
+    _motionEnabled = enabled;
+    if (enabled) {
+      _enter.forward(from: 0);
+      _drift.repeat();
+    } else {
+      _enter.stop();
+      _enter.value = 1;
+      _drift.stop();
+      _drift.value = 0;
+    }
   }
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _enter.dispose();
     _drift.dispose();
     super.dispose();
   }
 
-  Future<void> _openNextPage() async {
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
-    if (!mounted) return;
+  void _skipSplash() {
+    _navigationTimer?.cancel();
+    _openNextPage();
+  }
+
+  void _openNextPage() {
+    if (!mounted || _didNavigate) return;
+    _didNavigate = true;
     final completedOnboarding = ref.read(onboardingProvider);
     final destination =
         completedOnboarding ? const HomePage() : const OnboardingPage();
@@ -78,7 +119,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
                       top: MediaQuery.sizeOf(context).height * .18 +
                           math.sin(t * 2 * math.pi) * 10,
                       right: -42 + math.cos(t * 2 * math.pi) * 8,
-                      child: const _SplashBubble(size: 150, color: AppColors.skyLight),
+                      child: const _SplashBubble(
+                          size: 150, color: AppColors.skyLight),
                     ),
                     Positioned(
                       bottom: MediaQuery.sizeOf(context).height * .16 -
@@ -94,6 +136,17 @@ class _SplashPageState extends ConsumerState<SplashPage>
                 );
               },
               child: Center(child: _buildMark()),
+            ),
+            PositionedDirectional(
+              top: 8,
+              start: 12,
+              child: SafeArea(
+                child: TextButton.icon(
+                  onPressed: _skipSplash,
+                  icon: const Icon(Icons.skip_next_rounded),
+                  label: const Text('رد کردن'),
+                ),
+              ),
             ),
           ],
         ),
@@ -125,17 +178,38 @@ class _SplashContents extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const KartoniyaLogoMark(size: 118, showOrbit: true),
-        const SizedBox(height: 24),
+        SizedBox(
+          width: 148,
+          height: 142,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              const KartoniyaLogoMark(size: 118, showOrbit: true),
+              PositionedDirectional(
+                bottom: 0,
+                start: 1,
+                child: KartoniyaMascot(
+                  size: 48,
+                  mood: MascotMood.cheering,
+                  float: !still,
+                  reactToTouch: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
         Text(
           'کارتونیا',
           style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                color: context.isDarkMode ? AppColors.skyLight : AppColors.skyDeep,
+                color:
+                    context.isDarkMode ? AppColors.skyLight : AppColors.skyDeep,
               ),
         ),
         const SizedBox(height: 6),
         Text(
-          'دنیای شاد و امن کودکان',
+          'قصه‌ها اینجا شروع می‌شوند',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: context.secondaryTextColor,
               ),
@@ -159,17 +233,42 @@ class _LoadingDots extends StatefulWidget {
 class _LoadingDotsState extends State<_LoadingDots>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late bool _motionEnabled;
 
   static const _colors = [AppColors.coral, AppColors.gold, AppColors.teal];
 
   @override
   void initState() {
     super.initState();
+    _motionEnabled = !MotionScope.reducedGlobally;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    if (!widget.still && context.motionEnabledAtInit) _controller.repeat();
+    _syncAnimation();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _motionEnabled = context.motion.enabled;
+    _syncAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant _LoadingDots oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncAnimation();
+  }
+
+  void _syncAnimation() {
+    final shouldRun = !widget.still && _motionEnabled;
+    if (shouldRun && !_controller.isAnimating) {
+      _controller.repeat();
+    } else if (!shouldRun && _controller.isAnimating) {
+      _controller.stop();
+      _controller.value = 0;
+    }
   }
 
   @override

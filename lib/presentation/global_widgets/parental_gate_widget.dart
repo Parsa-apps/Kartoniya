@@ -9,25 +9,28 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
 
-/// قفل والدین مبتنی بر پرسش تصادفی؛ هیچ PIN ثابت یا دادهٔ حساسی ذخیره نمی‌شود.
+/// قفل والدینِ سبک برای کاهش دسترسی اتفاقی؛ جایگزین امنیت حساب یا نظارت والدین نیست.
+/// هیچ PIN ثابت یا دادهٔ حساسی ذخیره نمی‌شود.
 ///
-/// ضد‌دورزدن:
-/// - پس از سه پاسخ نادرست، قفل برای ۳۰ ثانیه وارد حالت انتظار می‌شود
-///   (تلاس آفلاین در حافظهٔ همان نشست؛ بدون هیچ ذخیره‌ای روی دستگاه).
-/// - با هر پاسخ غلط، مسئلهٔ تازه‌ای ساخته می‌شود تا حدس‌زدن معنادار نباشد.
-/// - دیالوگ با barrierDismissible باز نمی‌ماند و با back هم رد نمی‌شود مگر
-///   دکمهٔ «انصراف».
-Future<bool> showParentalGate(BuildContext context) async {
+/// - پس از سه پاسخ نادرست، همان پنجره برای ۳۰ ثانیه وارد حالت انتظار می‌شود.
+/// - با هر پاسخ غلط، مسئلهٔ تازه‌ای ساخته می‌شود.
+/// - برای بستن پنجره از دکمهٔ «انصراف» استفاده می‌شود.
+Future<bool> showParentalGate(
+  BuildContext context, {
+  String reason = 'تنظیمات',
+}) async {
   return (await showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => const _ParentalGateDialog(),
+        builder: (_) => _ParentalGateDialog(reason: reason),
       )) ??
       false;
 }
 
 class _ParentalGateDialog extends StatefulWidget {
-  const _ParentalGateDialog();
+  const _ParentalGateDialog({required this.reason});
+
+  final String reason;
 
   @override
   State<_ParentalGateDialog> createState() => _ParentalGateDialogState();
@@ -52,12 +55,14 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
   Timer? _cooldownTimer;
   int _cooldownSeconds = 0;
   bool _accepted = false;
+  late bool _motionEnabled;
 
   bool get _lockedOut => _cooldownSeconds > 0;
 
   @override
   void initState() {
     super.initState();
+    _motionEnabled = !MotionScope.reducedGlobally;
     _shakeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 420),
@@ -67,8 +72,21 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
       TweenSequenceItem(tween: Tween(begin: -9, end: 9), weight: 2),
       TweenSequenceItem(tween: Tween(begin: 9, end: -6), weight: 2),
       TweenSequenceItem(tween: Tween(begin: -6, end: 0), weight: 1),
-    ]).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
+    ]).animate(
+        CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
     _newChallenge();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final enabled = context.motion.enabled;
+    if (enabled == _motionEnabled) return;
+    _motionEnabled = enabled;
+    if (!enabled) {
+      _shakeController.stop();
+      _shakeController.value = 0;
+    }
   }
 
   @override
@@ -125,7 +143,7 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
       _answerController.clear();
       _newChallenge();
     });
-    _shakeController.forward(from: 0);
+    if (_motionEnabled) _shakeController.forward(from: 0);
   }
 
   void _startCooldown() {
@@ -163,7 +181,7 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
           alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: _accepted
-                ? const LinearGradient(colors: [AppColors.green, AppColors.greenDeep])
+                ? AppColors.actionGradient(AppColors.green)
                 : AppColors.sunsetGradient,
             shape: BoxShape.circle,
             boxShadow: AppTheme.glow(
@@ -182,7 +200,7 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
           children: [
             if (!_accepted) ...[
               Text(
-                'برای باز کردن تنظیمات، مسئلهٔ زیر را حل کنید.',
+                'برای دسترسی به ${widget.reason}، مسئلهٔ زیر را حل کنید.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -196,7 +214,9 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
                     color: _lockedOut
                         ? AppColors.red.withOpacity(.08)
                         : AppColors.skySoft.withOpacity(
-                            Theme.of(context).brightness == Brightness.dark ? .12 : 1,
+                            Theme.of(context).brightness == Brightness.dark
+                                ? .12
+                                : 1,
                           ),
                     borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     border: Border.all(
@@ -213,9 +233,11 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.hourglass_top_rounded,
-                                color: AppColors.red,
+                                color: context.isDarkMode
+                                    ? AppColors.red
+                                    : AppColors.redDeep,
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
@@ -223,8 +245,10 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
                                 child: Text(
                                   'چند پاسخ نادرست؛ '
                                   '${toFaDigits('$_cooldownSeconds')} ثانیه صبر کن.',
-                                  style: const TextStyle(
-                                    color: AppColors.red,
+                                  style: TextStyle(
+                                    color: context.isDarkMode
+                                        ? AppColors.red
+                                        : AppColors.redDeep,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -236,11 +260,15 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
                           '$_first  $_operator  $_second  =  ؟',
                           textAlign: TextAlign.center,
                           textDirection: TextDirection.ltr,
-                          style:
-                              Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    color: AppColors.skyDeep,
-                                    fontWeight: FontWeight.w900,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                color: context.isDarkMode
+                                    ? AppColors.skyLight
+                                    : AppColors.skyDeep,
+                                fontWeight: FontWeight.w900,
+                              ),
                         ),
                 ),
               ),

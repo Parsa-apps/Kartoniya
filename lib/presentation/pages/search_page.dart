@@ -13,6 +13,7 @@ import '../../data/models/cartoon_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/cartoon_card.dart';
 import '../widgets/kartoniya_mascot.dart';
+import '../widgets/motion_progress_indicator.dart';
 import '../widgets/state_views.dart';
 import 'cartoon_detail_page.dart';
 
@@ -191,10 +192,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ? _SearchSuggestions(onSelected: _selectSuggestion)
               : _waitingForQuery
                   ? const Center(
-                      child: SizedBox(
-                        width: 26,
-                        height: 26,
-                        child: CircularProgressIndicator(strokeWidth: 2.6),
+                      child: MotionProgressIndicator(
+                        size: 26,
+                        strokeWidth: 2.6,
                       ),
                     )
                   : result.when(
@@ -203,7 +203,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                             ? items
                             : items
                                 .where(
-                                  (cartoon) => cartoon.category == _categoryFilter,
+                                  (cartoon) =>
+                                      cartoon.category == _categoryFilter,
                                 )
                                 .toList(growable: false);
                         if (filtered.isEmpty) {
@@ -231,10 +232,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                               ),
                               child: Text(
                                 '${toFaDigits('${filtered.length}')} نتیجه',
-                                style:
-                                    Theme.of(context).textTheme.labelMedium?.copyWith(
-                                          color: context.secondaryTextColor,
-                                        ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelMedium
+                                    ?.copyWith(
+                                      color: context.secondaryTextColor,
+                                    ),
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -248,7 +251,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         );
                       },
                       loading: () => const Center(
-                        child: CircularProgressIndicator(),
+                        child: MotionProgressIndicator(),
                       ),
                       error: (_, __) => ErrorStateView(
                         title: 'جست‌وجو انجام نشد',
@@ -280,6 +283,7 @@ class _SearchFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedColor = AppColors.actionColor(color);
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 8),
       child: GestureDetector(
@@ -291,10 +295,10 @@ class _SearchFilterChip extends StatelessWidget {
           duration: context.motion.dur(AppMotion.quick),
           padding: const EdgeInsets.symmetric(horizontal: 13),
           decoration: BoxDecoration(
-            color: selected ? color : context.surfaceColor,
+            color: selected ? selectedColor : context.surfaceColor,
             borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
             border: Border.all(
-              color: selected ? color : color.withOpacity(.35),
+              color: selected ? selectedColor : color.withOpacity(.35),
             ),
           ),
           child: Row(
@@ -394,7 +398,8 @@ class _SearchResultGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(AppTheme.pageMargin, 4, AppTheme.pageMargin, 20),
+      padding: const EdgeInsets.fromLTRB(
+          AppTheme.pageMargin, 4, AppTheme.pageMargin, 20),
       physics: const BouncingScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 220,

@@ -12,6 +12,7 @@ import '../../data/providers/cartoons_provider.dart';
 import '../global_widgets/parental_gate_widget.dart';
 import '../widgets/kartoniya_mascot.dart';
 import 'about_us_page.dart';
+import 'premium_readiness_page.dart';
 import 'settings_page.dart';
 
 /// فضای والدین؛ ورود به تنظیمات حساس با قفل والدین محافظت می‌شود.
@@ -25,6 +26,23 @@ class ProfilePage extends ConsumerWidget {
     final child = ref.watch(childProfileProvider);
     final favorites = ref.watch(favoritesProvider);
     final history = ref.watch(watchHistoryProvider);
+    final cartoons = ref.watch(cartoonsProvider);
+    final nativeEpisodeIds = cartoons.maybeWhen(
+      data: (items) => items
+          .expand((cartoon) => cartoon.episodes)
+          .where((episode) => episode.secureDirectVideoUri != null)
+          .map((episode) => episode.id)
+          .toSet(),
+      orElse: () => const <String>{},
+    );
+    final resumableProgressCount = history.entries
+        .where(
+          (entry) =>
+              nativeEpisodeIds.contains(entry.key) &&
+              entry.value > .01 &&
+              entry.value < .995,
+        )
+        .length;
     final themeMode = ref.watch(themeModeProvider);
 
     return Center(
@@ -61,16 +79,18 @@ class ProfilePage extends ConsumerWidget {
                             'سلام $parentName 👋',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: context.secondaryTextColor,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: context.secondaryTextColor,
+                                    ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
                       tooltip: 'ویرایش نام والد',
-                      onPressed: () => _editParentName(context, ref, parentName),
+                      onPressed: () =>
+                          _editParentName(context, ref, parentName),
                       icon: const Icon(Icons.edit_outlined),
                     ),
                   ],
@@ -121,8 +141,8 @@ class ProfilePage extends ConsumerWidget {
                         child: _StatCard(
                           icon: Icons.play_circle_fill_rounded,
                           color: AppColors.sky,
-                          value: history.length,
-                          label: 'ادامهٔ تماشا',
+                          value: resumableProgressCount,
+                          label: 'پیشرفت قابل‌ازسرگیری',
                         ),
                       ),
                     ],
@@ -166,15 +186,50 @@ class ProfilePage extends ConsumerWidget {
                         SwitchListTile.adaptive(
                           value: themeMode == ThemeMode.dark,
                           onChanged: (value) {
-                            ref
-                                .read(themeModeProvider.notifier)
-                                .setMode(value ? ThemeMode.dark : ThemeMode.light);
+                            ref.read(themeModeProvider.notifier).setMode(
+                                value ? ThemeMode.dark : ThemeMode.light);
                           },
                           secondary: const Icon(Icons.dark_mode_outlined),
                           title: const Text('حالت تاریک'),
                           subtitle: const Text('برای تماشای راحت‌تر در شب'),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // ——— آماده‌سازی خرید (فقط پس از عبور از قفل والدین) ———
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.pageMargin,
+                  22,
+                  AppTheme.pageMargin,
+                  10,
+                ),
+                child: Text(
+                  'کارتونیا ویژه',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: StaggeredReveal(
+                index: 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.pageMargin,
+                  ),
+                  child: Card(
+                    child: _ActionTile(
+                      icon: Icons.workspace_premium_outlined,
+                      color: context.isDarkMode
+                          ? AppColors.gold
+                          : AppColors.goldDark,
+                      title: 'وضعیت خرید',
+                      subtitle: 'فعلاً غیرفعال؛ بدون قیمت یا تراکنش',
+                      onTap: () => _openPremium(context),
                     ),
                   ),
                 ),
@@ -197,7 +252,7 @@ class ProfilePage extends ConsumerWidget {
             ),
             SliverToBoxAdapter(
               child: StaggeredReveal(
-                index: 3,
+                index: 4,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppTheme.pageMargin,
@@ -205,7 +260,9 @@ class ProfilePage extends ConsumerWidget {
                   child: Card(
                     child: _ActionTile(
                       icon: Icons.auto_awesome_rounded,
-                      color: AppColors.goldDark,
+                      color: context.isDarkMode
+                          ? AppColors.gold
+                          : AppColors.goldDark,
                       title: 'Parsa Apps',
                       subtitle: 'دربارهٔ سازنده و پشتیبانی تلگرام',
                       onTap: () => pushAppPage<void>(
@@ -239,19 +296,24 @@ class ProfilePage extends ConsumerWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.privacy_tip_outlined,
-                        color: AppColors.tealDeep,
+                        color: context.isDarkMode
+                            ? AppColors.tealLight
+                            : AppColors.tealDeep,
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'کارتونیا در این نسخه حساب کاربری نمی‌سازد و فقط نام نمایشی، '
-                          'علاقه‌مندی‌ها و ادامهٔ تماشا را روی همین دستگاه نگه می‌دارد. '
-                          'هیچ داده‌ای از کودک ارسال یا ردیابی نمی‌شود.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
+                          'نام نمایشی، علاقه‌مندی‌ها و پیشرفتِ قسمت‌های پشتیبانی‌شده '
+                          'روی همین دستگاه ذخیره می‌شوند. پخش آپارات به میزبان بیرونی '
+                          'واگذار می‌شود و ممکن است آن سرویس داده‌های فنی یا تبلیغات '
+                          'خودش را داشته باشد. قفل والدین فقط مانع دسترسی اتفاقی است؛ '
+                          'جایگزین همراهی بزرگ‌تر نیست.',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
                         ),
                       ),
                     ],
@@ -271,6 +333,12 @@ class ProfilePage extends ConsumerWidget {
     await pushAppPage<void>(context, const SettingsPage());
   }
 
+  Future<void> _openPremium(BuildContext context) async {
+    final allowed = await showParentalGate(context, reason: 'وضعیت خرید');
+    if (!allowed || !context.mounted) return;
+    await pushAppPage<void>(context, const PremiumReadinessPage());
+  }
+
   Future<void> _editParentName(
     BuildContext context,
     WidgetRef ref,
@@ -286,8 +354,7 @@ class ProfilePage extends ConsumerWidget {
           autofocus: true,
           maxLength: 28,
           textInputAction: TextInputAction.done,
-          onSubmitted: (value) =>
-              Navigator.of(dialogContext).pop(value),
+          onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
           decoration: const InputDecoration(
             hintText: 'مثلاً مامان یا بابا',
             counterText: '',
@@ -341,8 +408,9 @@ class _ChildCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final (emoji, colorValue) = child.avatar;
     final color = Color(colorValue);
-    final displayName =
-        child.hasName ? child.name : 'کودک من';
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
+    final displayName = child.hasName ? child.name : 'کودک من';
     return PressableScale(
       onTap: onEdit,
       child: Container(
@@ -403,7 +471,7 @@ class _ChildCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.edit_rounded, color: color, size: 20),
+            Icon(Icons.edit_rounded, color: accent, size: 20),
           ],
         ),
       ),
@@ -538,6 +606,8 @@ class _AvatarOption extends StatelessWidget {
   Widget build(BuildContext context) {
     final (emoji, colorValue) = ChildProfileModel.avatars[index];
     final color = Color(colorValue);
+    final selectionColor =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return Semantics(
       button: true,
       selected: selected,
@@ -557,12 +627,10 @@ class _AvatarOption extends StatelessWidget {
             height: 56,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: selected
-                  ? color.withOpacity(.2)
-                  : context.surfaceAltColor,
+              color: selected ? color.withOpacity(.2) : context.surfaceAltColor,
               shape: BoxShape.circle,
               border: Border.all(
-                color: selected ? color : Colors.transparent,
+                color: selected ? selectionColor : Colors.transparent,
                 width: 2.5,
               ),
             ),
@@ -589,6 +657,8 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -606,7 +676,7 @@ class _StatCard extends StatelessWidget {
               color: color.withOpacity(.14),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 21),
+            child: Icon(icon, color: accent, size: 21),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -655,6 +725,8 @@ class _ActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return ListTile(
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -665,7 +737,7 @@ class _ActionTile extends StatelessWidget {
           color: color.withOpacity(.13),
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: color),
+        child: Icon(icon, color: accent),
       ),
       title: Text(title),
       subtitle: Text(subtitle),

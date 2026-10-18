@@ -13,7 +13,8 @@ import '../repositories/local_cartoon_repository.dart';
 
 /// در [main] با نمونهٔ واقعی SharedPreferences override می‌شود.
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError('SharedPreferences باید هنگام شروع برنامه فراهم شود.');
+  throw UnimplementedError(
+      'SharedPreferences باید هنگام شروع برنامه فراهم شود.');
 });
 
 final appPreferencesProvider = Provider<AppPreferences>((ref) {
@@ -32,9 +33,12 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>((ref) {
   return ref.watch(cartoonRepositoryProvider).fetchCategories();
 });
 
-final featuredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+final featuredCartoonsProvider =
+    FutureProvider<List<CartoonModel>>((ref) async {
   final cartoons = await ref.watch(cartoonsProvider.future);
-  return cartoons.where((cartoon) => cartoon.isFeatured).toList(growable: false);
+  return cartoons
+      .where((cartoon) => cartoon.isFeatured)
+      .toList(growable: false);
 });
 
 final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
@@ -42,16 +46,10 @@ final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
   return cartoons.where((cartoon) => cartoon.isNew).toList(growable: false);
 });
 
-final popularCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
-  final sorted = [...cartoons]
-    ..sort((a, b) => b.rating.compareTo(a.rating));
-  return List.unmodifiable(sorted);
-});
-
 final selectedCategoryProvider = StateProvider<String?>((ref) => null);
 
-final filteredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+final filteredCartoonsProvider =
+    FutureProvider<List<CartoonModel>>((ref) async {
   final selectedCategory = ref.watch(selectedCategoryProvider);
   final cartoons = await ref.watch(cartoonsProvider.future);
   if (selectedCategory == null) return cartoons;
@@ -91,12 +89,16 @@ final searchResultsProvider = FutureProvider<List<CartoonModel>>((ref) async {
     ].join(' ');
     return normalizeForSearch(searchableText).contains(query);
   }).toList();
+  final catalogOrder = <String, int>{
+    for (var index = 0; index < cartoons.length; index++)
+      cartoons[index].id: index,
+  };
   matches.sort((a, b) {
     final score = searchRelevanceScore(a, query).compareTo(
       searchRelevanceScore(b, query),
     );
     if (score != 0) return score; // امتیاز کمتر یعنی مرتبط‌تر
-    return b.rating.compareTo(a.rating);
+    return catalogOrder[a.id]!.compareTo(catalogOrder[b.id]!);
   });
   return List.unmodifiable(matches);
 });
@@ -133,7 +135,8 @@ class FavoritesNotifier extends StateNotifier<Set<String>> {
   }
 }
 
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+final themeModeProvider =
+    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
   return ThemeModeNotifier(ref.watch(appPreferencesProvider));
 });
 
@@ -171,7 +174,7 @@ final reduceMotionProvider =
 
 class ReduceMotionNotifier extends StateNotifier<bool> {
   ReduceMotionNotifier(this._preferences)
-    : super(_preferences.reduceMotionEnabled);
+      : super(_preferences.reduceMotionEnabled);
 
   final AppPreferences _preferences;
 
@@ -181,7 +184,8 @@ class ReduceMotionNotifier extends StateNotifier<bool> {
   }
 }
 
-final profileNameProvider = StateNotifierProvider<ProfileNameNotifier, String>((ref) {
+final profileNameProvider =
+    StateNotifierProvider<ProfileNameNotifier, String>((ref) {
   return ProfileNameNotifier(ref.watch(appPreferencesProvider));
 });
 
@@ -204,12 +208,12 @@ final childProfileProvider =
 
 class ChildProfileNotifier extends StateNotifier<ChildProfileModel> {
   ChildProfileNotifier(this._preferences)
-    : super(
-        ChildProfileModel(
-          name: _preferences.childProfileName ?? '',
-          avatarIndex: _preferences.childAvatarIndex,
-        ),
-      );
+      : super(
+          ChildProfileModel(
+            name: _preferences.childProfileName ?? '',
+            avatarIndex: _preferences.childAvatarIndex,
+          ),
+        );
 
   final AppPreferences _preferences;
 
@@ -228,12 +232,14 @@ class ChildProfileNotifier extends StateNotifier<ChildProfileModel> {
   }
 }
 
-final onboardingProvider = StateNotifierProvider<OnboardingNotifier, bool>((ref) {
+final onboardingProvider =
+    StateNotifierProvider<OnboardingNotifier, bool>((ref) {
   return OnboardingNotifier(ref.watch(appPreferencesProvider));
 });
 
 class OnboardingNotifier extends StateNotifier<bool> {
-  OnboardingNotifier(this._preferences) : super(_preferences.onboardingCompleted);
+  OnboardingNotifier(this._preferences)
+      : super(_preferences.onboardingCompleted);
 
   final AppPreferences _preferences;
 
@@ -282,11 +288,12 @@ class WatchHistoryNotifier extends StateNotifier<Map<String, double>> {
   }
 }
 
-final episodeProgressProvider = Provider.family<double, String>((ref, episodeId) {
+final episodeProgressProvider =
+    Provider.family<double, String>((ref, episodeId) {
   return ref.watch(watchHistoryProvider)[episodeId] ?? 0.0;
 });
 
-/// یک آیتم «ادامهٔ تماشا»؛ فقط برای قسمت‌های معتبر کاتالوگ ساخته می‌شود.
+/// یک آیتم «ادامهٔ تماشا»؛ فقط برای URL مستقیم امن با progress واقعی ساخته می‌شود.
 class ContinueWatchingEntry {
   const ContinueWatchingEntry({
     required this.cartoon,
@@ -303,11 +310,12 @@ class ContinueWatchingEntry {
 /// تا منطق «درصد واقعی + حذف محتوای نامعتبر» یک‌جا و قابل‌تست بماند.
 final continueWatchingProvider =
     FutureProvider<List<ContinueWatchingEntry>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
   final history = ref.watch(watchHistoryProvider);
+  final cartoons = await ref.watch(cartoonsProvider.future);
   final entries = <ContinueWatchingEntry>[];
   for (final cartoon in cartoons) {
     for (final episode in cartoon.episodes) {
+      if (episode.secureDirectVideoUri == null) continue;
       final amount = history[episode.id];
       if (amount != null && amount > .01 && amount < .995) {
         entries.add(

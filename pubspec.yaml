@@ -1,5 +1,5 @@
 name: kartoniya
-description: کارتونیا؛ فضای امن و شاد تماشای انیمیشن برای کودکان و والدین.
+description: کارتونیا؛ فهرست و پخش محتوای کودک با همراهی والدین.
 publish_to: 'none'
 version: 1.2.1+4
 
@@ -33,6 +33,8 @@ flutter:
   # Vazirmatn (OFL 1.1, see asset/fonts/LICENSE-Vazirmatn.txt) is bundled so the
   # first run works fully offline, cold start avoids a font fetch from the
   # network and the rendering never falls back to a non-Persian fallback font.
+  assets:
+    - asset/fonts/LICENSE-Vazirmatn.txt
   fonts:
     - family: Vazirmatn
       fonts:
@@ -43,4 +45,11 @@ flutter:
         - asset: asset/fonts/Vazirmatn-Bold.ttf
           weight: 700
         - asset: asset/fonts/Vazirmatn-Black.ttf
+          weight: 900
+    # Official Vazirmatn Round-Dots display variant (same OFL 1.1 license).
+    - family: VazirmatnRoundDots
+      fonts:
+        - asset: asset/fonts/Vazirmatn-RD-Bold.ttf
+          weight: 700
+        - asset: asset/fonts/Vazirmatn-RD-Black.ttf
           weight: 900
