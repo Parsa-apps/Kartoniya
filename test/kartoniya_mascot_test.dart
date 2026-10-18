@@ -20,7 +20,7 @@ void main() {
         find.byWidgetPredicate(
           (widget) =>
               widget is Semantics &&
-              widget.label == 'فِلَک؛ برای دیدن واکنش لمس کن',
+              widget.properties.label == 'فِلَک؛ برای دیدن واکنش لمس کن',
         ),
         findsOneWidget,
       );

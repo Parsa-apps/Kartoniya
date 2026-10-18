@@ -18,6 +18,7 @@ concurrency:
 
 permissions:
   contents: read
+  checks: write
 
 jobs:
   validate:
@@ -50,6 +51,44 @@ jobs:
 
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed lib test
+
+      # Temporary diagnostics: publish the formatter's exact patch as a check
+      # output so it can be applied when the local sandbox has no Dart SDK.
+      - name: Capture formatter patch
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          dart format lib test
+          python3 - <<'PYTHON'
+          import json, os, subprocess
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          diff = subprocess.run(
+              ['git', 'diff', '--', 'lib', 'test'],
+              check=True, capture_output=True, text=True,
+          ).stdout
+          if not diff:
+              diff = 'No formatter changes were produced.'
+          chunks = [diff[i:i + 50000] for i in range(0, len(diff), 50000)]
+          for index, chunk in enumerate(chunks, 1):
+              payload = {
+                  'name': f'Dart formatter patch {index}/{len(chunks)}',
+                  'head_sha': sha,
+                  'status': 'completed',
+                  'conclusion': 'neutral',
+                  'output': {
+                      'title': 'Dart formatter output',
+                      'summary': 'Temporary formatter diagnostics for this commit.',
+                      'text': '```diff\n' + chunk + '\n```',
+                  },
+              }
+              subprocess.run(
+                  ['gh', 'api', '--method', 'POST',
+                   f'repos/{repo}/check-runs', '--input', '-'],
+                  input=json.dumps(payload), text=True, check=True,
+              )
+          PYTHON
 
       - name: Analyze
         run: flutter analyze

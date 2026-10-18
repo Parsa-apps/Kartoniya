@@ -62,83 +62,84 @@ abstract final class AppTheme {
 
     final rawTextTheme =
         ThemeData(brightness: brightness, useMaterial3: true).textTheme;
-    final textTheme =
+    final baseTextTheme =
         rawTextTheme.apply(
       bodyColor: scheme.onSurface,
       displayColor: scheme.onSurface,
       fontFamily: fontFamily,
-    ).copyWith(
-      displayLarge: rawTextTheme.displayLarge?.copyWith(
+    );
+    final textTheme = baseTextTheme.copyWith(
+      displayLarge: baseTextTheme.displayLarge?.copyWith(
         fontFamily: headingFontFamily,
         fontSize: 38,
         fontWeight: FontWeight.w900,
         height: 1.25,
       ),
-      displayMedium: rawTextTheme.displayMedium?.copyWith(
+      displayMedium: baseTextTheme.displayMedium?.copyWith(
         fontFamily: headingFontFamily,
         fontSize: 30,
         fontWeight: FontWeight.w900,
         height: 1.3,
       ),
-      displaySmall: rawTextTheme.displaySmall?.copyWith(
+      displaySmall: baseTextTheme.displaySmall?.copyWith(
         fontFamily: headingFontFamily,
         fontSize: 26,
         fontWeight: FontWeight.w900,
         height: 1.3,
       ),
-      headlineMedium: rawTextTheme.headlineMedium?.copyWith(
+      headlineMedium: baseTextTheme.headlineMedium?.copyWith(
         fontFamily: headingFontFamily,
         fontSize: 23,
         fontWeight: FontWeight.w800,
         height: 1.4,
       ),
-      headlineSmall: rawTextTheme.headlineSmall?.copyWith(
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
         fontFamily: headingFontFamily,
         fontSize: 20,
         fontWeight: FontWeight.w800,
         height: 1.42,
       ),
-      titleLarge: rawTextTheme.titleLarge?.copyWith(
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
         fontFamily: headingFontFamily,
         fontSize: 17.5,
         fontWeight: FontWeight.w800,
         height: 1.5,
       ),
-      titleMedium: rawTextTheme.titleMedium?.copyWith(
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
         fontSize: 15.5,
         fontWeight: FontWeight.w700,
         height: 1.5,
       ),
-      titleSmall: rawTextTheme.titleSmall?.copyWith(
+      titleSmall: baseTextTheme.titleSmall?.copyWith(
         fontSize: 13.5,
         fontWeight: FontWeight.w700,
         height: 1.45,
       ),
-      bodyLarge: rawTextTheme.bodyLarge?.copyWith(
+      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         height: 1.75,
       ),
-      bodyMedium: rawTextTheme.bodyMedium?.copyWith(
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
         fontSize: 13.5,
         fontWeight: FontWeight.w400,
         height: 1.7,
       ),
-      bodySmall: rawTextTheme.bodySmall?.copyWith(
+      bodySmall: baseTextTheme.bodySmall?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         height: 1.55,
       ),
-      labelLarge: rawTextTheme.labelLarge?.copyWith(
+      labelLarge: baseTextTheme.labelLarge?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w700,
         height: 1.4,
       ),
-      labelMedium: rawTextTheme.labelMedium?.copyWith(
+      labelMedium: baseTextTheme.labelMedium?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
-      labelSmall: rawTextTheme.labelSmall?.copyWith(
+      labelSmall: baseTextTheme.labelSmall?.copyWith(
         fontSize: 10.5,
         fontWeight: FontWeight.w600,
       ),

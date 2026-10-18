@@ -28,6 +28,18 @@ void main() {
     return SharedPreferences.getInstance();
   }
 
+  Future<void> revealTextInList(WidgetTester tester, String text) async {
+    final scrollable = find.descendant(
+      of: find.byType(ListView),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.text(text),
+      240,
+      scrollable: scrollable.first,
+    );
+  }
+
   testWidgets('مسیر اولین اجرا: اسپلش → آن‌بوردینگ → خانه', (tester) async {
     usePhone(tester);
     final prefs = await initPrefs();
@@ -147,6 +159,7 @@ void main() {
 
     expect(find.text('خرید هنوز فعال نیست'), findsOneWidget);
     expect(find.text('انتخاب فروشگاه مقصد'), findsOneWidget);
+    await revealTextInList(tester, 'اعتبارسنجی و بازیابی');
     expect(find.text('اعتبارسنجی و بازیابی'), findsOneWidget);
     expect(find.textContaining('تومان'), findsNothing);
     expect(find.textContaining('€'), findsNothing);
@@ -163,6 +176,7 @@ void main() {
 
     expect(find.text('حریم خصوصی'), findsOneWidget);
     expect(find.text('اطلاعات ذخیره‌شده روی دستگاه'), findsOneWidget);
+    await revealTextInList(tester, 'پخش و پیوندهای بیرونی');
     expect(find.text('پخش و پیوندهای بیرونی'), findsOneWidget);
     expect(find.textContaining('جایگزین سیاست حقوقی'), findsOneWidget);
     expect(tester.takeException(), isNull);
