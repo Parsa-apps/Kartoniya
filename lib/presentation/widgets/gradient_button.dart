@@ -146,9 +146,8 @@ class _GradientButtonState extends State<GradientButton> {
       child: FocusableActionDetector(
         focusNode: _focusNode,
         enabled: enabled,
-        mouseCursor: enabled
-            ? SystemMouseCursors.click
-            : SystemMouseCursors.basic,
+        mouseCursor:
+            enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
         shortcuts: const <ShortcutActivator, Intent>{
           SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
           SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
@@ -166,9 +165,8 @@ class _GradientButtonState extends State<GradientButton> {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
-            onTapCancel: enabled
-                ? () => setState(() => _pressed = false)
-                : null,
+            onTapCancel:
+                enabled ? () => setState(() => _pressed = false) : null,
             onTapUp: enabled
                 ? (_) {
                     setState(() => _pressed = false);
@@ -202,9 +200,8 @@ class _GradientButtonState extends State<GradientButton> {
                   boxShadow: [
                     ...AppTheme.glow(
                       _focused ? AppColors.gold : glow,
-                      opacity: _focused
-                          ? .52
-                          : (enabled && !_pressed ? .38 : .18),
+                      opacity:
+                          _focused ? .52 : (enabled && !_pressed ? .38 : .18),
                       lift: _focused ? 9 : (enabled && !_pressed ? 8 : 3),
                     ),
                   ],
