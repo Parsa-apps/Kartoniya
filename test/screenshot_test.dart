@@ -244,21 +244,40 @@ void main() {
 
       await captureMascot(
         '09_mascot_states',
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        const Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            KartoniyaMascot(width: 104, height: 132, float: false),
-            KartoniyaMascot(
-              width: 104,
-              height: 132,
-              float: false,
-              mood: MascotMood.cheering,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                KartoniyaMascot(width: 104, height: 132, float: false),
+                SizedBox(width: 14),
+                KartoniyaMascot(
+                  width: 104,
+                  height: 132,
+                  float: false,
+                  mood: MascotMood.cheering,
+                ),
+              ],
             ),
-            KartoniyaMascot(
-              width: 104,
-              height: 132,
-              float: false,
-              mood: MascotMood.sleepy,
+            SizedBox(height: 12),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                KartoniyaMascot(
+                  width: 104,
+                  height: 132,
+                  float: false,
+                  mood: MascotMood.sleepy,
+                ),
+                SizedBox(width: 14),
+                KartoniyaMascot(
+                  width: 104,
+                  height: 132,
+                  float: false,
+                  mood: MascotMood.sad,
+                ),
+              ],
             ),
           ],
         ),

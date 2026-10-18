@@ -44,20 +44,25 @@ these budgets and checks that every catalogue entry resolves to a bundled file.
 ## Honesty notes
 
 There is no GLB/GLTF mesh, skeleton, runtime 3D renderer, external asset
-download, or live 3D camera. All "3D" imagery above is pre-rendered; the vector
-`KartoniyaMascot` used for empty/error states is a hand-drawn 2D fallback that
-imitates the same character design. A transparent matte is used only for the
-isolated mascot; all scene, splash and poster images are opaque.
+download, or live 3D camera. All "3D" imagery above is pre-rendered; the
+`KartoniyaMascot` used across the app animates the pre-rendered walnut as a
+layered 2D cut-out rig (body, leaf, arms, legs and face overlays), not a live
+3D mesh. A transparent matte is used only for the isolated mascot; all scene,
+splash and poster images are opaque.
 
 ## فندوقی (فایل‌های fandaq) — شخصیت اصلی (فاز ۶)
 
 - **تصویر مرجع:** توسط مالک پروژه (Parsa Apps) ارائه شده است؛ پس‌زمینه در
   همان پروژه حذف و لبهٔ آلفا تمیز شده است.
 - **لایه‌های ریگ‌شده** (`asset/images/fandaq/`): بدن، دست راست (سلام)، دست
-  چپ، دو پا، برگ، دو حالت چشم (بسته/درشت) و دهان خندان. این لایه‌ها با
-  برش ماسک روی همان تصویر ساخته شده‌اند تا در Flutter واقعاً حرکت کنند.
-- **حالت‌های چهره** با ویرایش هوش مصنوعی روی همان شخصیت ساخته و سپس فقط
-  ناحیهٔ چشم/دهان آن‌ها روی بدن اصلی جای‌گذاری شده است.
+  چپ، دو پا، برگ، پلک/چشم بسته و چهار جفت چهرهٔ حالت (خندان/هیجان‌زده،
+  غمگین، کنجکاو، خواب‌آلود). این لایه‌ها با برش ماسک روی همان تصویر ساخته
+  شده‌اند تا در Flutter واقعاً حرکت کنند.
+- **حالت‌های چهره** با ویرایش تصویر روی همان شخصیت و با راهنمایی سه تصویر
+  مرجع مالک پروژه ساخته شده‌اند؛ سپس فقط ناحیهٔ ابرو/چشم و دهان آن‌ها با
+  ماسک نرم روی بدن اصلی جای‌گذاری شده است. نام فایل‌ها:
+  `eyes_{laugh,sad,curious,sleepy}.webp` و
+  `mouth_{laugh,sad,curious,sleepy}.webp`.
 - **صحنه‌های تازه:** `fandaq_splash_night.webp` (پس‌زمینهٔ بدون شخصیت برای
   اسپلش)، `fandaq_scene_reading.webp` و `fandaq_scene_night.webp`؛ هر سه با
   همان زبان بصری نمدی/خمیری ساخته شده‌اند.

@@ -54,7 +54,9 @@ void main() {
       expect(image.height, greaterThan(40), reason: path);
       image.dispose();
     }
-    expect(rigBytes, lessThan(140 * 1024));
+    // چهار چهرهٔ حالت (چشم/ابرو + دهان) به مجموعه اضافه شده است؛ سقف
+    // با همان نسبت حافظهٔ قبلی بالا می‌رود، نه بی‌حساب.
+    expect(rigBytes, lessThan(250 * 1024));
 
     final stillBytes = await rootBundle.load(FandaqAssets.still);
     final codec = await ui.instantiateImageCodec(

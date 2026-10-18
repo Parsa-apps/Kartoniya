@@ -104,7 +104,7 @@ class ErrorStateView extends StatelessWidget {
             child: KartoniyaMascot(
               width: 108,
               height: 118,
-              mood: MascotMood.confused,
+              mood: MascotMood.sad,
               float: false,
               semanticLabel: 'فندوقی برای وضعیت خطا',
             ),

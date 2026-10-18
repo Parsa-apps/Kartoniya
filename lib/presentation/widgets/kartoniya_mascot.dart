@@ -7,7 +7,11 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 
 /// حالت‌های احساسی شخصیت «فندوقی».
-enum MascotMood { happy, sleepy, confused, cheering }
+///
+/// هر حالت چهرهٔ اختصاصی خودش را دارد (چشم/ابرو + دهان) و поз بدن هم
+/// متناسب با همان حالت کمی تغییر می‌کند؛ حالت `happy` چهرهٔ پایهٔ تصویر
+/// اصلی است و لایهٔ اضافه‌ای نمی‌خواهد.
+enum MascotMood { happy, sleepy, confused, cheering, sad }
 
 /// دارایی‌های ریگ‌شدهٔ «فندوقی»، شخصیت اصلی کارتونیا.
 ///
@@ -26,8 +30,17 @@ abstract final class FandaqAssets {
   static const legLeft = '$_dir/leg_left.webp';
   static const legRight = '$_dir/leg_right.webp';
   static const eyesClosed = '$_dir/eyes_closed.webp';
-  static const eyesWow = '$_dir/eyes_wow.webp';
-  static const mouthWow = '$_dir/mouth_wow.webp';
+
+  // چهره‌های چهار حالت؛ از فریم‌های هم‌قابِ ساخته‌شده از تصویر اصلی برش
+  // خورده‌اند تا ابرو/چشم/دهان هر حالت جدا و هم‌تراز باشد.
+  static const eyesLaugh = '$_dir/eyes_laugh.webp';
+  static const mouthLaugh = '$_dir/mouth_laugh.webp';
+  static const eyesSad = '$_dir/eyes_sad.webp';
+  static const mouthSad = '$_dir/mouth_sad.webp';
+  static const eyesCurious = '$_dir/eyes_curious.webp';
+  static const mouthCurious = '$_dir/mouth_curious.webp';
+  static const eyesSleepy = '$_dir/eyes_sleepy.webp';
+  static const mouthSleepy = '$_dir/mouth_sleepy.webp';
 
   /// تصویر کامل برای جاهایی که فقط یک تصویر ثابت لازم است.
   static const still = '$_dir/pose.webp';
@@ -41,8 +54,14 @@ abstract final class FandaqAssets {
     legLeft,
     legRight,
     eyesClosed,
-    eyesWow,
-    mouthWow,
+    eyesLaugh,
+    mouthLaugh,
+    eyesSad,
+    mouthSad,
+    eyesCurious,
+    mouthCurious,
+    eyesSleepy,
+    mouthSleepy,
   ];
 }
 
@@ -114,20 +133,70 @@ abstract final class _Rig {
     130,
     Alignment.center,
   );
-  static const eyesWow = _Part(
-    FandaqAssets.eyesWow,
-    93,
-    229,
-    354,
-    128,
+  // چهره‌های حالت‌ها؛ اعداد از همین اسپرایت‌های برش‌خورده آمده‌اند
+  // (manifest در flakwork ساختهٔ ابزار است و در زمان اجرا لازم نیست).
+  static const eyesLaugh = _Part(
+    FandaqAssets.eyesLaugh,
+    39,
+    119,
+    460,
+    284,
     Alignment.center,
   );
-  static const mouthWow = _Part(
-    FandaqAssets.mouthWow,
-    239,
-    339,
-    126,
-    92,
+  static const mouthLaugh = _Part(
+    FandaqAssets.mouthLaugh,
+    181,
+    291,
+    246,
+    196,
+    Alignment.center,
+  );
+  static const eyesSad = _Part(
+    FandaqAssets.eyesSad,
+    40,
+    119,
+    458,
+    284,
+    Alignment.center,
+  );
+  static const mouthSad = _Part(
+    FandaqAssets.mouthSad,
+    181,
+    291,
+    246,
+    196,
+    Alignment.center,
+  );
+  static const eyesCurious = _Part(
+    FandaqAssets.eyesCurious,
+    39,
+    119,
+    460,
+    284,
+    Alignment.center,
+  );
+  static const mouthCurious = _Part(
+    FandaqAssets.mouthCurious,
+    181,
+    291,
+    246,
+    196,
+    Alignment.center,
+  );
+  static const eyesSleepy = _Part(
+    FandaqAssets.eyesSleepy,
+    39,
+    119,
+    460,
+    284,
+    Alignment.center,
+  );
+  static const mouthSleepy = _Part(
+    FandaqAssets.mouthSleepy,
+    181,
+    291,
+    246,
+    196,
     Alignment.center,
   );
 }
@@ -137,8 +206,9 @@ abstract final class _Rig {
 /// رفتارها:
 /// * تنفس و شناوری آرام، تاب خوردن برگ و دست‌ها، پلک‌زدن نامنظم.
 /// * لمس: پرش کوتاه، تکان دست و چهرهٔ خندان؛ با HapticFeedback سبک.
-/// * حالت‌ها: شاد، خواب‌آلود (چشم بسته)، کنجکاو (چشم‌های درشت) و هیجان‌زده
-///   (چشم درشت + دهان باز).
+/// * حالت‌ها: شاد، خواب‌آلود (پلک سنگین + خمیازه)، کنجکاو (ابروی بالا +
+///   دهان گرد)، هیجان‌زده (چشم بستهٔ خندان + دهان باز) و غمگین/همدل
+///   (ابروی افتاده + لب پایین). هر چهره از تصویر اصلی برش خورده است.
 /// * با «کاهش حرکت» همهٔ کنترلرها و تایمرها می‌ایستند و یک فریم ثابت
 ///   آرام نمایش داده می‌شود (چهرهٔ همان حالت).
 ///
@@ -349,33 +419,50 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
 
                 // ——— حالت‌ها ———
                 final sleepy = mood == MascotMood.sleepy;
-                final excited =
-                    mood == MascotMood.cheering || mood == MascotMood.confused;
-                final waving = mood == MascotMood.cheering || tap > 0;
+                final sad = mood == MascotMood.sad;
+                final waving = mood == MascotMood.cheering ||
+                    (tap > 0 && !sad);
 
-                final bodyTilt = sleepy
-                    ? .018 * math.sin(t * math.pi * 2)
-                    : mood == MascotMood.confused
-                        ? .045
-                        : .012 * math.sin(t * math.pi * 2 + .6);
+                final bodyTilt = sad
+                    ? -.026
+                    : sleepy
+                        ? .018 * math.sin(t * math.pi * 2)
+                        : mood == MascotMood.confused
+                            ? .045
+                            : .012 * math.sin(t * math.pi * 2 + .6);
 
-                final leafSwing = sleepy
-                    ? .035 * math.sin(t * math.pi * 2) - .05
-                    : .055 * math.sin(t * math.pi * 2 + .4);
+                final leafSwing = sad
+                    ? -.075 + .025 * math.sin(t * math.pi * 2)
+                    : sleepy
+                        ? .035 * math.sin(t * math.pi * 2) - .05
+                        : .055 * math.sin(t * math.pi * 2 + .4);
 
                 final waveSwing = waving
                     ? .20 * math.sin(t * math.pi * 4) + .10
                     : .05 * math.sin(t * math.pi * 2 + 1.2) - .02;
-                final armWave = waveSwing + tap * .35 - (sleepy ? .22 : 0);
+                final armWave = waveSwing +
+                    tap * .35 -
+                    (sleepy ? .22 : 0) -
+                    (sad ? .34 : 0);
 
-                final armLeft =
-                    .045 * math.sin(t * math.pi * 2 + 2.2) + (sleepy ? .12 : 0);
-                final legSwing = .022 * math.sin(t * math.pi * 2 + .9);
+                final armLeft = .045 * math.sin(t * math.pi * 2 + 2.2) +
+                    (sleepy ? .12 : 0) +
+                    (sad ? .10 : 0);
+                final legSwing = sad
+                    ? .006 * math.sin(t * math.pi * 2 + .9)
+                    : .022 * math.sin(t * math.pi * 2 + .9);
 
-                final closing = mood == MascotMood.sleepy ||
-                    (_motion && blinking) ||
-                    (tap > 0 && tap < .62);
-                final wide = excited && !closing;
+                // چشم‌ها فقط برای پلک یا واکنش لمسی بسته می‌شوند؛ حالت
+                // خواب‌آلود چهرهٔ پلک‌سنگین خودش را دارد.
+                final closing = (_motion && blinking) || (tap > 0 && tap < .62);
+
+                final (_Part? eyesPatch, _Part? mouthPatch) = switch (mood) {
+                  MascotMood.cheering => (_Rig.eyesLaugh, _Rig.mouthLaugh),
+                  MascotMood.sad => (_Rig.eyesSad, _Rig.mouthSad),
+                  MascotMood.confused => (_Rig.eyesCurious, _Rig.mouthCurious),
+                  MascotMood.sleepy => (_Rig.eyesSleepy, _Rig.mouthSleepy),
+                  MascotMood.happy => (null, null),
+                };
 
                 return Opacity(
                   opacity: _intro.value.clamp(0.0, 1.0),
@@ -441,11 +528,15 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                                     clipBehavior: Clip.none,
                                     children: [
                                       part(_Rig.body),
-                                      // چهره‌ها روی بدن و زیر برگ.
+                                      // چهره‌ها روی بدن و زیر برگ؛ ابتدا
+                                      // چهرهٔ حالت، بعد پلک/واکنش روی چشم‌ها.
+                                      if (eyesPatch != null)
+                                        part(eyesPatch),
+                                      if (mouthPatch != null)
+                                        part(mouthPatch),
+                                      // پلک آخر از همه می‌آید تا لبهٔ دهان/گونه
+                                      // روی چشم بسته نیفتد.
                                       if (closing) part(_Rig.eyesClosed),
-                                      if (wide) part(_Rig.eyesWow),
-                                      if (wide && mood == MascotMood.cheering)
-                                        part(_Rig.mouthWow),
                                     ],
                                   ),
                                 ),
