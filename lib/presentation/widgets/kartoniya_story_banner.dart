@@ -105,6 +105,7 @@ class KartoniyaStoryBanner extends StatefulWidget {
     this.showMascot = true,
     this.semanticLabel,
     this.mood = MascotMood.happy,
+    this.greet = false,
   });
 
   final String title;
@@ -119,6 +120,9 @@ class KartoniyaStoryBanner extends StatefulWidget {
 
   /// چهرهٔ فندوقی در بنر؛ بنر شب خواب‌آلود و بنر روز خندان است.
   final MascotMood mood;
+
+  /// یک سلام کوتاه (تکان دست) وقتی بنر ساخته می‌شود.
+  final bool greet;
 
   @override
   State<KartoniyaStoryBanner> createState() => _KartoniyaStoryBannerState();
@@ -251,6 +255,7 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   width: mascotWidth,
                                   height: widget.height * .99,
                                   mood: widget.mood,
+                                  greet: widget.greet,
                                   semanticLabel:
                                       'فندوقی، شخصیت کارتونی کارتونیا',
                                 ),

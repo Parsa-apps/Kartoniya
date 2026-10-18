@@ -367,6 +367,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   height: 172,
                   showMascot: true,
                   mood: MascotMood.cheering,
+                  greet: true,
                   eyebrow: 'همراه فندوقی',
                   title: childProfile.hasName
                       ? '${childProfile.name}، امروز کجا بریم؟'

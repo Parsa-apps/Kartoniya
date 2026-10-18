@@ -600,8 +600,10 @@ class _FelakSearchPrompt extends StatelessWidget {
         child: Row(
           children: [
             // خود شخصیت (لایه‌ای) به‌جای عکس ثابت: در صفحهٔ جست‌وجو هم
-            // فندوقی زنده و هم‌هویت با بقیهٔ برنامه دیده می‌شود.
-            const SizedBox(
+            // فندوقی زنده و هم‌هویت با بقیهٔ برنامه دیده می‌شود. لمس خودش
+            // هم همان «برو به جست‌وجو» را اجرا می‌کند تا هیچ لمسی بی‌پاسخ
+            // نماند؛ کارتِ پشتش هم همین اکشن را دارد.
+            SizedBox(
               width: 82,
               height: 80,
               child: KartoniyaMascot(
@@ -609,7 +611,8 @@ class _FelakSearchPrompt extends StatelessWidget {
                 height: 92,
                 float: false,
                 greet: true,
-                semanticLabel: 'فندوقی در حال کتاب‌خواندن',
+                onTap: onTap,
+                semanticLabel: 'از فندوقی بپرس و جست‌وجو کن',
               ),
             ),
             const SizedBox(width: 12),

@@ -11,6 +11,7 @@ import 'package:kartoniya/presentation/pages/home_page.dart';
 import 'package:kartoniya/presentation/pages/search_page.dart';
 import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/category_tile.dart';
+import 'package:kartoniya/presentation/widgets/kartoniya_mascot.dart';
 import 'package:kartoniya/presentation/widgets/kartoniya_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -202,6 +203,34 @@ void main() {
     await tester.enterText(searchField(), 'الفبا');
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump(const Duration(milliseconds: 200));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('لمس فندوقی در کارت جست‌وجو، فیلد را فوکوس می‌کند',
+      (tester) async {
+    await pumpHome(tester, await preferences());
+    await openTab(tester, 'جست‌وجو');
+
+    final mascot = find.descendant(
+      of: find.byType(SearchPage),
+      matching: find.byType(KartoniyaMascot),
+    );
+    expect(mascot, findsWidgets);
+    expect(
+      tester.widget<KartoniyaMascot>(mascot.first).onTap,
+      isNotNull,
+      reason: 'شخصیت راهنما باید مثل کارتِ پشتش به جست‌وجو ببرد.',
+    );
+
+    await tester.tap(mascot.first);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 350));
+
+    expect(
+      FocusManager.instance.primaryFocus?.context?.widget,
+      isA<EditableText>(),
+      reason: 'پس از لمس فندوقی، فیلد جست‌وجو باید فوکوس بگیرد.',
+    );
     expect(tester.takeException(), isNull);
   });
 
