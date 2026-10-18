@@ -650,13 +650,11 @@ class _SuggestionChip extends StatelessWidget {
   const _SuggestionChip({
     required this.label,
     required this.onTap,
-    this.icon,
     this.color = AppColors.sky,
   });
 
   final String label;
   final VoidCallback onTap;
-  final IconData? icon;
   final Color color;
 
   @override
@@ -671,21 +669,12 @@ class _SuggestionChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
           border: Border.all(color: color.withOpacity(.24)),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 13, color: color),
-              const SizedBox(width: 5),
-            ],
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontSize: 12,
-                    color: context.primaryTextColor,
-                  ),
-            ),
-          ],
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontSize: 12,
+                color: context.primaryTextColor,
+              ),
         ),
       ),
     );
