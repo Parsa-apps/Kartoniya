@@ -53,7 +53,7 @@ class SettingsPage extends ConsumerWidget {
                     title: 'تماشا به سبک خانهٔ شما',
                     subtitle: 'همه‌چیز از همین دستگاه و در اختیار والدین',
                     semanticLabel:
-                        'فِلَک در دنیای ابری؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                        'فندوقی در دنیای ابری',
                   ),
                 ),
                 const SizedBox(height: 18),

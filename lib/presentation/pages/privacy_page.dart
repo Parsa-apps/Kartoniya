@@ -36,7 +36,7 @@ class PrivacyPage extends StatelessWidget {
                   title: 'اطلاعات خانواده مهم است',
                   subtitle: 'تنظیمات کارتونیا روی دستگاه شما می‌ماند.',
                   semanticLabel:
-                      'فِلَک در کتابخانهٔ مهتابی؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                      'فندوقی در کتابخانهٔ مهتابی',
                 ),
                 const SizedBox(height: 18),
                 Text(

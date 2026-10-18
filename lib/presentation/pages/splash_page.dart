@@ -11,6 +11,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_mascot.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import 'home_page.dart';
 import 'onboarding_page.dart';
@@ -18,7 +19,7 @@ import 'onboarding_page.dart';
 /// اسپلش برند کارتونیا.
 ///
 /// یک صحنهٔ شبانهٔ اختصاصی (ابرهای نرم، جزیرهٔ قصه و ماه)، ستاره‌های چشمک‌زن،
-/// ورود مرحله‌ای نشان/نام/فِلَک و خروج نرم به صفحهٔ بعد. هیچ تأخیر تزئینیِ
+/// ورود مرحله‌ای نشان/نام/فندوقی و خروج نرم به صفحهٔ بعد. هیچ تأخیر تزئینیِ
 /// ثابتی اعمال نمی‌شود: خروج زمانی رخ می‌دهد که انیمیشن ورود تمام شده باشد
 /// **و** کاتالوگ محلی آماده باشد (با سقف زمانی ۱٫۴ ثانیه)، تا خانه بدون
 /// پرش و با دادهٔ حاضر باز شود.
@@ -48,7 +49,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
   /// کمینهٔ نمایش برند؛ برای دیده‌شدن ورود پلکانی، نه معطل‌کردن کاربر.
   static const _brandBeat = Duration(milliseconds: 900);
   static const _brandBeatReduced = Duration(milliseconds: 380);
-  static const _exitDuration = Duration(milliseconds: 240);
+  static const _exitDuration = Duration(milliseconds: 300);
 
   @override
   void initState() {
@@ -62,11 +63,13 @@ class _SplashPageState extends ConsumerState<SplashPage>
       duration: const Duration(seconds: 18),
     );
     _exit = AnimationController(vsync: this, duration: _exitDuration);
-    _exitOpacity = Tween<double>(begin: 1, end: .1).animate(
-      CurvedAnimation(parent: _exit, curve: AppMotion.curveExit),
+    _exitOpacity = Tween<double>(begin: 1, end: 0).animate(
+      CurvedAnimation(parent: _exit, curve: Curves.easeInCubic),
     );
-    _exitScale = Tween<double>(begin: 1, end: 1.02).animate(
-      CurvedAnimation(parent: _exit, curve: AppMotion.curveExit),
+    // خروج با «بالا رفتن» آرام صحنه انجام می‌شود تا حس بازشدن در باشد و به
+    // ورود پلکانی خانه گره بخورد.
+    _exitScale = Tween<double>(begin: 1, end: 1.045).animate(
+      CurvedAnimation(parent: _exit, curve: Curves.easeInCubic),
     );
 
     if (context.motionEnabledAtInit) {
@@ -206,35 +209,41 @@ class _SplashScene extends StatelessWidget {
       builder: (context, constraints) {
         final h = constraints.maxHeight;
         final w = constraints.maxWidth;
-        final compact = h < 640;
+        final compact = h < 660;
+        final safeTop = MediaQuery.maybeOf(context)?.padding.top ?? 0;
+        final safeBottom = MediaQuery.maybeOf(context)?.padding.bottom ?? 0;
+
+        // ترکیب صحنه: ماه بالا-راست، نشان و نام روی باند آرام آسمان،
+        // فندوقی نشسته روی تخت ابر پایین کادر. اندازه‌ها نسبی‌اند تا روی
+        // گوشی کوتاه، تبلت و صفحهٔ بلند یکسان درست بنشیند.
         final logoSize = math.min(
-          compact ? 64.0 : 92.0,
-          math.min(w * .24, h * .14),
+          compact ? 62.0 : 78.0,
+          math.min(w * .21, h * .115),
         );
-        final characterWidth = math.min(w * .62, h * .30);
-        final characterHeight = characterWidth * 1.16;
-        final brandTop = math.max(
-          (MediaQuery.maybeOf(context)?.padding.top ?? 0) + 16,
-          h * (compact ? .085 : .10),
-        );
-        final characterBottom = math.max(24.0, h * .055);
+        final brandTop = math.max(safeTop + (compact ? 22 : 40), h * .17);
+        final characterHeight = math.min(h * (compact ? .30 : .32), w * .60);
+        final characterWidth = characterHeight * .92;
+        final characterBottom = math.max(safeBottom + 8, h * .045);
 
         return Stack(
           fit: StackFit.expand,
           children: [
             _SplashBackdrop(ambient: ambient, reduced: reduced),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xA60A1826),
-                    Color(0x140A1826),
-                    Color(0x1F08131F),
-                    Color(0x8C071423),
-                  ],
-                  stops: [0, .32, .68, 1],
+            // پردهٔ آرام برای خوانایی متن روی آسمان.
+            const IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0x44061B2C),
+                      Color(0x00061B2C),
+                      Color(0x00061B2C),
+                      Color(0x33081B2A),
+                    ],
+                    stops: [0, .28, .62, 1],
+                  ),
                 ),
               ),
             ),
@@ -249,18 +258,6 @@ class _SplashScene extends StatelessWidget {
                   ),
                 ),
               ),
-            Positioned.fill(
-              child: IgnorePointer(
-                child: _CharacterStage(
-                  entrance: entrance,
-                  ambient: ambient,
-                  reduced: reduced,
-                  width: characterWidth,
-                  height: characterHeight,
-                  bottom: characterBottom,
-                ),
-              ),
-            ),
             Positioned(
               top: brandTop,
               left: 24,
@@ -271,18 +268,22 @@ class _SplashScene extends StatelessWidget {
                 reduced: reduced,
                 compact: compact,
                 logoSize: logoSize,
+                trailing: _SplashLoader(exiting: exiting),
               ),
             ),
             Positioned(
               left: 0,
               right: 0,
-              bottom: math.max(
-                14.0,
-                MediaQuery.maybeOf(context)?.padding.bottom ?? 0,
-              ),
+              bottom: characterBottom,
               child: IgnorePointer(
                 child: Center(
-                  child: _SplashLoader(exiting: exiting),
+                  child: _CharacterStage(
+                    entrance: entrance,
+                    ambient: ambient,
+                    reduced: reduced,
+                    width: characterWidth,
+                    height: characterHeight,
+                  ),
                 ),
               ),
             ),
@@ -315,9 +316,9 @@ class _SplashBackdrop extends StatelessWidget {
           child: child,
         ),
         child: Image.asset(
-          'asset/images/cloud_night_splash.webp',
+          'asset/images/fandaq_splash_night.webp',
           fit: BoxFit.cover,
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.center,
           filterQuality: FilterQuality.medium,
           excludeFromSemantics: true,
           cacheWidth: (width * dpr).clamp(360, 1080).round(),
@@ -340,7 +341,10 @@ class _SplashBackdrop extends StatelessWidget {
   }
 }
 
-/// فِلَک روی لبهٔ صحنهٔ ابری: نور گرم پشت، ورود از پایین و نفس‌کشیدن آرام.
+/// فندوقی روی لبهٔ صحنهٔ ابری: نور گرم پشت، ورود از پایین و «سلام» کوتاه.
+///
+/// شخصیت خودش لایه‌ای و متحرک است؛ این ویجت فقط چیدمان ورود/شناوری و
+/// هالهٔ نور پشت او را می‌سازد.
 class _CharacterStage extends StatelessWidget {
   const _CharacterStage({
     required this.entrance,
@@ -348,7 +352,6 @@ class _CharacterStage extends StatelessWidget {
     required this.reduced,
     required this.width,
     required this.height,
-    required this.bottom,
   });
 
   final Animation<double> entrance;
@@ -356,64 +359,67 @@ class _CharacterStage extends StatelessWidget {
   final bool reduced;
   final double width;
   final double height;
-  final double bottom;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([entrance, ambient]),
-      builder: (context, child) {
-        final t = ((entrance.value - .34) / .61).clamp(0.0, 1.0);
-        final eased = AppMotion.curveEntrance.transform(t);
-        final bob = reduced
-            ? 0.0
-            : math.sin(ambient.value * 2 * math.pi * 1.5) * height * .018;
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            Positioned(
-              bottom: bottom - height * .12,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: width * 2.1,
-                  height: height * .9,
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.goldLight.withOpacity(.28 * eased),
-                        AppColors.coral.withOpacity(.08 * eased),
-                        Colors.transparent,
-                      ],
-                      stops: const [0, .48, 1],
+    final stageWidth = width * 1.45;
+    final stageHeight = height * 1.16;
+    return SizedBox(
+      width: stageWidth,
+      height: stageHeight,
+      child: AnimatedBuilder(
+        animation: Listenable.merge([entrance, ambient]),
+        builder: (context, child) {
+          final t = ((entrance.value - .30) / .64).clamp(0.0, 1.0);
+          final eased = AppMotion.curveEntrance.transform(t);
+          final bob = reduced
+              ? 0.0
+              : math.sin(ambient.value * 2 * math.pi * 1.5) * height * .016;
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // هالهٔ گرم پشت شخصیت، هم‌زمان با ورود روشن می‌شود.
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Center(
+                    child: Container(
+                      width: width * 2.0,
+                      height: height * .92,
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          colors: [
+                            AppColors.goldLight.withOpacity(.26 * eased),
+                            AppColors.coral.withOpacity(.07 * eased),
+                            Colors.transparent,
+                          ],
+                          stops: const [0, .5, 1],
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: bottom + bob,
-              left: 0,
-              right: 0,
-              child: Opacity(
-                opacity: eased,
-                child: Transform.translate(
-                  offset: Offset(0, (1 - eased) * height * .22),
-                  child: Transform.scale(
-                    scale: .9 + eased * .1,
-                    child: Center(child: child),
-                  ),
-                ),
+              Positioned(
+                left: (stageWidth - width) / 2,
+                bottom: bob + (1 - eased) * height * .20,
+                width: width,
+                height: height,
+                // ورود نرم (محو + مقیاس) کار خود شخصیت است؛ اینجا فقط
+                // بالا آمدن از لبهٔ ابر اضافه می‌شود تا دو محو روی هم نیفتد.
+                child: child,
               ),
-            ),
-          ],
-        );
-      },
-      child: PreRenderedFlak(
-        width: width,
-        height: height,
-        semanticLabel: 'فِلَک، شخصیت سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
+            ],
+          );
+        },
+        child: KartoniyaMascot(
+          width: width,
+          height: height,
+          float: false,
+          interactive: false,
+          entrance: true,
+          greet: true,
+          semanticLabel: 'فندوقی، شخصیت کارتونی کارتونیا',
+        ),
       ),
     );
   }
@@ -427,6 +433,7 @@ class _BrandBlock extends StatelessWidget {
     required this.reduced,
     required this.compact,
     required this.logoSize,
+    this.trailing,
   });
 
   final Animation<double> entrance;
@@ -434,6 +441,7 @@ class _BrandBlock extends StatelessWidget {
   final bool reduced;
   final bool compact;
   final double logoSize;
+  final Widget? trailing;
 
   double _phase(double start, double end,
       {Curve curve = AppMotion.curveEntrance}) {
@@ -554,6 +562,13 @@ class _BrandBlock extends StatelessWidget {
                 ),
               ),
             ),
+            if (trailing != null) ...[
+              SizedBox(height: compact ? 18 : 24),
+              Opacity(
+                opacity: taglineIn.clamp(0.0, 1.0),
+                child: trailing,
+              ),
+            ],
           ],
         );
       },

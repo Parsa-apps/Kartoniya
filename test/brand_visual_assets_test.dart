@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartoniya/data/repositories/local_cartoon_repository.dart';
 import 'package:kartoniya/presentation/pages/privacy_page.dart';
+import 'package:kartoniya/presentation/widgets/kartoniya_mascot.dart';
 import 'package:kartoniya/presentation/widgets/kartoniya_story_banner.dart';
 
 void main() {
@@ -41,41 +42,63 @@ void main() {
 
     expect(totalBytes, lessThan(300 * 1024));
 
-    final mascotData = await rootBundle.load(PreRenderedFlak.assetPath);
-    final mascotBytes = mascotData.buffer.asUint8List(
-      mascotData.offsetInBytes,
-      mascotData.lengthInBytes,
-    );
-    final mascotCodec = await ui.instantiateImageCodec(mascotBytes);
-    final mascotFrame = await mascotCodec.getNextFrame();
-    final rgba = await mascotFrame.image.toByteData(
-      format: ui.ImageByteFormat.rawRgba,
-    );
-    expect(rgba, isNotNull);
-    // The cut-out has real alpha, not a checkerboard baked into the image.
-    expect(rgba!.getUint8(3), 0);
+    // ——— شخصیت لایه‌ای فندوقی ———
+    // همهٔ لایه‌ها (بدن، دست‌ها، پاها، برگ و حالت چشم/دهان) باید در APK
+    // باشند، رمزگشایی شوند و با هم زیر بودجهٔ حافظه بمانند.
+    var rigBytes = 0;
+    for (final path in FandaqAssets.all) {
+      final data = await rootBundle.load(path);
+      rigBytes += data.lengthInBytes;
+      final image = await decode(path);
+      expect(image.width, greaterThan(40), reason: path);
+      expect(image.height, greaterThan(40), reason: path);
+      image.dispose();
+    }
+    expect(rigBytes, lessThan(140 * 1024));
 
-    // A grey checkerboard would survive as a ring of dark, neutral, fully
-    // opaque pixels around the silhouette. The clean matte keeps only a few
-    // hundred such pixels (eye shading); the old asset had thousands.
+    final stillBytes = await rootBundle.load(FandaqAssets.still);
+    final codec = await ui.instantiateImageCodec(
+      stillBytes.buffer.asUint8List(
+        stillBytes.offsetInBytes,
+        stillBytes.lengthInBytes,
+      ),
+    );
+    final frame = await codec.getNextFrame();
+    final rgba = await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    expect(rgba, isNotNull);
+
+    // برش واقعی آلفا دارد: بخش زیادی از کادر شفاف است، نه پس‌زمینهٔ سفید.
+    var transparent = 0;
     var darkNeutralOpaque = 0;
-    for (var i = 0; i < rgba.lengthInBytes; i += 4) {
+    for (var i = 0; i < rgba!.lengthInBytes; i += 4) {
+      final a = rgba.getUint8(i + 3);
+      if (a < 16) {
+        transparent++;
+        continue;
+      }
+      if (a <= 200) continue;
       final r = rgba.getUint8(i);
       final g = rgba.getUint8(i + 1);
       final b = rgba.getUint8(i + 2);
-      final a = rgba.getUint8(i + 3);
-      if (a <= 200) continue;
-      final spread = [r, g, b].reduce((x, y) => x > y ? x : y) -
-          [r, g, b].reduce((x, y) => x < y ? x : y);
+      final spread =
+          [r, g, b].reduce((x, y) => x > y ? x : y) -
+              [r, g, b].reduce((x, y) => x < y ? x : y);
       final luminance = (r * 299 + g * 587 + b * 114) ~/ 1000;
       if (spread <= 12 && luminance <= 80) darkNeutralOpaque++;
     }
+    final total = rgba.lengthInBytes ~/ 4;
+    expect(
+      transparent / total,
+      greaterThan(.25),
+      reason: 'پس‌زمینهٔ شخصیت حذف نشده است.',
+    );
     expect(
       darkNeutralOpaque,
-      lessThan(800),
-      reason: 'لبهٔ برش فِلَک هنوز بقایای صفحه‌شطرنجی/خاکستری دارد.',
+      lessThan(2600),
+      reason: 'لبهٔ برش شخصیت بقایای صفحه‌شطرنجی/خاکستری دارد.',
     );
-    mascotCodec.dispose();
+    codec.dispose();
+    frame.image.dispose();
   });
 
   test('phase 6 posters and splash decode within budget and are wired',
@@ -102,14 +125,24 @@ void main() {
     // Eight 1080x810 WebP posters stay below 600 KiB in the APK.
     expect(totalBytes, lessThan(600 * 1024));
 
+    // پس‌زمینهٔ اسپلش نسخهٔ شبانهٔ بدون شخصیت است تا فندوقی زندهٔ
+    // لایه‌ای روی آن بنشیند.
     final splashData = await rootBundle.load(
-      'asset/images/cloud_night_splash.webp',
+      'asset/images/fandaq_splash_night.webp',
     );
-    expect(splashData.lengthInBytes, lessThan(140 * 1024));
-    final splash = await decode('asset/images/cloud_night_splash.webp');
-    expect(splash.width, greaterThanOrEqualTo(800));
-    expect(splash.height, greaterThanOrEqualTo(1400));
+    expect(splashData.lengthInBytes, lessThan(180 * 1024));
+    final splash = await decode('asset/images/fandaq_splash_night.webp');
+    expect(splash.width, greaterThanOrEqualTo(700));
+    expect(splash.height, greaterThanOrEqualTo(1200));
     splash.dispose();
+
+    final sceneData = await rootBundle.load(
+      'asset/images/fandaq_scene_reading.webp',
+    );
+    expect(sceneData.lengthInBytes, lessThan(120 * 1024));
+    final scene = await decode('asset/images/fandaq_scene_reading.webp');
+    expect(scene.width, greaterThanOrEqualTo(1000));
+    scene.dispose();
 
     // Every catalog entry that declares artwork must point at a bundled file.
     final cartoons = await LocalCartoonRepository().fetchCartoons();

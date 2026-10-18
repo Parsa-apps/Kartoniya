@@ -673,7 +673,7 @@ class _PlayerError extends StatelessWidget {
                   width: 92,
                   height: 106,
                   semanticLabel:
-                      'فِلَک در وضعیت خطای پخش؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                      'فندوقی در وضعیت خطای پخش',
                 ),
                 const SizedBox(height: 13),
                 const Text(

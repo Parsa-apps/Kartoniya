@@ -48,3 +48,18 @@ download, or live 3D camera. All "3D" imagery above is pre-rendered; the vector
 `KartoniyaMascot` used for empty/error states is a hand-drawn 2D fallback that
 imitates the same character design. A transparent matte is used only for the
 isolated mascot; all scene, splash and poster images are opaque.
+
+## فندوقی — شخصیت اصلی (فاز ۶)
+
+- **تصویر مرجع:** توسط مالک پروژه (Parsa Apps) ارائه شده است؛ پس‌زمینه در
+  همان پروژه حذف و لبهٔ آلفا تمیز شده است.
+- **لایه‌های ریگ‌شده** (`asset/images/fandaq/`): بدن، دست راست (سلام)، دست
+  چپ، دو پا، برگ، دو حالت چشم (بسته/درشت) و دهان خندان. این لایه‌ها با
+  برش ماسک روی همان تصویر ساخته شده‌اند تا در Flutter واقعاً حرکت کنند.
+- **حالت‌های چهره** با ویرایش هوش مصنوعی روی همان شخصیت ساخته و سپس فقط
+  ناحیهٔ چشم/دهان آن‌ها روی بدن اصلی جای‌گذاری شده است.
+- **صحنه‌های تازه:** `fandaq_splash_night.webp` (پس‌زمینهٔ بدون شخصیت برای
+  اسپلش)، `fandaq_scene_reading.webp` و `fandaq_scene_night.webp`؛ هر سه با
+  همان زبان بصری نمدی/خمیری ساخته شده‌اند.
+- **ادعای سه‌بعدی:** این‌ها رندرهای از پیش ساخته‌شده‌اند (نه مدل زنده). حرکت
+  دست/پا/برگ/چشم در Flutter با تبدیل لایه‌ها انجام می‌شود.

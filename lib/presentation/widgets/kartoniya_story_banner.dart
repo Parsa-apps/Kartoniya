@@ -20,15 +20,19 @@ extension KartoniyaSceneAssets on KartoniyaScene {
       };
 }
 
-/// Fallback 2D vector version of Felak. The bundled image normally wins; the
-/// fallback keeps a missing asset from becoming a blank brand surface.
+/// تصویر «فندوقی» با اندازهٔ دلخواه.
+///
+/// به‌جای یک PNG ثابت، همان شخصیت لایه‌ای و متحرک نمایش داده می‌شود؛ فقط
+/// بدون لمس و شناوری تا در بنرها/آواتارها آرام بماند. تصویر کامل
+/// ([assetPath]) برای پیش‌بارگذاری و تست‌ها نگه داشته شده است.
 class PreRenderedFlak extends StatelessWidget {
   const PreRenderedFlak({
     super.key,
     this.width,
     this.height,
     this.alignment = Alignment.center,
-    this.semanticLabel = 'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+    this.semanticLabel = 'فندوقی، شخصیت کارتونی کارتونیا',
+    this.animate = true,
   });
 
   final double? width;
@@ -36,24 +40,28 @@ class PreRenderedFlak extends StatelessWidget {
   final AlignmentGeometry alignment;
   final String semanticLabel;
 
-  static const assetPath = 'asset/images/flak_3d.webp';
+  /// حرکت آرام (پلک/تاب)؛ برای آواتارهای کوچک خاموش شود.
+  final bool animate;
+
+  static const assetPath = FandaqAssets.still;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      image: true,
-      label: semanticLabel,
-      child: Image.asset(
-        assetPath,
-        width: width,
-        height: height,
-        alignment: alignment,
+    final w = width ?? 96;
+    final h = height ?? 96;
+    return SizedBox(
+      width: w,
+      height: h,
+      child: FittedBox(
         fit: BoxFit.contain,
-        filterQuality: FilterQuality.medium,
-        excludeFromSemantics: true,
-        errorBuilder: (context, error, stackTrace) => const KartoniyaMascot(
-          size: 96,
+        alignment: alignment,
+        child: KartoniyaMascot(
+          width: 240,
+          height: 240 * 651 / 599,
+          animate: animate,
           float: false,
+          interactive: false,
+          semanticLabel: semanticLabel,
         ),
       ),
     );
@@ -219,7 +227,7 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   width: mascotWidth,
                                   height: widget.height * .99,
                                   semanticLabel:
-                                      'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+                                      'فندوقی، شخصیت کارتونی کارتونیا',
                                 ),
                               ),
                             ),

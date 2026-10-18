@@ -49,7 +49,8 @@ class FavoritesPage extends ConsumerWidget {
             child: const PreRenderedFlak(
               width: 42,
               height: 42,
-              semanticLabel: 'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+              animate: false,
+              semanticLabel: 'فندوقی، شخصیت کارتونی کارتونیا',
             ),
           ),
           trailing: favorites.isEmpty

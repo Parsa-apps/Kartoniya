@@ -97,7 +97,7 @@ class CartoonDetailPage extends ConsumerWidget {
                       child: PreRenderedFlak(
                         width: 72,
                         height: 88,
-                        semanticLabel: 'فِلَک در تصویر سه‌بعدی',
+                        semanticLabel: 'فندوقی، راهنمای کارتونیا',
                       ),
                     ),
                   ),

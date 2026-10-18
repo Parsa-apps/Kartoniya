@@ -349,7 +349,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
               ),
             ),
           ),
-          // ——— دعوت برندی فِلَک ———
+          // ——— دعوت برندی فندوقی ———
           SliverToBoxAdapter(
             child: StaggeredReveal(
               index: 4,
@@ -364,14 +364,14 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                 child: KartoniyaStoryBanner(
                   scene: KartoniyaScene.cloudworld,
                   height: 164,
-                  eyebrow: 'همراه فِلَک',
+                  eyebrow: 'همراه فندوقی',
                   title: childProfile.hasName
                       ? '${childProfile.name}، امروز کجا بریم؟'
                       : 'امروز کجا بریم؟',
                   subtitle: 'یک قصهٔ تازه همیشه منتظر توست.',
                   actionLabel: 'دیدن دسته‌ها',
                   onAction: widget.onOpenCategories,
-                  semanticLabel: 'فِلَک در جزیرهٔ ابری کارتونیا',
+                  semanticLabel: 'فندوقی در جزیرهٔ ابری کارتونیا',
                 ),
               ),
             ),

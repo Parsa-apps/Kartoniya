@@ -415,7 +415,7 @@ class _SearchField extends StatelessWidget {
   }
 }
 
-/// صفحهٔ شروع جست‌وجو: پیشنهادهای واقعی کاتالوگ + دعوت فِلَک.
+/// صفحهٔ شروع جست‌وجو: پیشنهادهای واقعی کاتالوگ + دعوت فندوقی.
 class _SearchLanding extends StatelessWidget {
   const _SearchLanding({
     required this.catalogue,
@@ -602,7 +602,7 @@ class _FelakSearchPrompt extends StatelessWidget {
           children: [
             Semantics(
               image: true,
-              label: 'فِلَک در حال کتاب‌خواندن، تصویر سه‌بعدی از پیش‌رندرشده',
+              label: 'فندوقی در حال کتاب‌خواندن',
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                 child: Image.asset(
@@ -624,7 +624,7 @@ class _FelakSearchPrompt extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'از فِلَک بپرس',
+                    'از فندوقی بپرس',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
@@ -632,7 +632,7 @@ class _FelakSearchPrompt extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     'نام کارتون یا موضوعی که دوست داری بنویس؛ '
-                    'فِلَک بهترین نتیجه‌ها را پیدا می‌کند.',
+                    'فندوقی بهترین نتیجه‌ها را پیدا می‌کند.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: context.secondaryTextColor,
                           height: 1.6,
