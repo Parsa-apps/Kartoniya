@@ -335,8 +335,7 @@ class _MascotPainter extends CustomPainter {
     drawEye(Offset(faceCenter.dx + eyeGap, eyeY));
 
     // گونه‌ها.
-    final blush = Paint()
-      ..color = AppColors.pink.withOpacity(.4);
+    final blush = Paint()..color = AppColors.pink.withOpacity(.4);
     canvas.drawCircle(
       Offset(faceCenter.dx - eyeGap * 2.05, eyeY + h * .05),
       w * .04,

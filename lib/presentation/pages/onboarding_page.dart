@@ -123,7 +123,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: _pages.length,
-                  onPageChanged: (value) => setState(() => _currentPage = value),
+                  onPageChanged: (value) =>
+                      setState(() => _currentPage = value),
                   itemBuilder: (context, index) {
                     final item = _pages[index];
                     return AnimatedBuilder(
@@ -133,7 +134,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         if (_pageController.hasClients &&
                             _pageController.position.hasContentDimensions &&
                             context.motion.enabled) {
-                          final pageValue = _pageController.page ?? index.toDouble();
+                          final pageValue =
+                              _pageController.page ?? index.toDouble();
                           delta = (pageValue - index).clamp(-1.0, 1.0);
                         }
                         return Opacity(
@@ -202,9 +204,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           width: selected ? 26 : 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: selected
-                                ? page.color
-                                : context.softBorderColor,
+                            color:
+                                selected ? page.color : context.softBorderColor,
                             borderRadius: BorderRadius.circular(8),
                           ),
                         );

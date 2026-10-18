@@ -171,10 +171,12 @@ class _StaggeredRevealState extends State<StaggeredReveal>
         animation: curved,
         builder: (context, child) => Transform.translate(
           offset: Offset(0, (1 - curved.value) * widget.offsetY),
-          child: widget.scale == 1 ? child : Transform.scale(
-            scale: 1 - (1 - curved.value) * (1 - widget.scale),
-            child: child,
-          ),
+          child: widget.scale == 1
+              ? child
+              : Transform.scale(
+                  scale: 1 - (1 - curved.value) * (1 - widget.scale),
+                  child: child,
+                ),
         ),
         child: widget.child,
       ),
@@ -212,9 +214,8 @@ class _PressableScaleState extends State<PressableScale> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = _pressed && context.motion.enabled
-        ? widget.pressedScale
-        : 1.0;
+    final scale =
+        _pressed && context.motion.enabled ? widget.pressedScale : 1.0;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => _setPressed(true),

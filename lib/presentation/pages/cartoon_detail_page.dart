@@ -118,7 +118,8 @@ class CartoonDetailPage extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 cartoon.title,
-                                style: Theme.of(context).textTheme.headlineMedium,
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
                               ),
                             ),
                           ],
@@ -138,12 +139,14 @@ class CartoonDetailPage extends ConsumerWidget {
                             ),
                             InfoPill(
                               icon: Icons.schedule_rounded,
-                              text: 'مجموع زمان ${toFaDigits(cartoon.durationLabel)}',
+                              text:
+                                  'مجموع زمان ${toFaDigits(cartoon.durationLabel)}',
                             ),
                             InfoPill(
                               icon: Icons.movie_outlined,
                               color: categoryForeground,
-                              text: '${toFaDigits('${cartoon.episodeCount}')} قسمت',
+                              text:
+                                  '${toFaDigits('${cartoon.episodeCount}')} قسمت',
                             ),
                           ],
                         ),
@@ -174,14 +177,18 @@ class CartoonDetailPage extends ConsumerWidget {
                                   const SizedBox(width: 7),
                                   Text(
                                     'دربارهٔ این کارتون',
-                                    style: Theme.of(context).textTheme.titleMedium,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 cartoon.description,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
                                       color: context.secondaryTextColor,
                                     ),
                               ),
@@ -202,8 +209,8 @@ class CartoonDetailPage extends ConsumerWidget {
                           expand: true,
                           gradient: AppColors.actionGradient(categoryColor),
                           glowColor: categoryColor,
-                          onPressed: () =>
-                              _play(context, resume?.episode ?? cartoon.firstEpisode),
+                          onPressed: () => _play(
+                              context, resume?.episode ?? cartoon.firstEpisode),
                         ),
                       ),
                       const SizedBox(height: 26),
@@ -227,10 +234,12 @@ class CartoonDetailPage extends ConsumerWidget {
                               ),
                               child: Text(
                                 toFaDigits('${cartoon.episodeCount}'),
-                                style:
-                                    Theme.of(context).textTheme.labelMedium?.copyWith(
-                                          color: categoryForeground,
-                                        ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelMedium
+                                    ?.copyWith(
+                                      color: categoryForeground,
+                                    ),
                               ),
                             ),
                           ],
@@ -412,9 +421,10 @@ class _EpisodeTile extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         toFaDigits(episode.durationLabel),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: context.secondaryTextColor,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: context.secondaryTextColor,
+                                ),
                       ),
                       if (hasProgress) ...[
                         const SizedBox(height: 7),

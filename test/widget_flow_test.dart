@@ -34,7 +34,7 @@ void main() {
       matching: find.byType(Scrollable),
     );
     await tester.scrollUntilVisible(
-      find.text(text),
+      find.textContaining(text),
       240,
       scrollable: scrollable.first,
     );
@@ -72,7 +72,8 @@ void main() {
     expect(prefs.getBool('onboarding_completed'), isTrue);
   });
 
-  testWidgets('اسپلش با دکمهٔ ردکردن سریع به آن‌بوردینگ می‌رود', (tester) async {
+  testWidgets('اسپلش با دکمهٔ ردکردن سریع به آن‌بوردینگ می‌رود',
+      (tester) async {
     usePhone(tester);
     final prefs = await initPrefs();
 
@@ -176,13 +177,15 @@ void main() {
 
     expect(find.text('حریم خصوصی'), findsOneWidget);
     expect(find.text('اطلاعات ذخیره‌شده روی دستگاه'), findsOneWidget);
+    await revealTextInList(tester, 'جایگزین سیاست حقوقی');
+    expect(find.textContaining('جایگزین سیاست حقوقی'), findsOneWidget);
     await revealTextInList(tester, 'پخش و پیوندهای بیرونی');
     expect(find.text('پخش و پیوندهای بیرونی'), findsOneWidget);
-    expect(find.textContaining('جایگزین سیاست حقوقی'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('قفل والدین: پاسخ غلط دیالوگ را باز نگه می‌دارد و '
+  testWidgets(
+      'قفل والدین: پاسخ غلط دیالوگ را باز نگه می‌دارد و '
       'پاسخ درست اجازه ورود می‌دهد', (tester) async {
     usePhone(tester);
     final prefs = await initPrefs();
@@ -289,8 +292,8 @@ _Challenge _readChallenge(WidgetTester tester) {
   for (final element in find.textContaining('=').evaluate()) {
     final widget = element.widget;
     if (widget is Text && widget.data != null && widget.data!.contains('؟')) {
-      final match = RegExp(r'(\d+)\s*([+×−\-])\s*(\d+)')
-          .firstMatch(widget.data!);
+      final match =
+          RegExp(r'(\d+)\s*([+×−\-])\s*(\d+)').firstMatch(widget.data!);
       if (match == null) continue;
       final a = int.parse(match.group(1)!);
       final b = int.parse(match.group(3)!);

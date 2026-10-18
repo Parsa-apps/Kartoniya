@@ -203,7 +203,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                             ? items
                             : items
                                 .where(
-                                  (cartoon) => cartoon.category == _categoryFilter,
+                                  (cartoon) =>
+                                      cartoon.category == _categoryFilter,
                                 )
                                 .toList(growable: false);
                         if (filtered.isEmpty) {
@@ -231,10 +232,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                               ),
                               child: Text(
                                 '${toFaDigits('${filtered.length}')} نتیجه',
-                                style:
-                                    Theme.of(context).textTheme.labelMedium?.copyWith(
-                                          color: context.secondaryTextColor,
-                                        ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelMedium
+                                    ?.copyWith(
+                                      color: context.secondaryTextColor,
+                                    ),
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -395,7 +398,8 @@ class _SearchResultGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(AppTheme.pageMargin, 4, AppTheme.pageMargin, 20),
+      padding: const EdgeInsets.fromLTRB(
+          AppTheme.pageMargin, 4, AppTheme.pageMargin, 20),
       physics: const BouncingScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 220,

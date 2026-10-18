@@ -68,8 +68,9 @@ class CartoonCard extends ConsumerWidget {
                       isFavorite: isFavorite,
                       size: 32,
                       iconSize: 17,
-                      onPressed: () =>
-                          ref.read(favoritesProvider.notifier).toggle(cartoon.id),
+                      onPressed: () => ref
+                          .read(favoritesProvider.notifier)
+                          .toggle(cartoon.id),
                     ),
                   ),
                   if (progress > 0)
@@ -97,9 +98,10 @@ class CartoonCard extends ConsumerWidget {
                         cartoon.title,
                         maxLines: compact ? 1 : 2,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontSize: compact ? 13.5 : 15,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: compact ? 13.5 : 15,
+                                ),
                       ),
                       Row(
                         children: [

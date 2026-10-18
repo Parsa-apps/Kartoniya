@@ -35,7 +35,8 @@ class CartoonArtwork extends StatelessWidget {
   final bool emphasis;
 
   /// تگ Hero مشترک بین کارت انتخاب‌شده و صفحهٔ جزئیات.
-  static String heroTagFor(CartoonModel cartoon) => AppMotion.heroTag(cartoon.id);
+  static String heroTagFor(CartoonModel cartoon) =>
+      AppMotion.heroTag(cartoon.id);
 
   static int _stableSeed(String value) {
     var hash = 0x811C9DC5;
@@ -84,7 +85,8 @@ class CartoonArtwork extends StatelessWidget {
                       stops: const [.55, 1],
                     ),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(.38), width: 1.6),
+                    border: Border.all(
+                        color: Colors.white.withOpacity(.38), width: 1.6),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(.16),
@@ -174,11 +176,11 @@ class CartoonArtwork extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.white,
-                                  shadows: const [
-                                    Shadow(color: Colors.black38, blurRadius: 5),
-                                  ],
-                                ),
+                          color: Colors.white,
+                          shadows: const [
+                            Shadow(color: Colors.black38, blurRadius: 5),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -364,7 +366,8 @@ class PosterScenePainter extends CustomPainter {
         size.width * .58,
         size.height * .92,
       )
-      ..quadraticBezierTo(size.width * .8, size.height, size.width, size.height * .9)
+      ..quadraticBezierTo(
+          size.width * .8, size.height, size.width, size.height * .9)
       ..lineTo(size.width, size.height)
       ..close();
     canvas.drawPath(hillPath2, hillPaint2);

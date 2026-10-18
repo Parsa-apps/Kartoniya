@@ -59,8 +59,7 @@ class PrivacyInformationPage extends StatelessWidget {
                 const _PrivacyNotice(
                   icon: Icons.cloud_off_rounded,
                   title: 'رفتار خود برنامه',
-                  body:
-                      'در وابستگی‌های فعلی، سرویس اختصاصیِ تحلیل‌گر یا شبکهٔ '
+                  body: 'در وابستگی‌های فعلی، سرویس اختصاصیِ تحلیل‌گر یا شبکهٔ '
                       'تبلیغاتی وجود ندارد و برنامه backend حساب کاربری ندارد. '
                       'مجوز فضای ذخیره‌سازی درخواست نمی‌شود. برای پاک‌کردن علاقه‌مندی‌ها '
                       'یا پیشرفت پخش از تنظیمات والدین استفاده کنید؛ پاک‌سازی کامل '
@@ -115,9 +114,8 @@ class _PrivacyNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = context.isDarkMode
-        ? color
-        : AppColors.readableOnLightSurface(color);
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(17),

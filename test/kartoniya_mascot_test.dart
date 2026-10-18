@@ -27,10 +27,8 @@ void main() {
       await tester.tap(find.byType(KartoniyaMascot));
       await tester.pump(const Duration(milliseconds: 180));
       expect(
-        tester
-            .widgetList<Transform>(find.byType(Transform))
-            .any((transform) =>
-                (transform.transform.storage[0] - 1).abs() > .001),
+        tester.widgetList<Transform>(find.byType(Transform)).any(
+            (transform) => (transform.transform.storage[0] - 1).abs() > .001),
         isTrue,
       );
       await tester.pump(const Duration(milliseconds: 220));

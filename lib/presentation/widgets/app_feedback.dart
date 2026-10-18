@@ -46,9 +46,7 @@ Future<bool> confirmParentAction(
     context: context,
     builder: (dialogContext) => AlertDialog(
       icon: Icon(
-        destructive
-            ? Icons.warning_amber_rounded
-            : Icons.info_outline_rounded,
+        destructive ? Icons.warning_amber_rounded : Icons.info_outline_rounded,
         color: destructive ? AppColors.warning : AppColors.skyDeep,
         size: 34,
       ),

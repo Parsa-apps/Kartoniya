@@ -72,116 +72,119 @@ class CategoriesPage extends ConsumerWidget {
         ),
         Expanded(
           child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: categories.when(
-                    data: (items) => cartoons.maybeWhen(
-                      data: (allCartoons) => _CategoryTiles(
-                        categories: items,
-                        cartoons: allCartoons,
-                        selected: selectedCategory,
-                        onSelected: (category) {
-                          HapticFeedback.selectionClick();
-                          ref.read(selectedCategoryProvider.notifier).state =
-                              category.id == 'all' ? null : category.name;
-                        },
-                      ),
-                      orElse: () => const _CategoryTilesSkeleton(),
-                    ),
-                    loading: () => const _CategoryTilesSkeleton(),
-                    error: (_, __) => ErrorStateView(
-                      title: 'دسته‌ها باز نشدند',
-                      message: 'برای دیدن دسته‌بندی‌ها دوباره تلاش کن.',
-                      onRetry: () {
-                        ref.invalidate(categoriesProvider);
-                        ref.invalidate(cartoonsProvider);
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: categories.when(
+                  data: (items) => cartoons.maybeWhen(
+                    data: (allCartoons) => _CategoryTiles(
+                      categories: items,
+                      cartoons: allCartoons,
+                      selected: selectedCategory,
+                      onSelected: (category) {
+                        HapticFeedback.selectionClick();
+                        ref.read(selectedCategoryProvider.notifier).state =
+                            category.id == 'all' ? null : category.name;
                       },
-                      compact: true,
                     ),
+                    orElse: () => const _CategoryTilesSkeleton(),
+                  ),
+                  loading: () => const _CategoryTilesSkeleton(),
+                  error: (_, __) => ErrorStateView(
+                    title: 'دسته‌ها باز نشدند',
+                    message: 'برای دیدن دسته‌بندی‌ها دوباره تلاش کن.',
+                    onRetry: () {
+                      ref.invalidate(categoriesProvider);
+                      ref.invalidate(cartoonsProvider);
+                    },
+                    compact: true,
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: SectionHeader(
-                    title: selectedCategory ?? 'همهٔ کارتون‌ها',
-                    subtitle: cartoons.maybeWhen(
-                      data: (all) {
-                        final count = selectedCategory == null
-                            ? all.length
-                            : all
-                                .where((c) => c.category == selectedCategory)
-                                .length;
-                        return '${toFaDigits('$count')} کارتون';
-                      },
-                      orElse: () => null,
-                    ),
-                    actionLabel: selectedCategory == null ? null : 'پاک کردن فیلتر',
-                    onAction: selectedCategory == null
-                        ? null
-                        : () =>
-                            ref.read(selectedCategoryProvider.notifier).state = null,
+              ),
+              SliverToBoxAdapter(
+                child: SectionHeader(
+                  title: selectedCategory ?? 'همهٔ کارتون‌ها',
+                  subtitle: cartoons.maybeWhen(
+                    data: (all) {
+                      final count = selectedCategory == null
+                          ? all.length
+                          : all
+                              .where((c) => c.category == selectedCategory)
+                              .length;
+                      return '${toFaDigits('$count')} کارتون';
+                    },
+                    orElse: () => null,
                   ),
+                  actionLabel:
+                      selectedCategory == null ? null : 'پاک کردن فیلتر',
+                  onAction: selectedCategory == null
+                      ? null
+                      : () => ref
+                          .read(selectedCategoryProvider.notifier)
+                          .state = null,
                 ),
-                cartoons.when(
-                  data: (items) {
-                    final visible = selectedCategory == null
-                        ? items
-                        : items
-                            .where((item) => item.category == selectedCategory)
-                            .toList(growable: false);
-                    if (visible.isEmpty) {
-                      return const SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: EmptyStateView(
-                          title: 'هنوز چیزی در این دسته نیست',
-                          message: 'در فهرست فعلی موردی برای این دسته نیست؛ '
-                              'یک دستهٔ دیگر را امتحان کن.',
-                          mascot: MascotMood.sleepy,
-                        ),
-                      );
-                    }
-                    return SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppTheme.pageMargin,
-                        0,
-                        AppTheme.pageMargin,
-                        AppTheme.spacingLg,
-                      ),
-                      sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 220,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 14,
-                          childAspectRatio: .74,
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => CartoonCard(
-                            cartoon: visible[index],
-                            onTap: () => pushAppPage<void>(
-                              context,
-                              CartoonDetailPage(cartoon: visible[index]),
-                            ),
-                          ),
-                          childCount: visible.length,
-                        ),
+              ),
+              cartoons.when(
+                data: (items) {
+                  final visible = selectedCategory == null
+                      ? items
+                      : items
+                          .where((item) => item.category == selectedCategory)
+                          .toList(growable: false);
+                  if (visible.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyStateView(
+                        title: 'هنوز چیزی در این دسته نیست',
+                        message: 'در فهرست فعلی موردی برای این دسته نیست؛ '
+                            'یک دستهٔ دیگر را امتحان کن.',
+                        mascot: MascotMood.sleepy,
                       ),
                     );
-                  },
-                  loading: () => const SliverToBoxAdapter(
-                    child: SizedBox(height: 240, child: _CategoryGridLoading()),
-                  ),
-                  error: (_, __) => SliverToBoxAdapter(
-                    child: ErrorStateView(
-                      title: 'کاتالوگ باز نشد',
-                      message: 'دادهٔ فهرست در دسترس نیست؛ دوباره تلاش کنید.',
-                      onRetry: () => ref.invalidate(cartoonsProvider),
+                  }
+                  return SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppTheme.pageMargin,
+                      0,
+                      AppTheme.pageMargin,
+                      AppTheme.spacingLg,
                     ),
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 220,
+                        crossAxisSpacing: 14,
+                        mainAxisSpacing: 14,
+                        childAspectRatio: .74,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => CartoonCard(
+                          cartoon: visible[index],
+                          onTap: () => pushAppPage<void>(
+                            context,
+                            CartoonDetailPage(cartoon: visible[index]),
+                          ),
+                        ),
+                        childCount: visible.length,
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const SliverToBoxAdapter(
+                  child: SizedBox(height: 240, child: _CategoryGridLoading()),
+                ),
+                error: (_, __) => SliverToBoxAdapter(
+                  child: ErrorStateView(
+                    title: 'کاتالوگ باز نشد',
+                    message: 'دادهٔ فهرست در دسترس نیست؛ دوباره تلاش کنید.',
+                    onRetry: () => ref.invalidate(cartoonsProvider),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
+      ],
     );
   }
 }
@@ -204,7 +207,8 @@ class _CategoryTiles extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(AppTheme.pageMargin, 8, AppTheme.pageMargin, 4),
+      padding: const EdgeInsets.fromLTRB(
+          AppTheme.pageMargin, 8, AppTheme.pageMargin, 4),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 190,
         mainAxisSpacing: 10,
@@ -214,9 +218,8 @@ class _CategoryTiles extends StatelessWidget {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        final isSelected = category.id == 'all'
-            ? selected == null
-            : selected == category.name;
+        final isSelected =
+            category.id == 'all' ? selected == null : selected == category.name;
         final count = category.id == 'all'
             ? cartoons.length
             : cartoons
@@ -332,7 +335,8 @@ class _CategoryTilesSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppTheme.pageMargin, 8, AppTheme.pageMargin, 0),
+      padding: const EdgeInsets.fromLTRB(
+          AppTheme.pageMargin, 8, AppTheme.pageMargin, 0),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),

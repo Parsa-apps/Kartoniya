@@ -115,14 +115,19 @@ class _AboutUsPageState extends State<AboutUsPage>
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: KartoniyaLogoMark(
-                              size: MediaQuery.sizeOf(context).width > 480 ? 110 : 92,
+                              size: MediaQuery.sizeOf(context).width > 480
+                                  ? 110
+                                  : 92,
                             ),
                           ),
                         ),
                         const SizedBox(height: 22),
                         Text(
                           'کارتونیا',
-                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .displaySmall
+                              ?.copyWith(
                                 color: context.isDarkMode
                                     ? AppColors.skyLight
                                     : AppColors.skyDeep,
@@ -131,9 +136,10 @@ class _AboutUsPageState extends State<AboutUsPage>
                         const SizedBox(height: 4),
                         Text(
                           'ساختهٔ گروه برنامه‌نویسی Parsa Apps',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
                         ),
                       ],
                     ),
@@ -155,19 +161,24 @@ class _AboutUsPageState extends State<AboutUsPage>
                                 ),
                                 child: Text(
                                   'فرشاد پارسا',
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                            color: context.isDarkMode
-                                                ? AppColors.goldLight
-                                                : AppColors.goldDark,
-                                          ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        color: context.isDarkMode
+                                            ? AppColors.goldLight
+                                            : AppColors.goldDark,
+                                      ),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'مدیریت، طراحی و توسعهٔ کارتونیا',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     color: context.secondaryTextColor,
                                   ),
                             ),
@@ -208,15 +219,19 @@ class _AboutUsPageState extends State<AboutUsPage>
                                   children: [
                                     Text(
                                       'پشتیبانی تلگرام',
-                                      style: Theme.of(context).textTheme.titleMedium,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       '@Parsaappsadmin',
-                                      style:
-                                          Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: context.secondaryTextColor,
-                                              ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: context.secondaryTextColor,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -251,7 +266,10 @@ class _AboutUsPageState extends State<AboutUsPage>
                               'سرویس جداست. والدین پیش از پخش، محتوا و صفحهٔ میزبان را '
                               'بررسی کنند.',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     color: context.secondaryTextColor,
                                   ),
                             ),
@@ -307,9 +325,10 @@ class _AboutUsPageState extends State<AboutUsPage>
                         const SizedBox(height: 4),
                         Text(
                           '© Parsa Apps — ساخته‌شده با ❤️ برای کودکان ایران',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
                         ),
                       ],
                     ),
@@ -337,9 +356,8 @@ class _ValueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = context.isDarkMode
-        ? color
-        : AppColors.readableOnLightSurface(color);
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(

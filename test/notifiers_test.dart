@@ -33,7 +33,8 @@ class _TestCartoonRepository implements CartoonRepository {
   Future<List<CartoonModel>> fetchCartoons() async => cartoons;
 
   @override
-  Future<List<CategoryModel>> fetchCategories() async => const <CategoryModel>[];
+  Future<List<CategoryModel>> fetchCategories() async =>
+      const <CategoryModel>[];
 }
 
 void main() {
@@ -140,14 +141,16 @@ void main() {
       expect(results.map((c) => c.id), contains('felak'));
     });
 
-    test('مرتب‌سازی بر اساس مرتبط‌بودن است و در تساوی ترتیب کاتالوگ می‌ماند', () async {
+    test('مرتب‌سازی بر اساس مرتبط‌بودن است و در تساوی ترتیب کاتالوگ می‌ماند',
+        () async {
       final container = await _container();
       container.read(searchQueryProvider.notifier).state = 'آموزشی';
       final results = await container.read(searchResultsProvider.future);
       expect(results.map((cartoon) => cartoon.id), ['alefba', 'math']);
     });
 
-    test('continueWatching پیشرفت embed را قابل ازسرگیری نشان نمی‌دهد', () async {
+    test('continueWatching پیشرفت embed را قابل ازسرگیری نشان نمی‌دهد',
+        () async {
       final container = await _container({
         'watch_progress': '{"felak-1":0.5,"felak-99":0.5,"math-1":0.999}',
       });

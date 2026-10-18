@@ -43,22 +43,26 @@ class PremiumReadinessPage extends StatelessWidget {
                 const _RequirementTile(
                   icon: Icons.store_outlined,
                   title: 'انتخاب فروشگاه مقصد',
-                  detail: 'کافه‌بازار، مایکت یا فروشگاه‌های موردنظر باید مشخص شوند.',
+                  detail:
+                      'کافه‌بازار، مایکت یا فروشگاه‌های موردنظر باید مشخص شوند.',
                 ),
                 const _RequirementTile(
                   icon: Icons.sell_outlined,
                   title: 'تعریف محصول و قیمت',
-                  detail: 'شناسهٔ واقعی محصول، نوع خرید و قیمت تأییدشده هنوز ارائه نشده‌اند.',
+                  detail:
+                      'شناسهٔ واقعی محصول، نوع خرید و قیمت تأییدشده هنوز ارائه نشده‌اند.',
                 ),
                 const _RequirementTile(
                   icon: Icons.verified_user_outlined,
                   title: 'اعتبارسنجی و بازیابی',
-                  detail: 'اتصال SDK، تأیید رسید و بازیابی خرید باید طراحی و آزمایش شوند.',
+                  detail:
+                      'اتصال SDK، تأیید رسید و بازیابی خرید باید طراحی و آزمایش شوند.',
                 ),
                 const _RequirementTile(
                   icon: Icons.video_library_outlined,
                   title: 'مجوز و مزایای محصول',
-                  detail: 'حقوق انتشار محتوا و مزایای پولی باید پیش از فروش روشن شوند.',
+                  detail:
+                      'حقوق انتشار محتوا و مزایای پولی باید پیش از فروش روشن شوند.',
                 ),
                 const SizedBox(height: 16),
                 Text(

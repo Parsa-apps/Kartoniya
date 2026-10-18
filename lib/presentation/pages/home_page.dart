@@ -183,9 +183,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                 2,
               ),
               child: _HomeHeader(
-                childName: childProfile.hasName
-                    ? childProfile.name
-                    : null,
+                childName: childProfile.hasName ? childProfile.name : null,
                 onProfileTap: widget.onOpenProfile,
                 onSearchTap: widget.onOpenSearch,
               ),
@@ -203,9 +201,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                     onOpen: _openDetail,
                     onPlay: _play,
                     isFavorite: (cartoon) => favorites.contains(cartoon.id),
-                    onToggleFavorite: (cartoon) => ref
-                        .read(favoritesProvider.notifier)
-                        .toggle(cartoon.id),
+                    onToggleFavorite: (cartoon) =>
+                        ref.read(favoritesProvider.notifier).toggle(cartoon.id),
                   ),
                   loading: () => const ShimmerHeroBanner(height: 224),
                   error: (_, __) => ErrorStateView(
@@ -261,7 +258,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                             horizontal: AppTheme.pageMargin,
                           ),
                           itemCount: entries.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 12),
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 12),
                           itemBuilder: (context, index) => _ContinueCard(
                             entry: entries[index],
                             onPlay: () => pushAppPageFade<void>(
@@ -513,8 +511,7 @@ class _ContinueCard extends StatelessWidget {
                   width: 92,
                   height: 96,
                   child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.circular(AppTheme.radiusMedium),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     child: CartoonArtwork(
                       cartoon: entry.cartoon,
                       borderRadius: 0,
@@ -532,9 +529,10 @@ class _ContinueCard extends StatelessWidget {
                         entry.cartoon.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontSize: 14,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 14,
+                                ),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -553,14 +551,17 @@ class _ContinueCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               '${toFaDigits('$percent')}٪ تماشا شده',
-                              style:
-                                  Theme.of(context).textTheme.labelMedium?.copyWith(
-                                        color: color,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.copyWith(
+                                    color: color,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                           ),
-                          Icon(Icons.play_circle_fill_rounded, color: color, size: 22),
+                          Icon(Icons.play_circle_fill_rounded,
+                              color: color, size: 22),
                         ],
                       ),
                     ],

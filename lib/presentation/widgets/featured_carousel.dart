@@ -93,7 +93,8 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
   bool _onScroll(ScrollNotification notification) {
     // کشیدن انگشت کاربر تایمر خودکار را قطع می‌کند؛ پس از توقف، از سر گرفته
     // می‌شود. اسکرول‌های برنامه‌ریزی‌شده (animateToPage) مزاحم نیستند.
-    if (notification is ScrollStartNotification && notification.dragDetails != null) {
+    if (notification is ScrollStartNotification &&
+        notification.dragDetails != null) {
       _autoTimer?.cancel();
     } else if (notification is ScrollEndNotification) {
       _restartAutoAdvance();
@@ -125,8 +126,8 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                       double delta = 0;
                       if (_controller.hasClients &&
                           _controller.position.hasContentDimensions) {
-                        final page =
-                            _controller.page ?? _controller.initialPage.toDouble();
+                        final page = _controller.page ??
+                            _controller.initialPage.toDouble();
                         delta = (page - index).clamp(-1.0, 1.0).abs();
                       }
                       final reduced = !context.motion.enabled;
@@ -151,7 +152,8 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                         onOpen: () => widget.onOpen(cartoon),
                         onPlay: () => widget.onPlay(cartoon),
                         isFavorite: widget.isFavorite(cartoon),
-                        onToggleFavorite: () => widget.onToggleFavorite(cartoon),
+                        onToggleFavorite: () =>
+                            widget.onToggleFavorite(cartoon),
                       ),
                     ),
                   );
@@ -245,10 +247,12 @@ class _FeaturedSlide extends StatelessWidget {
                 top: 12,
                 start: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(.94),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
+                    borderRadius:
+                        BorderRadius.circular(AppTheme.radiusCircular),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -280,11 +284,11 @@ class _FeaturedSlide extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          shadows: const [
-                            Shadow(color: Colors.black38, blurRadius: 6),
-                          ],
-                        ),
+                      color: Colors.white,
+                      shadows: const [
+                        Shadow(color: Colors.black38, blurRadius: 6),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 3),
                   Text(

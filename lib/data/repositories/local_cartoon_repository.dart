@@ -12,8 +12,8 @@ class LocalCartoonRepository implements CartoonRepository {
   Future<List<CategoryModel>> fetchCategories() async =>
       List<CategoryModel>.unmodifiable(_categories);
 
-  EpisodeModel _episode(String cartoonId, int number, String hash,
-      String title, int seconds, String publisher) {
+  EpisodeModel _episode(String cartoonId, int number, String hash, String title,
+      int seconds, String publisher) {
     return EpisodeModel(
       id: '$cartoonId-$number',
       title: title,
@@ -50,22 +50,24 @@ class LocalCartoonRepository implements CartoonRepository {
       isFeatured: true,
       tags: const ['الفبا', 'فارسی', 'یادگیری'],
       episodes: [
-        _episode('alefba', 1, 'ddy5427', 'الفبای فارسی با انیمیشن موزیکال', 420, 'کوچکستان'),
-        _episode('alefba', 2, 'SfomR', 'آموزش الفبا؛ الف تا ث', 249, 'سنجاقک آبی'),
+        _episode('alefba', 1, 'ddy5427', 'الفبای فارسی با انیمیشن موزیکال', 420,
+            'کوچکستان'),
+        _episode(
+            'alefba', 2, 'SfomR', 'آموزش الفبا؛ الف تا ث', 249, 'سنجاقک آبی'),
       ],
     ),
     CartoonModel(
       id: 'math',
       title: 'شمارش و اعداد',
-      description:
-          'دو عنوان فهرست‌شده دربارهٔ شمارش، اعداد و چوب‌خط.',
+      description: 'دو عنوان فهرست‌شده دربارهٔ شمارش، اعداد و چوب‌خط.',
       category: 'آموزشی',
       artworkEmoji: '🔢',
       artworkColorValue: 0xFF53B86A,
       tags: const ['اعداد', 'حل مسئله', 'ریاضی'],
       episodes: [
         _episode('math', 1, 'ymji038', 'آموزش اعداد ۱ تا ۲۰', 121, 'فیکولند'),
-        _episode('math', 2, 'rfa2n7f', 'اعداد ۰ تا ۳۰ با چوب‌خط', 151, 'کوچولوها'),
+        _episode(
+            'math', 2, 'rfa2n7f', 'اعداد ۰ تا ۳۰ با چوب‌خط', 151, 'کوچولوها'),
       ],
     ),
     CartoonModel(
@@ -92,8 +94,10 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkColorValue: 0xFFFF8A50,
       tags: const ['خلاقیت', 'غذا', 'مهارت زندگی'],
       episodes: [
-        _episode('kitchen', 1, 'l0498kh', 'تهیهٔ کیک باب اسفنجی', 59, 'مرد عنکبوتی'),
-        _episode('kitchen', 2, 'ncky1g1', 'آشپزی کوچولو', 45, 'The land of gamers'),
+        _episode(
+            'kitchen', 1, 'l0498kh', 'تهیهٔ کیک باب اسفنجی', 59, 'مرد عنکبوتی'),
+        _episode(
+            'kitchen', 2, 'ncky1g1', 'آشپزی کوچولو', 45, 'The land of gamers'),
       ],
     ),
     CartoonModel(
@@ -107,8 +111,10 @@ class LocalCartoonRepository implements CartoonRepository {
       isFeatured: true,
       tags: const ['طبیعت', 'حیوانات', 'دوستی'],
       episodes: [
-        _episode('rainbow', 1, 'd1391q9', 'حیوانات مزرعه و باغ وحش', 214, 'آپارات گرام'),
-        _episode('rainbow', 2, 'j93q0wf', 'آشنایی با حیوانات', 1683, 'آپارات گرام'),
+        _episode('rainbow', 1, 'd1391q9', 'حیوانات مزرعه و باغ وحش', 214,
+            'آپارات گرام'),
+        _episode(
+            'rainbow', 2, 'j93q0wf', 'آشنایی با حیوانات', 1683, 'آپارات گرام'),
       ],
     ),
     CartoonModel(
@@ -135,7 +141,8 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkColorValue: 0xFFFFC83D,
       tags: const ['موسیقی', 'ریتم', 'جنگل'],
       episodes: [
-        _episode('melody', 1, 'a15fnfv', 'حیوانات جنگل (انگلیسی)', 195, 'تفریح و سرگرمی'),
+        _episode('melody', 1, 'a15fnfv', 'حیوانات جنگل (انگلیسی)', 195,
+            'تفریح و سرگرمی'),
         _episode('melody', 2, 'a02g7w9', 'آهنگ منظومهٔ شمسی', 99, 'فیکولند'),
       ],
     ),
@@ -162,7 +169,9 @@ class LocalCartoonRepository implements CartoonRepository {
       colorValue: 0xFFFF6B9D,
     ),
     CategoryModel(id: 'art', name: 'هنری', emoji: '🎨', colorValue: 0xFF9B7CEB),
-    CategoryModel(id: 'science', name: 'علمی', emoji: '🔬', colorValue: 0xFF53B86A),
-    CategoryModel(id: 'music', name: 'موسیقی', emoji: '🎵', colorValue: 0xFFFFC83D),
+    CategoryModel(
+        id: 'science', name: 'علمی', emoji: '🔬', colorValue: 0xFF53B86A),
+    CategoryModel(
+        id: 'music', name: 'موسیقی', emoji: '🎵', colorValue: 0xFFFFC83D),
   ];
 }

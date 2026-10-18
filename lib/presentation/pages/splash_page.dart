@@ -119,7 +119,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
                       top: MediaQuery.sizeOf(context).height * .18 +
                           math.sin(t * 2 * math.pi) * 10,
                       right: -42 + math.cos(t * 2 * math.pi) * 8,
-                      child: const _SplashBubble(size: 150, color: AppColors.skyLight),
+                      child: const _SplashBubble(
+                          size: 150, color: AppColors.skyLight),
                     ),
                     Positioned(
                       bottom: MediaQuery.sizeOf(context).height * .16 -
@@ -202,7 +203,8 @@ class _SplashContents extends StatelessWidget {
         Text(
           'کارتونیا',
           style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                color: context.isDarkMode ? AppColors.skyLight : AppColors.skyDeep,
+                color:
+                    context.isDarkMode ? AppColors.skyLight : AppColors.skyDeep,
               ),
         ),
         const SizedBox(height: 6),

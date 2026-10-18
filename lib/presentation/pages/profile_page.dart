@@ -79,16 +79,18 @@ class ProfilePage extends ConsumerWidget {
                             'سلام $parentName 👋',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: context.secondaryTextColor,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: context.secondaryTextColor,
+                                    ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
                       tooltip: 'ویرایش نام والد',
-                      onPressed: () => _editParentName(context, ref, parentName),
+                      onPressed: () =>
+                          _editParentName(context, ref, parentName),
                       icon: const Icon(Icons.edit_outlined),
                     ),
                   ],
@@ -184,9 +186,8 @@ class ProfilePage extends ConsumerWidget {
                         SwitchListTile.adaptive(
                           value: themeMode == ThemeMode.dark,
                           onChanged: (value) {
-                            ref
-                                .read(themeModeProvider.notifier)
-                                .setMode(value ? ThemeMode.dark : ThemeMode.light);
+                            ref.read(themeModeProvider.notifier).setMode(
+                                value ? ThemeMode.dark : ThemeMode.light);
                           },
                           secondary: const Icon(Icons.dark_mode_outlined),
                           title: const Text('حالت تاریک'),
@@ -309,9 +310,10 @@ class ProfilePage extends ConsumerWidget {
                           'واگذار می‌شود و ممکن است آن سرویس داده‌های فنی یا تبلیغات '
                           'خودش را داشته باشد. قفل والدین فقط مانع دسترسی اتفاقی است؛ '
                           'جایگزین همراهی بزرگ‌تر نیست.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
                         ),
                       ),
                     ],
@@ -352,8 +354,7 @@ class ProfilePage extends ConsumerWidget {
           autofocus: true,
           maxLength: 28,
           textInputAction: TextInputAction.done,
-          onSubmitted: (value) =>
-              Navigator.of(dialogContext).pop(value),
+          onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
           decoration: const InputDecoration(
             hintText: 'مثلاً مامان یا بابا',
             counterText: '',
@@ -407,11 +408,9 @@ class _ChildCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final (emoji, colorValue) = child.avatar;
     final color = Color(colorValue);
-    final accent = context.isDarkMode
-        ? color
-        : AppColors.readableOnLightSurface(color);
-    final displayName =
-        child.hasName ? child.name : 'کودک من';
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
+    final displayName = child.hasName ? child.name : 'کودک من';
     return PressableScale(
       onTap: onEdit,
       child: Container(
@@ -607,9 +606,8 @@ class _AvatarOption extends StatelessWidget {
   Widget build(BuildContext context) {
     final (emoji, colorValue) = ChildProfileModel.avatars[index];
     final color = Color(colorValue);
-    final selectionColor = context.isDarkMode
-        ? color
-        : AppColors.readableOnLightSurface(color);
+    final selectionColor =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return Semantics(
       button: true,
       selected: selected,
@@ -629,9 +627,7 @@ class _AvatarOption extends StatelessWidget {
             height: 56,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: selected
-                  ? color.withOpacity(.2)
-                  : context.surfaceAltColor,
+              color: selected ? color.withOpacity(.2) : context.surfaceAltColor,
               shape: BoxShape.circle,
               border: Border.all(
                 color: selected ? selectionColor : Colors.transparent,
@@ -661,9 +657,8 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = context.isDarkMode
-        ? color
-        : AppColors.readableOnLightSurface(color);
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -730,9 +725,8 @@ class _ActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = context.isDarkMode
-        ? color
-        : AppColors.readableOnLightSurface(color);
+    final accent =
+        context.isDarkMode ? color : AppColors.readableOnLightSurface(color);
     return ListTile(
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),

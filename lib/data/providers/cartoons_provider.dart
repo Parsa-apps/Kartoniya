@@ -13,7 +13,8 @@ import '../repositories/local_cartoon_repository.dart';
 
 /// در [main] با نمونهٔ واقعی SharedPreferences override می‌شود.
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError('SharedPreferences باید هنگام شروع برنامه فراهم شود.');
+  throw UnimplementedError(
+      'SharedPreferences باید هنگام شروع برنامه فراهم شود.');
 });
 
 final appPreferencesProvider = Provider<AppPreferences>((ref) {
@@ -32,9 +33,12 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>((ref) {
   return ref.watch(cartoonRepositoryProvider).fetchCategories();
 });
 
-final featuredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+final featuredCartoonsProvider =
+    FutureProvider<List<CartoonModel>>((ref) async {
   final cartoons = await ref.watch(cartoonsProvider.future);
-  return cartoons.where((cartoon) => cartoon.isFeatured).toList(growable: false);
+  return cartoons
+      .where((cartoon) => cartoon.isFeatured)
+      .toList(growable: false);
 });
 
 final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
@@ -44,7 +48,8 @@ final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
 
 final selectedCategoryProvider = StateProvider<String?>((ref) => null);
 
-final filteredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+final filteredCartoonsProvider =
+    FutureProvider<List<CartoonModel>>((ref) async {
   final selectedCategory = ref.watch(selectedCategoryProvider);
   final cartoons = await ref.watch(cartoonsProvider.future);
   if (selectedCategory == null) return cartoons;
@@ -130,7 +135,8 @@ class FavoritesNotifier extends StateNotifier<Set<String>> {
   }
 }
 
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+final themeModeProvider =
+    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
   return ThemeModeNotifier(ref.watch(appPreferencesProvider));
 });
 
@@ -168,7 +174,7 @@ final reduceMotionProvider =
 
 class ReduceMotionNotifier extends StateNotifier<bool> {
   ReduceMotionNotifier(this._preferences)
-    : super(_preferences.reduceMotionEnabled);
+      : super(_preferences.reduceMotionEnabled);
 
   final AppPreferences _preferences;
 
@@ -178,7 +184,8 @@ class ReduceMotionNotifier extends StateNotifier<bool> {
   }
 }
 
-final profileNameProvider = StateNotifierProvider<ProfileNameNotifier, String>((ref) {
+final profileNameProvider =
+    StateNotifierProvider<ProfileNameNotifier, String>((ref) {
   return ProfileNameNotifier(ref.watch(appPreferencesProvider));
 });
 
@@ -201,12 +208,12 @@ final childProfileProvider =
 
 class ChildProfileNotifier extends StateNotifier<ChildProfileModel> {
   ChildProfileNotifier(this._preferences)
-    : super(
-        ChildProfileModel(
-          name: _preferences.childProfileName ?? '',
-          avatarIndex: _preferences.childAvatarIndex,
-        ),
-      );
+      : super(
+          ChildProfileModel(
+            name: _preferences.childProfileName ?? '',
+            avatarIndex: _preferences.childAvatarIndex,
+          ),
+        );
 
   final AppPreferences _preferences;
 
@@ -225,12 +232,14 @@ class ChildProfileNotifier extends StateNotifier<ChildProfileModel> {
   }
 }
 
-final onboardingProvider = StateNotifierProvider<OnboardingNotifier, bool>((ref) {
+final onboardingProvider =
+    StateNotifierProvider<OnboardingNotifier, bool>((ref) {
   return OnboardingNotifier(ref.watch(appPreferencesProvider));
 });
 
 class OnboardingNotifier extends StateNotifier<bool> {
-  OnboardingNotifier(this._preferences) : super(_preferences.onboardingCompleted);
+  OnboardingNotifier(this._preferences)
+      : super(_preferences.onboardingCompleted);
 
   final AppPreferences _preferences;
 
@@ -279,7 +288,8 @@ class WatchHistoryNotifier extends StateNotifier<Map<String, double>> {
   }
 }
 
-final episodeProgressProvider = Provider.family<double, String>((ref, episodeId) {
+final episodeProgressProvider =
+    Provider.family<double, String>((ref, episodeId) {
   return ref.watch(watchHistoryProvider)[episodeId] ?? 0.0;
 });
 
@@ -300,9 +310,9 @@ class ContinueWatchingEntry {
 /// تا منطق «درصد واقعی + حذف محتوای نامعتبر» یک‌جا و قابل‌تست بماند.
 final continueWatchingProvider =
     FutureProvider<List<ContinueWatchingEntry>>((ref) async {
-    final history = ref.watch(watchHistoryProvider);
-    final cartoons = await ref.watch(cartoonsProvider.future);
-    final entries = <ContinueWatchingEntry>[];
+  final history = ref.watch(watchHistoryProvider);
+  final cartoons = await ref.watch(cartoonsProvider.future);
+  final entries = <ContinueWatchingEntry>[];
   for (final cartoon in cartoons) {
     for (final episode in cartoon.episodes) {
       if (episode.secureDirectVideoUri == null) continue;

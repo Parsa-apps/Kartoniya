@@ -113,8 +113,10 @@ class _AparatPlayerState extends State<AparatPlayer>
           // requests are not top-level navigations and are unaffected.
           if (!request.isMainFrame) return NavigationDecision.navigate;
           final target = Uri.tryParse(request.url);
-          return target?.scheme == 'https' && target?.host == uri.host &&
-                  target?.path == uri.path && target?.userInfo == '' &&
+          return target?.scheme == 'https' &&
+                  target?.host == uri.host &&
+                  target?.path == uri.path &&
+                  target?.userInfo == '' &&
                   !(target?.hasPort ?? true)
               ? NavigationDecision.navigate
               : NavigationDecision.prevent;
@@ -191,8 +193,7 @@ class _AparatPlayerState extends State<AparatPlayer>
                       key: ValueKey(controller),
                       controller: controller,
                     ),
-                  if (_loading)
-                    const Center(child: MotionProgressIndicator()),
+                  if (_loading) const Center(child: MotionProgressIndicator()),
                   if (_error != null)
                     Center(
                       child: SingleChildScrollView(
@@ -200,7 +201,8 @@ class _AparatPlayerState extends State<AparatPlayer>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(_error!, textAlign: TextAlign.center,
+                            Text(_error!,
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(color: Colors.white)),
                             const SizedBox(height: 12),
                             FilledButton(

@@ -102,9 +102,8 @@ class _FavoriteButtonState extends State<FavoriteButton>
     final isFav = widget.isFavorite;
     final heartColor = context.isDarkMode ? AppColors.red : AppColors.redDeep;
     final background = switch (widget.style) {
-      FavoriteButtonStyle.glass => isFav
-          ? AppColors.redDeep
-          : Colors.white.withOpacity(.92),
+      FavoriteButtonStyle.glass =>
+        isFav ? AppColors.redDeep : Colors.white.withOpacity(.92),
       FavoriteButtonStyle.solid => isFav
           ? AppColors.redDeep
           : Theme.of(context).colorScheme.surfaceVariant,
@@ -115,7 +114,8 @@ class _FavoriteButtonState extends State<FavoriteButton>
       FavoriteButtonStyle.glass => isFav ? Colors.white : AppColors.redDeep,
       FavoriteButtonStyle.solid =>
         isFav ? Colors.white : context.secondaryTextColor,
-      FavoriteButtonStyle.plain => isFav ? heartColor : context.secondaryTextColor,
+      FavoriteButtonStyle.plain =>
+        isFav ? heartColor : context.secondaryTextColor,
     };
 
     Widget icon = AnimatedSwitcher(

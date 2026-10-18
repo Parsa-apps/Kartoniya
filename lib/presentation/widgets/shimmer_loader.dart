@@ -68,7 +68,8 @@ class ShimmerHeroBanner extends StatelessWidget {
 
 /// اسکلت ردیف افقی کارت‌های جمع‌وجور.
 class ShimmerCompactRow extends StatelessWidget {
-  const ShimmerCompactRow({super.key, this.itemCount = 3, this.itemWidth = 210});
+  const ShimmerCompactRow(
+      {super.key, this.itemCount = 3, this.itemWidth = 210});
 
   final int itemCount;
   final double itemWidth;

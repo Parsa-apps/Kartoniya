@@ -67,7 +67,8 @@ void main() {
       expect(service.childAvatarIndex, 0);
     });
 
-    test('پروفایل کودک فقط نام نمایشی و ایندکس آواتار را نگه می‌دارد', () async {
+    test('پروفایل کودک فقط نام نمایشی و ایندکس آواتار را نگه می‌دارد',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final service = AppPreferences(prefs);
