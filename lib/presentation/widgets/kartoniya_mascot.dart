@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -72,24 +73,30 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
 
   final _blinkRandom = math.Random();
 
-  Future<void> _scheduleBlink() async {
-    while (mounted && context.motionEnabledAtInit) {
-      await Future<void>.delayed(
-        Duration(milliseconds: 1600 + _blinkRandom.nextInt(2600)),
-      );
-      if (!mounted || !context.motion.enabled) return;
-      try {
-        await _blink.forward();
-        await _blink.reverse();
-      } catch (_) {
-        // TickerCanceled پس از dispose انتظار می‌رود؛ نادیده گرفته می‌شود.
-        return;
-      }
-    }
+  Timer? _blinkTimer;
+
+  void _scheduleBlink() {
+    _blinkTimer?.cancel();
+    if (!mounted || !context.motionEnabledAtInit) return;
+    _blinkTimer = Timer(
+      Duration(milliseconds: 1600 + _blinkRandom.nextInt(2600)),
+      () async {
+        if (!mounted || !context.motion.enabled) return;
+        try {
+          await _blink.forward().orCancel;
+          await _blink.reverse().orCancel;
+        } catch (_) {
+          // Disposing the controller cancels an in-flight blink.
+          return;
+        }
+        if (mounted) _scheduleBlink();
+      },
+    );
   }
 
   @override
   void dispose() {
+    _blinkTimer?.cancel();
     _blink.dispose();
     _bob.dispose();
     super.dispose();
