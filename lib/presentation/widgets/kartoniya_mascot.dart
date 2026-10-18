@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
@@ -138,15 +137,15 @@ class _MascotPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
     final bodyPaint = Paint()
-      ..shader = ui.Gradient.linear(
-        Offset(w, h * .1),
-        Offset(0, h),
-        [
+      ..shader = LinearGradient(
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+        colors: [
           Color.lerp(accent, Colors.white, .55)!,
           accent,
           Color.lerp(accent, const Color(0xFF101627), .2)!,
         ],
-      );
+      ).createShader(Offset.zero & size);
 
     // ابر: بدنهٔ پهن + برجستگی‌های گرد.
     final cloud = Path();
