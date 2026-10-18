@@ -10,7 +10,7 @@
 |---|---|
 | شاخه | `arena/f29eaa28-kartoniya` |
 | commit شروع | `b572e32` (merge فاز ۶ پیش از کار شخصیت) |
-| آخرین commit کد/تست | `812eb5a` — «feat(mascot): keep Fandaq breathing in banners and avatars» |
+| آخرین commit کد/تست | `ee144cc` — «fix(layout): let cards and the hero banner grow with the system font» |
 | commitهای بعدی | فقط `docs:` (این گزارش) |
 | تعداد commitها در این بازه | بیش از ۶۰ |
 
@@ -113,23 +113,30 @@
 ## ۵) محافظت از رگرسیون
 
 - فونت Vazirmatn و تست `font_probe` دست‌نخورده و سبز است.
+- **متن بزرگ سیستم**: `test/text_scale_layout_test.dart` خانه و تب‌های
+  دسته‌ها/جست‌وجو را روی ۳۲۰×۵۶۸ با متن ۱٫۳× (حرکت خاموش) اسکرول می‌کند.
+  این تست دو سرریز واقعی را پیدا کرد و هر دو رفع شدند:
+  ناحیهٔ اطلاعات کارت (پایین‌تنهٔ ثابت ۸۶px) و ریل افقی ۱۶۸×۱۹۸ که با
+  متن بزرگ بزرگ می‌شوند؛ کپی بنر قهرمان هم حداکثر ۱٫۱۵× بزرگ می‌شود و
+  عنوان در فونت بزرگ یک‌خطی می‌ماند. در اندازهٔ پیش‌فرض هندسه دقیقاً همان
+  قبل است.
 - تست‌های کنتراست، اعداد فارسی و motion همچنان اجرا می‌شوند.
 - منطق Player، واکشی ویدیو از آپارات، مدل‌ها، مسیرها، repository و
   ذخیره‌سازی محلی تغییر نکرده‌اند؛ تغییرات صفحهٔ پخش فقط ظاهری/متنی است.
 - هیچ dependency جدیدی اضافه نشده است.
 
-## ۶) نتیجهٔ واقعی CI (commit `812eb5a`)
+## ۶) نتیجهٔ واقعی CI (commit `5d397e9`)
 
 | بررسی | نتیجه |
 |---|---|
-| `dart format lib test` | «Formatted 61 files (0 changed)» |
-| `flutter analyze` | `No issues found! (ran in 9.5s)` |
-| `flutter test` | `00:12 +65 ~1: All tests passed!` (۶۵ موفق، ۱ skip اختیاری اسکرین‌شات) |
+| `dart format lib test` | «Formatted 62 files (0 changed)» |
+| `flutter analyze` | `No issues found! (ran in 14.9s)` |
+| `flutter test` | `00:22 +68 ~1: All tests passed!` (۶۸ موفق، ۱ skip اختیاری اسکرین‌شات) |
 | Build Android APK | موفق |
-| UI Snapshots | موفق — run [`39167762742`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39167762742) |
+| UI Snapshots | موفق — run [`39170284172`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39170284172) |
 
-- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۶۲٬۹۴۱ بایت) در run
-  [`39167762667`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39167762667).
+- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۶۷٬۱۹۳ بایت) در run
+  [`39170284172`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39170284172).
 - ویدئوی بازبینی انیمیشن (رندر همان لایه‌ها با همان منحنی‌ها):
   `docs/mascot_animation_demo.gif` و تصویر پنج حالت:
   `docs/screenshots/13_mascot_faces.png`.
@@ -142,6 +149,9 @@
 
 ## ۷) محدودیت‌ها و چیزهای آزمون‌نشده
 
+- متن بزرگ روی کارت‌ها حداکثر تا ۱٫۴× و روی کپی بنر قهرمان تا ۱٫۱۵×
+  بزرگ می‌شود (سقف طراحی)؛ بقیهٔ متن‌ها آزادند. این سقف در گزارش ذکر شده
+  تا انتظار با نتیجه هم‌خوان باشد.
 - در این محیط گوشی واقعی یا امولاتور اندروید در دسترس نیست؛ APK فقط ساخته
   شده و نصب/اجرا نشده است. هیچ ادعای تست لمسی/عملکردی روی دستگاه نیست.
 - پخش ویدیوی آپارات در تست‌ها واقعی اجرا نمی‌شود؛ فقط مسیر و وضعیت‌های UI
