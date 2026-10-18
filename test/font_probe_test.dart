@@ -1,10 +1,8 @@
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartoniya/data/providers/cartoons_provider.dart';
-import 'package:kartoniya/main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kartoniya/core/theme/app_theme.dart';
+import 'package:kartoniya/presentation/widgets/kartoniya_logo.dart';
 
 /// بررسی می‌کند فونت Vazirmatn باندل‌شده در محیط تست هم واقعاً بارگذاری و در
 /// تم برنامه به‌کار گرفته شود. تست‌های ویجت به‌صورت پیش‌فرض فونت جعبه‌ای
@@ -46,12 +44,16 @@ void main() {
     print('font probe: vazirmatn=$bundled fallback=$fallback');
     expect(bundled, isNot(closeTo(fallback, .01)));
 
-    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
-    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-        child: const KartoniyaApp(),
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        locale: const Locale('fa', 'IR'),
+        home: const Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: Center(child: KartoniyaWordmark(markSize: 40)),
+          ),
+        ),
       ),
     );
     await tester.pump();
@@ -61,10 +63,7 @@ void main() {
     final paragraph = tester.renderObject<RenderParagraph>(finder);
     final family = paragraph.text.style?.fontFamily;
     // ignore: avoid_print
-    print(
-      'font probe: app text family=$family '
-      'width=${paragraph.size.width}',
-    );
+    print('font probe: app text family=$family width=${paragraph.size.width}');
     expect(family, 'Vazirmatn');
   });
 }
