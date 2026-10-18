@@ -420,8 +420,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                 // ——— حالت‌ها ———
                 final sleepy = mood == MascotMood.sleepy;
                 final sad = mood == MascotMood.sad;
-                final waving = mood == MascotMood.cheering ||
-                    (tap > 0 && !sad);
+                final waving = mood == MascotMood.cheering || (tap > 0 && !sad);
 
                 final bodyTilt = sad
                     ? -.026
@@ -532,10 +531,8 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                                       part(_Rig.body),
                                       // چهره‌ها روی بدن و زیر برگ؛ ابتدا
                                       // چهرهٔ حالت، بعد پلک/واکنش روی چشم‌ها.
-                                      if (eyesPatch != null)
-                                        part(eyesPatch),
-                                      if (mouthPatch != null)
-                                        part(mouthPatch),
+                                      if (eyesPatch != null) part(eyesPatch),
+                                      if (mouthPatch != null) part(mouthPatch),
                                       // پلک آخر از همه می‌آید تا لبهٔ دهان/گونه
                                       // روی چشم بسته نیفتد.
                                       if (closing) part(_Rig.eyesClosed),
