@@ -3,6 +3,10 @@ name: Build Android APK
 on:
   workflow_dispatch:
     inputs:
+      api_delivery:
+        description: 'Export APK through GitHub API for restricted clients (no Git history changes)'
+        type: boolean
+        default: false
       build_type:
         description: 'نوع بیلد APK'
         type: choice
@@ -32,7 +36,7 @@ jobs:
       run:
         shell: bash
     permissions:
-      contents: read
+      contents: write
       actions: write
       checks: write
 
@@ -92,6 +96,26 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: API delivery for restricted clients
+        if: ${{ inputs.api_delivery && github.event.inputs.build_type != 'debug' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PYTHON'
+          import base64, hashlib, json, os, pathlib, subprocess
+          exported = []
+          for name in ('pubspec.lock', 'build/app/outputs/flutter-apk/app-release.apk'):
+              data = pathlib.Path(name).read_bytes()
+              result = subprocess.run(['gh', 'api', '--method', 'POST',
+                  'repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/blobs',
+                  '--input', '-'], input=json.dumps({
+                      'content': base64.b64encode(data).decode(), 'encoding': 'base64',
+                  }), text=True, capture_output=True, check=True)
+              exported.append({'file': name, 'blob': json.loads(result.stdout)['sha'],
+                  'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)})
+          pathlib.Path('/tmp/api-delivery.json').write_text(json.dumps(exported, indent=2))
+          PYTHON
+
       - name: Build diagnostics
         if: always()
         env:
@@ -100,7 +124,7 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib, subprocess
           parts = []
-          for name in ('/tmp/flutter-tests.log', '/tmp/flutter-build.log'):
+          for name in ('/tmp/flutter-tests.log', '/tmp/flutter-build.log', '/tmp/api-delivery.json'):
               path = pathlib.Path(name)
               if path.exists():
                   parts.append(path.read_text(errors='replace')[-24000:])
