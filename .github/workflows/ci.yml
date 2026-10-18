@@ -55,3 +55,14 @@ jobs:
             tail -n 60 test.log 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          # همان خطوط را به‌صورت annotation قابل‌خواندن از API منتشر کن
+          if [ -f analyze.log ]; then
+            grep -E "^\s+(error|warning|info)" analyze.log | head -n 100 | sed 's/^ *//' | while IFS= read -r line; do
+              echo "::error::ANALYZE $line"
+            done
+          fi
+          if [ -f test.log ]; then
+            grep -E "(FAILED|Expected|Actual|which:|test\.dart)" test.log | head -n 80 | sed 's/^ *//' | while IFS= read -r line; do
+              echo "::error::TEST $line"
+            done
+          fi
