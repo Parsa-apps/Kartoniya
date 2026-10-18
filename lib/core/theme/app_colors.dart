@@ -197,8 +197,8 @@ abstract final class AppColors {
   static ({LinearGradient gradient, Color foreground}) gradientAndText(
     LinearGradient gradient,
   ) {
-    final inkSafe = gradient.colors
-        .every((color) => contrast(color, deepInk) >= 4.5);
+    final inkSafe =
+        gradient.colors.every((color) => contrast(color, deepInk) >= 4.5);
     if (inkSafe) return (gradient: gradient, foreground: deepInk);
     return (gradient: readableGradient(gradient), foreground: Colors.white);
   }
@@ -214,8 +214,8 @@ abstract final class AppColors {
     double minContrast = 4.5,
   }) {
     if (contrast(background, base) >= minContrast) return base;
-    final towardLight = contrast(background, Colors.white) >
-        contrast(background, deepInk);
+    final towardLight =
+        contrast(background, Colors.white) > contrast(background, deepInk);
     final target = towardLight ? Colors.white : deepInk;
     for (var step = 1; step <= 40; step++) {
       final candidate = Color.lerp(base, target, step / 40)!;
@@ -232,8 +232,7 @@ abstract final class AppColors {
   static Color readableWithWhiteText(Color base, {double minContrast = 5.0}) {
     if (contrastWithWhite(base) >= minContrast) return base;
     for (var step = 1; step <= 25; step++) {
-      final candidate =
-          Color.lerp(base, const Color(0xFF101B33), step / 25)!;
+      final candidate = Color.lerp(base, const Color(0xFF101B33), step / 25)!;
       if (contrastWithWhite(candidate) >= minContrast) return candidate;
     }
     return const Color(0xFF101B33);

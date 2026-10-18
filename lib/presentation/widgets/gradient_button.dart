@@ -59,8 +59,7 @@ class _GradientButtonState extends State<GradientButton> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (widget.icon != null) ...[
-          Icon(widget.icon,
-              color: foreground, size: widget.compact ? 20 : 24),
+          Icon(widget.icon, color: foreground, size: widget.compact ? 20 : 24),
           const SizedBox(width: 8),
         ],
         Flexible(

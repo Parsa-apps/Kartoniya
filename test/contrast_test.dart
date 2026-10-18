@@ -43,8 +43,8 @@ void main() {
       }
       // رنگ‌های روشن باید شاد و دست‌نخورده بمانند، نه تیره و گل‌آلود.
       expect(AppColors.fillAndText(AppColors.gold).fill, AppColors.gold);
-      expect(AppColors.fillAndText(AppColors.gold).foreground,
-          AppColors.deepInk);
+      expect(
+          AppColors.fillAndText(AppColors.gold).foreground, AppColors.deepInk);
     });
 
     test('گرادیان کاشی دسته با متن سرمه‌ای خوانا و شاد است', () {

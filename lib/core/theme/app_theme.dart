@@ -71,75 +71,75 @@ abstract final class AppTheme {
       fontFamily: fontFamily,
     );
     final textTheme = baseTextTheme.copyWith(
-          displayLarge: baseTextTheme.displayLarge?.copyWith(
-            fontSize: 38,
-            fontWeight: FontWeight.w900,
-            height: 1.25,
-          ),
-          displayMedium: baseTextTheme.displayMedium?.copyWith(
-            fontSize: 30,
-            fontWeight: FontWeight.w900,
-            height: 1.3,
-          ),
-          displaySmall: baseTextTheme.displaySmall?.copyWith(
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
-            height: 1.3,
-          ),
-          headlineMedium: baseTextTheme.headlineMedium?.copyWith(
-            fontSize: 23,
-            fontWeight: FontWeight.w800,
-            height: 1.4,
-          ),
-          headlineSmall: baseTextTheme.headlineSmall?.copyWith(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            height: 1.42,
-          ),
-          titleLarge: baseTextTheme.titleLarge?.copyWith(
-            fontSize: 17.5,
-            fontWeight: FontWeight.w800,
-            height: 1.5,
-          ),
-          titleMedium: baseTextTheme.titleMedium?.copyWith(
-            fontSize: 15.5,
-            fontWeight: FontWeight.w700,
-            height: 1.5,
-          ),
-          titleSmall: baseTextTheme.titleSmall?.copyWith(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w700,
-            height: 1.45,
-          ),
-          bodyLarge: baseTextTheme.bodyLarge?.copyWith(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            height: 1.75,
-          ),
-          bodyMedium: baseTextTheme.bodyMedium?.copyWith(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w400,
-            height: 1.7,
-          ),
-          bodySmall: baseTextTheme.bodySmall?.copyWith(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            height: 1.55,
-          ),
-          labelLarge: baseTextTheme.labelLarge?.copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            height: 1.4,
-          ),
-          labelMedium: baseTextTheme.labelMedium?.copyWith(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-          labelSmall: baseTextTheme.labelSmall?.copyWith(
-            fontSize: 10.5,
-            fontWeight: FontWeight.w600,
-          ),
-        );
+      displayLarge: baseTextTheme.displayLarge?.copyWith(
+        fontSize: 38,
+        fontWeight: FontWeight.w900,
+        height: 1.25,
+      ),
+      displayMedium: baseTextTheme.displayMedium?.copyWith(
+        fontSize: 30,
+        fontWeight: FontWeight.w900,
+        height: 1.3,
+      ),
+      displaySmall: baseTextTheme.displaySmall?.copyWith(
+        fontSize: 26,
+        fontWeight: FontWeight.w900,
+        height: 1.3,
+      ),
+      headlineMedium: baseTextTheme.headlineMedium?.copyWith(
+        fontSize: 23,
+        fontWeight: FontWeight.w800,
+        height: 1.4,
+      ),
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.w800,
+        height: 1.42,
+      ),
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
+        fontSize: 17.5,
+        fontWeight: FontWeight.w800,
+        height: 1.5,
+      ),
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
+        fontSize: 15.5,
+        fontWeight: FontWeight.w700,
+        height: 1.5,
+      ),
+      titleSmall: baseTextTheme.titleSmall?.copyWith(
+        fontSize: 13.5,
+        fontWeight: FontWeight.w700,
+        height: 1.45,
+      ),
+      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        height: 1.75,
+      ),
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
+        fontSize: 13.5,
+        fontWeight: FontWeight.w400,
+        height: 1.7,
+      ),
+      bodySmall: baseTextTheme.bodySmall?.copyWith(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        height: 1.55,
+      ),
+      labelLarge: baseTextTheme.labelLarge?.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        height: 1.4,
+      ),
+      labelMedium: baseTextTheme.labelMedium?.copyWith(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
+      labelSmall: baseTextTheme.labelSmall?.copyWith(
+        fontSize: 10.5,
+        fontWeight: FontWeight.w600,
+      ),
+    );
 
     final cardBorder = BorderSide(
       color: isDark

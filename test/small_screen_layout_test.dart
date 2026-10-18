@@ -57,8 +57,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('گروه‌بندی و جست‌وجو روی گوشی ۳۲۰px جا می‌شوند',
-      (tester) async {
+  testWidgets('گروه‌بندی و جست‌وجو روی گوشی ۳۲۰px جا می‌شوند', (tester) async {
     useSmallPhone(tester);
     final prefs = await initPrefs();
     final container = ProviderContainer(
