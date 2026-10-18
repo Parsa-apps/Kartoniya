@@ -49,15 +49,7 @@ class SectionHeader extends StatelessWidget {
               height: 34,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                    Color.lerp(accent, Colors.white, .28)!,
-                    accent,
-                    Color.lerp(accent, const Color(0xFF14213B), .22)!,
-                  ],
-                ),
+                gradient: AppColors.tileGradient(accent),
                 borderRadius: BorderRadius.circular(11),
                 boxShadow: [
                   BoxShadow(
@@ -72,7 +64,11 @@ class SectionHeader extends StatelessWidget {
                       emoji!,
                       style: const TextStyle(fontSize: 16, height: 1),
                     )
-                  : Icon(icon, color: Colors.white, size: 19),
+                  : Icon(
+                      icon,
+                      color: AppColors.fillAndText(accent).foreground,
+                      size: 19,
+                    ),
             )
           else
             Container(

@@ -31,7 +31,9 @@ class CategoryPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = category.color;
-    final contentColor = selected ? Colors.white : context.primaryTextColor;
+    // کاشی روشن با متن سرمه‌ای: رنگ برند زنده می‌ماند و متن خوانا است.
+    final contentColor =
+        selected ? AppColors.deepInk : context.primaryTextColor;
     return Semantics(
       button: true,
       selected: selected,
@@ -50,13 +52,13 @@ class CategoryPill extends StatelessWidget {
             vertical: compact ? 8 : 9,
           ),
           decoration: BoxDecoration(
-            gradient: selected
-                ? AppColors.accessibleGradient(color)
-                : null,
+            gradient: selected ? AppColors.tileGradient(color) : null,
             color: selected ? null : context.surfaceColor,
             borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
             border: Border.all(
-              color: selected ? Colors.transparent : color.withOpacity(.26),
+              color: selected
+                  ? AppColors.deepInk.withOpacity(.16)
+                  : color.withOpacity(.26),
               width: 1.2,
             ),
             boxShadow: [
@@ -100,7 +102,7 @@ class CategoryPill extends StatelessWidget {
                   toFaDigits('$count'),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: selected
-                            ? Colors.white.withOpacity(.86)
+                            ? AppColors.deepInk.withOpacity(.72)
                             : AppColors.readableOn(
                                 context.surfaceColor,
                                 color,
@@ -152,13 +154,14 @@ class CategoryTile extends StatelessWidget {
           curve: AppMotion.curveStandard,
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
-            // متن سفید روی رنگ‌های شاد برند کنتراست کافی ندارد؛ گرادیان
-            // تیره‌شده با همان رنگ دسته استفاده می‌شود (‏>۴٫۵ : ۱) و
-            // زنده‌بودن رنگ با هالهٔ روشن گوشه حفظ می‌شود.
-            gradient: AppColors.accessibleGradient(color),
+            // کاشی روشن با متن سرمه‌ای: شادی رنگ دسته حفظ می‌شود و
+            // برچسب/تعداد/آیکون‌ها ≥۴٫۵:۱ خوانا می‌مانند.
+            gradient: AppColors.tileGradient(color),
             borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
             border: Border.all(
-              color: selected ? Colors.white : Colors.white.withOpacity(.28),
+              color: selected
+                  ? AppColors.deepInk.withOpacity(.55)
+                  : AppColors.deepInk.withOpacity(.10),
               width: selected ? 2.4 : 1,
             ),
             boxShadow: [
@@ -181,7 +184,7 @@ class CategoryTile extends StatelessWidget {
                   height: 74,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: color.withOpacity(.35),
+                    color: Colors.white.withOpacity(.34),
                   ),
                 ),
               ),
@@ -195,10 +198,10 @@ class CategoryTile extends StatelessWidget {
                         height: 38,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(.22),
+                          color: Colors.white.withOpacity(.55),
                           borderRadius: BorderRadius.circular(13),
                           border: Border.all(
-                            color: Colors.white.withOpacity(.34),
+                            color: Colors.white.withOpacity(.70),
                           ),
                         ),
                         child: Text(
@@ -228,7 +231,7 @@ class CategoryTile extends StatelessWidget {
                                 Icons.chevron_left_rounded,
                                 key: const ValueKey('idle'),
                                 size: 18,
-                                color: Colors.white.withOpacity(.72),
+                                color: AppColors.deepInk.withOpacity(.55),
                               ),
                       ),
                     ],
@@ -239,7 +242,7 @@ class CategoryTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
+                          color: AppColors.deepInk,
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                         ),
@@ -250,7 +253,7 @@ class CategoryTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: Colors.white.withOpacity(.84),
+                          color: AppColors.deepInk.withOpacity(.78),
                           fontWeight: FontWeight.w600,
                           fontSize: 11,
                         ),

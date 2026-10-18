@@ -47,7 +47,7 @@ void main() {
           AppColors.deepInk);
     });
 
-    test('گرادیان کاشی دسته با متن سفید خوانا است', () {
+    test('گرادیان کاشی دسته با متن سرمه‌ای خوانا و شاد است', () {
       const categoryColors = [
         AppColors.coral,
         AppColors.sky,
@@ -57,14 +57,17 @@ void main() {
         AppColors.gold,
       ];
       for (final color in categoryColors) {
-        final gradient = AppColors.accessibleGradient(color);
+        final gradient = AppColors.tileGradient(color);
         for (final stop in gradient.colors) {
           expect(
-            AppColors.contrastWithWhite(stop),
+            AppColors.contrast(stop, AppColors.deepInk),
             greaterThanOrEqualTo(4.5),
             reason: 'یکی از توقف‌های گرادیان کاشی $color خوانا نیست',
           );
         }
+        // کاشی نباید برای خوانایی، رنگ برند را تیره و گِلی کند.
+        expect(AppColors.contrast(gradient.colors.last, Colors.white),
+            lessThan(4.5));
       }
     });
 

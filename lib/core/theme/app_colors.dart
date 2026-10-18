@@ -246,8 +246,7 @@ abstract final class AppColors {
       end: gradient.end,
       stops: gradient.stops,
       colors: [
-        for (final color in gradient.colors)
-          readableWithWhiteText(color),
+        for (final color in gradient.colors) readableWithWhiteText(color),
       ],
     );
   }
@@ -262,19 +261,21 @@ abstract final class AppColors {
   static Color textSafeColor(Color base) =>
       Color.lerp(base, const Color(0xFF101B33), .55)!;
 
-  /// گرادیان متن‌پس‌زمینهٔ امن برای کاشی/قرص دسته‌ای که روی آن متن سفید
-  /// نوشته می‌شود. هر سه توقف تیره‌اند تا در همهٔ نقاط کاشی کنتراست حفظ شود.
-  static LinearGradient accessibleGradient(Color color) {
-    final deep = textSafeColor(color);
+  /// گرادیان روشن و شاد کاشی دسته.
+  ///
+  /// همهٔ توقف‌ها روشن‌اند تا متن سرمه‌ای ([deepInk]) روی آن‌ها کنتراست
+  /// ≥۴٫۵ داشته باشد؛ در نتیجه رنگ برند دست‌نخورده و زنده می‌ماند و متن هم
+  /// خوانا است (راه‌حل «تیره‌کردن کل کاشی» ظاهر گِلی و غیرکودکانه می‌داد).
+  static LinearGradient tileGradient(Color color) {
     return LinearGradient(
       begin: Alignment.topRight,
       end: Alignment.bottomLeft,
       colors: [
-        Color.lerp(deep, const Color(0xFF101B33), -.10)!,
-        deep,
-        Color.lerp(deep, const Color(0xFF0A1224), .22)!,
+        Color.lerp(color, Colors.white, .42)!,
+        color,
+        Color.lerp(color, Colors.white, .06)!,
       ],
-      stops: const [0, .55, 1],
+      stops: const [0, .58, 1],
     );
   }
 

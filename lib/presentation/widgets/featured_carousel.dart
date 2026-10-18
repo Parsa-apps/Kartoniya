@@ -290,7 +290,8 @@ class _SpotlightCard extends StatelessWidget {
                             vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.coral,
+                            // «تازه» متن سفید دارد؛ روی مرجانی خام ۲٫۶:۱ بود.
+                            color: AppColors.fillAndText(AppColors.coral).fill,
                             borderRadius:
                                 BorderRadius.circular(AppTheme.radiusCircular),
                             boxShadow:
@@ -302,7 +303,8 @@ class _SpotlightCard extends StatelessWidget {
                                 .textTheme
                                 .labelLarge
                                 ?.copyWith(
-                                  color: Colors.white,
+                                  color: AppColors.fillAndText(AppColors.coral)
+                                      .foreground,
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -513,7 +515,11 @@ class _GlassPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: color ?? AppColors.coral),
+          Icon(
+            icon,
+            size: 13,
+            color: AppColors.readableOn(Colors.white, color ?? AppColors.coral),
+          ),
           const SizedBox(width: 4),
           Text(
             label,
