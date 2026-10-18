@@ -166,7 +166,7 @@ void main() {
         category: 'آموزشی',
         artworkEmoji: '🧪',
         artworkColorValue: 0xFFFFFFFF,
-        episodes: const [
+        episodes: [
           EpisodeModel(
             id: 'native-1',
             title: 'ویدئوی مستقیم',
@@ -183,7 +183,7 @@ void main() {
       );
       final container = await _container(
         {'watch_progress': '{"native-1":0.5,"embed-1":0.6}'},
-        _TestCartoonRepository([cartoon]),
+        const _TestCartoonRepository([cartoon]),
       );
 
       final entries = await container.read(continueWatchingProvider.future);
