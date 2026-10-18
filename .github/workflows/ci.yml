@@ -66,7 +66,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           # همان خطوط را به‌صورت annotation قابل‌خواندن از API منتشر کن
           if [ -f analyze.log ]; then
-            sed -n '1,90p' analyze.log | while IFS= read -r line; do
+            grep -E "error|warning" analyze.log | head -n 12 | while IFS= read -r line; do
               clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r')"
               [ -n "$clean" ] && echo "::error::A| $clean"
             done
@@ -75,11 +75,11 @@ jobs:
           fi
           if [ -f test.log ]; then
             {
-              grep -E "^00:[0-9]+ .*\[E\]" test.log | head -n 12
-              grep -A 10 "EXCEPTION CAUGHT" test.log | head -n 40
-              grep -E "The following|Which:|Expected:|Actual:|assert" test.log | head -n 25
-              grep -E "^  .*kartoniya.*\.dart:[0-9]+" test.log | head -n 20
-              tail -n 6 test.log
+              grep -E "^00:[0-9]+ .*\[E\]" test.log | head -n 6
+              grep -A 6 "EXCEPTION CAUGHT" test.log | grep -vE "^--$" | head -n 14
+              grep -E "The following .* thrown|Which:|Expected:|Actual:" test.log | head -n 8
+              grep -E "^  .*kartoniya.*\.dart:[0-9]+" test.log | head -n 6
+              tail -n 2 test.log
             } | while IFS= read -r line; do
               clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r' | sed 's/::/!!/g')"
               [ -n "$clean" ] && echo "::error::T| $clean"
