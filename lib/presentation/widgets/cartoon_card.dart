@@ -70,6 +70,27 @@ class CartoonCard extends ConsumerWidget {
                         showAgeBadge: false,
                       ),
                     ),
+                    // جلای نور از لبهٔ بالا؛ همان جهت نور کارت و سایه‌ها.
+                    PositionedDirectional(
+                      top: 0,
+                      start: 0,
+                      end: 0,
+                      height: 42,
+                      child: IgnorePointer(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.white.withOpacity(.18),
+                                Colors.white.withOpacity(0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     PositionedDirectional(
                       top: 8,
                       start: 8,

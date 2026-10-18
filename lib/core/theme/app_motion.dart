@@ -26,6 +26,13 @@ abstract final class AppMotion {
 
   static const heroTagPrefix = 'kartoniya-artwork';
   static String heroTag(String cartoonId) => '$heroTagPrefix-$cartoonId';
+
+  /// ماتریس «فشرده‌شدن» سطح: پرسپکتیو بسیار کم و کج‌شدن چند‌درجه‌ای که
+  /// حس لمس فیزیکی می‌دهد. فقط تا وقتی انگشت روی سطح است اعمال می‌شود.
+  static Matrix4 pressTilt(double press) => Matrix4.identity()
+    ..setEntry(3, 2, .0011)
+    ..rotateX(.05 * press)
+    ..rotateY(-.035 * press);
 }
 
 /// اطلاعات حرکت برای یک BuildContext.
@@ -252,8 +259,7 @@ class _PressableScaleState extends State<PressableScale> {
 
   @override
   Widget build(BuildContext context) {
-    final scale =
-        _pressed && context.motion.enabled ? widget.pressedScale : 1.0;
+    final active = _pressed && context.motion.enabled;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => _setPressed(true),
@@ -264,13 +270,24 @@ class _PressableScaleState extends State<PressableScale> {
         widget.onTap?.call();
       },
       onLongPress: widget.onLongPress,
-      child: AnimatedScale(
-        scale: scale,
+      // یک انیمیتور برای هر دو اثر: مقیاس و کج‌شدن پرسپکتیوی. با
+      // «کاهش حرکت» مقدار صفر می‌ماند و هیچ Ticker اضافه‌ای ساخته نمی‌شود.
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0, end: active ? 1 : 0),
         duration: context.motion.dur(
           _pressed ? AppMotion.micro : AppMotion.quick,
         ),
         curve: _pressed ? Curves.easeOut : AppMotion.curvePop,
         child: widget.child,
+        builder: (context, press, child) => Transform(
+          alignment: Alignment.center,
+          transformHitTests: false,
+          transform: AppMotion.pressTilt(press),
+          child: Transform.scale(
+            scale: 1 - (1 - widget.pressedScale) * press,
+            child: child,
+          ),
+        ),
       ),
     );
   }

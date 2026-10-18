@@ -305,26 +305,41 @@ abstract final class AppTheme {
 
   // ——— سایه‌ها ———
 
-  static List<BoxShadow> softShadow(BuildContext context) => [
-        BoxShadow(
-          color: Colors.black.withOpacity(
-            Theme.of(context).brightness == Brightness.dark ? .22 : .06,
-          ),
-          blurRadius: 22,
-          offset: const Offset(0, 8),
-        ),
-      ];
+  /// سایهٔ دو‌لایه: یک سایهٔ تماسِ نزدیک که سطح را روی صفحه می‌نشاند و یک
+  /// سایهٔ محیطی نرم برای عمق. جهت نور همیشه از بالا است تا همهٔ کارت‌ها
+  /// یک منبع نور مشترک داشته باشند و حس سه‌بعدی یکدست بماند.
+  static List<BoxShadow> softShadow(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return [
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .30 : .085),
+        blurRadius: 5,
+        offset: const Offset(0, 2),
+      ),
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .20 : .05),
+        blurRadius: 24,
+        offset: const Offset(0, 12),
+      ),
+    ];
+  }
 
-  static List<BoxShadow> mediumShadow(BuildContext context) => [
-        BoxShadow(
-          color: Colors.black.withOpacity(
-            Theme.of(context).brightness == Brightness.dark ? .32 : .12,
-          ),
-          blurRadius: 30,
-          spreadRadius: -4,
-          offset: const Offset(0, 14),
-        ),
-      ];
+  static List<BoxShadow> mediumShadow(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return [
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .34 : .10),
+        blurRadius: 7,
+        offset: const Offset(0, 3),
+      ),
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .26 : .09),
+        blurRadius: 34,
+        spreadRadius: -4,
+        offset: const Offset(0, 16),
+      ),
+    ];
+  }
 
   /// هالهٔ رنگی نرم برای دکمه‌ها و کارت‌های شاخص.
   static List<BoxShadow> glow(Color color,
