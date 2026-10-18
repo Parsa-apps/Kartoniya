@@ -36,5 +36,19 @@ void main() {
       final categories = await LocalCartoonRepository().fetchCategories();
       expect(categories.first.id, 'all');
     });
+
+    test('هر کارتون تصویر پوستر محلی و یکتای خود را دارد', () async {
+      final cartoons = await LocalCartoonRepository().fetchCartoons();
+      final assets = cartoons.map((cartoon) => cartoon.artworkAsset).toList();
+      expect(assets.every((asset) => asset != null), isTrue);
+      expect(assets.toSet().length, cartoons.length);
+      expect(
+        assets.every(
+          (asset) => asset!.startsWith('asset/images/posters/') &&
+              asset.endsWith('.webp'),
+        ),
+        isTrue,
+      );
+    });
   });
 }

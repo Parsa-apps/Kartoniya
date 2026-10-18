@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/app_feedback.dart';
 import '../widgets/cartoon_card.dart';
 import '../widgets/kartoniya_story_banner.dart';
+import '../widgets/page_intro.dart';
 import '../widgets/shimmer_loader.dart';
 import '../widgets/state_views.dart';
 import 'cartoon_detail_page.dart';
@@ -30,51 +30,35 @@ class FavoritesPage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppTheme.pageMargin,
-            18,
-            AppTheme.pageMargin,
-            8,
+        PageIntro(
+          title: 'علاقه‌مندی‌ها',
+          subtitle: favorites.isEmpty
+              ? 'جایی برای کارتون‌های دوست‌داشتنی'
+              : '${toFaDigits('${favorites.length}')} کارتون دوست‌داشتنی',
+          icon: Icons.favorite_rounded,
+          gradient: AppColors.warmGradient,
+          leading: Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              shape: BoxShape.circle,
+              border: Border.all(color: context.softBorderColor),
+            ),
+            child: const PreRenderedFlak(
+              width: 42,
+              height: 42,
+              semanticLabel: 'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+            ),
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'علاقه‌مندی‌ها',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    AnimatedSwitcher(
-                      duration: context.motion.dur(AppMotion.quick),
-                      child: Text(
-                        favorites.isEmpty
-                            ? 'جایی برای کارتون‌های دوست‌داشتنی'
-                            : '${toFaDigits('${favorites.length}')} کارتون دوست‌داشتنی',
-                        key: ValueKey(favorites.length),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: context.secondaryTextColor,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (favorites.isNotEmpty)
-                IconButton(
+          trailing: favorites.isEmpty
+              ? null
+              : IconButton.filledTonal(
                   tooltip: 'پاک کردن همه',
                   onPressed: () => _confirmClear(context, ref),
-                  icon: const Icon(Icons.delete_outline_rounded),
+                  icon: const Icon(Icons.delete_outline_rounded, size: 21),
                 ),
-              const PreRenderedFlak(
-                width: 56,
-                height: 62,
-                semanticLabel: 'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده در علاقه‌مندی‌ها',
-              ),
-            ],
-          ),
         ),
         Expanded(
           child: cartoons.when(
@@ -111,7 +95,7 @@ class FavoritesPage extends ConsumerWidget {
                   maxCrossAxisExtent: 220,
                   mainAxisSpacing: 14,
                   crossAxisSpacing: 14,
-                  childAspectRatio: .74,
+                  childAspectRatio: .72,
                 ),
                 itemCount: selected.length,
                 itemBuilder: (context, index) => CartoonCard(
@@ -167,7 +151,7 @@ class _FavoritesLoading extends StatelessWidget {
         maxCrossAxisExtent: 220,
         mainAxisSpacing: 14,
         crossAxisSpacing: 14,
-        childAspectRatio: .74,
+        childAspectRatio: .72,
       ),
       itemCount: 4,
       itemBuilder: (_, __) => const ShimmerCard(),

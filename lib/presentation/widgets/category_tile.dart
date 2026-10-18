@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
@@ -239,7 +238,7 @@ class CategoryTile extends StatelessWidget {
                                 ),
                               )
                             : Icon(
-                                Icons.arrow_back_rounded,
+                                Icons.chevron_left_rounded,
                                 key: const ValueKey('idle'),
                                 size: 18,
                                 color: Colors.white.withOpacity(.72),
@@ -304,9 +303,10 @@ class CategoryPillRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visible = includeAll
-        ? categories
-        : categories.where((category) => category.id != 'all');
+    final visible = (includeAll
+            ? categories
+            : categories.where((category) => category.id != 'all'))
+        .toList(growable: false);
     return SizedBox(
       height: height,
       child: ListView.separated(

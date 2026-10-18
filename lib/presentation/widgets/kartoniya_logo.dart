@@ -41,7 +41,12 @@ class KartoniyaLogoMark extends StatelessWidget {
             clipBehavior: Clip.none,
             alignment: Alignment.center,
             children: [
-              if (showOrbit) _LogoOrbits(size: size),
+              if (showOrbit)
+                OverflowBox(
+                  maxWidth: size * 1.46,
+                  maxHeight: size * 1.46,
+                  child: _LogoOrbits(size: size),
+                ),
               CustomPaint(
                 size: Size.square(size),
                 painter: _LogoPainter(

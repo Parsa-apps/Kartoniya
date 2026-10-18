@@ -5,8 +5,10 @@ import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/fa_digits.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
+import '../widgets/kartoniya_logo.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import 'home_page.dart';
 
@@ -108,17 +110,54 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         child: SafeArea(
           child: Column(
             children: [
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppTheme.pageMargin - 10,
-                    vertical: 6,
-                  ),
-                  child: TextButton(
-                    onPressed: _isCompleting ? null : _finish,
-                    child: const Text('رد کردن'),
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.pageMargin - 8,
+                  vertical: 4,
+                ),
+                child: Row(
+                  children: [
+                    const KartoniyaLogoMark(size: 34),
+                    const SizedBox(width: 8),
+                    Text(
+                      'کارتونیا',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                    const SizedBox(width: 10),
+                    AnimatedSwitcher(
+                      duration: context.motion.dur(AppMotion.quick),
+                      child: Container(
+                        key: ValueKey(_currentPage),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: page.color.withOpacity(.14),
+                          borderRadius:
+                              BorderRadius.circular(AppTheme.radiusCircular),
+                        ),
+                        child: Text(
+                          '${toFaDigits('${_currentPage + 1}')} از '
+                          '${toFaDigits('${_pages.length}')}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(
+                                color: page.color,
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: _isCompleting ? null : _finish,
+                      child: const Text('رد کردن'),
+                    ),
+                  ],
                 ),
               ),
               Expanded(

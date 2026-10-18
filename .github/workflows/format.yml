@@ -1,0 +1,51 @@
+name: Format Dart
+
+# ابزار دستی برای اجرای واقعی `dart format` روی شاخهٔ جاری.
+# workflow اصلی فقط قالب‌بندی را گزارش می‌کند؛ این job همان قالب‌بندی را
+# اعمال و در صورت تغییر، commit می‌کند تا بازبینی‌ها کوچک بمانند.
+on:
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: 'پیام commit قالب‌بندی'
+        required: false
+        default: 'style: dart format lib and test'
+  push:
+    paths:
+      - '.github/workflows/format.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: format-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: dart format
+    if: github.ref == 'refs/heads/arena/f29eaa28-kartoniya'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          channel: stable
+          cache: true
+      - name: Format
+        run: dart format lib test
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo 'Dart files are already formatted.'
+            exit 0
+          fi
+          git config user.name 'Kartoniya Formatter'
+          git config user.email 'actions@users.noreply.github.com'
+          git add lib test
+          git commit -m "${{ inputs.commit_message || 'style: dart format lib and test' }}"
+          git push

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/navigation/app_routes.dart';
@@ -266,7 +265,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.auto_awesome_rounded,
                                     size: 15,
                                     color: AppColors.skyDeep,
@@ -571,7 +570,10 @@ class _FelakSearchPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return PressableScale(
+      onTap: onTap,
+      pressedScale: .99,
+      child: Container(
       padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 16, 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -629,6 +631,7 @@ class _FelakSearchPrompt extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

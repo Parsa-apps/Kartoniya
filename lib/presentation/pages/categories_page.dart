@@ -69,7 +69,7 @@ class CategoriesPage extends ConsumerWidget {
           subtitle: subtitle,
           icon: Icons.grid_view_rounded,
           gradient: AppColors.violetGradient,
-          leading: _SceneThumb(),
+          leading: const _SceneThumb(),
           trailing: selectedCategory == null
               ? null
               : IconButton.filledTonal(
@@ -237,6 +237,8 @@ class CategoriesPage extends ConsumerWidget {
 }
 
 class _SceneThumb extends StatelessWidget {
+  const _SceneThumb();
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -250,9 +252,9 @@ class _SceneThumb extends StatelessWidget {
           filterQuality: FilterQuality.medium,
           excludeFromSemantics: true,
           cacheWidth: 144,
-          errorBuilder: (context, error, stackTrace) => DecoratedBox(
+          errorBuilder: (context, error, stackTrace) => const DecoratedBox(
             decoration: BoxDecoration(gradient: AppColors.violetGradient),
-            child: const Icon(Icons.menu_book_rounded, color: Colors.white),
+            child: Icon(Icons.menu_book_rounded, color: Colors.white),
           ),
         ),
       ),

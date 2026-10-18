@@ -273,7 +273,7 @@ class _SpotlightCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _GlassPill(
+                    const _GlassPill(
                       icon: Icons.auto_awesome_rounded,
                       label: 'منتخب این هفته',
                       color: AppColors.goldLight,

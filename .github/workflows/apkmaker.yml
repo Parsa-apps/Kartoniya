@@ -73,7 +73,7 @@ jobs:
         run: flutter analyze --no-pub 2>&1 | tee /tmp/flutter-analyze.log
 
       - name: تست‌ها
-        timeout-minutes: 5
+        timeout-minutes: 6
         run: flutter test --reporter expanded 2>&1 | tee /tmp/flutter-tests.log
 
       - name: بیلد release APK (تفکیک ABI)

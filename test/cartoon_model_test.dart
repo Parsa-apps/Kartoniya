@@ -42,6 +42,16 @@ void main() {
     test('رنگ artwork از مقدار عددی ساخته می‌شود', () {
       expect(cartoon().artworkColor.value, 0xFF123456);
     });
+
+    test('نشانی تصویر پوستر اختیاری است و در copyWith حفظ می‌شود', () {
+      expect(cartoon().artworkAsset, isNull);
+      final withArt = cartoon().copyWith(
+        artworkAsset: 'asset/images/posters/oscar.webp',
+      );
+      expect(withArt.artworkAsset, 'asset/images/posters/oscar.webp');
+      expect(withArt.copyWith(title: 'دیگر').artworkAsset,
+          'asset/images/posters/oscar.webp');
+    });
   });
 
   group('Aparat sources', () {

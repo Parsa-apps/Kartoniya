@@ -28,7 +28,7 @@ class KartoniyaMascot extends StatefulWidget {
     this.accent = AppColors.sky,
     this.float = true,
     this.onTap,
-    this.semanticLabel = 'فِلَک، شخصیت کارتونی کارتونیا',
+    this.semanticLabel = 'شخصیت کارتونی فِلَک',
     this.interactive = true,
   });
 
@@ -239,6 +239,25 @@ class _MascotPainter extends CustomPainter {
     final dy = (h - s) / 2;
     canvas.save();
     canvas.translate(dx, dy);
+
+    // هالهٔ رنگ برند پشت شخصیت؛ accent را به سطح صفحه وصل می‌کند.
+    final auraRect = Rect.fromCenter(
+      center: Offset(s * .5, s * .55),
+      width: s * .98,
+      height: s * .98,
+    );
+    canvas.drawCircle(
+      auraRect.center,
+      auraRect.width / 2,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            accent.withOpacity(.16),
+            accent.withOpacity(0),
+          ],
+          stops: const [.55, 1],
+        ).createShader(auraRect),
+    );
 
     // ——— سایهٔ زمین (بسیار نرم، بدون blur سنگین) ———
     final groundRect = Rect.fromCenter(
@@ -516,10 +535,10 @@ class _MascotPainter extends CustomPainter {
     canvas.drawPath(
       base,
       Paint()
-        ..shader = LinearGradient(
+        ..shader = const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_hair, const Color(0xFF8ADCE5), _hairDeep],
+          colors: [_hair, Color(0xFF8ADCE5), _hairDeep],
         ).createShader(Rect.fromLTWH(s * .35, s * .08, s * .38, s * .28)),
     );
 
