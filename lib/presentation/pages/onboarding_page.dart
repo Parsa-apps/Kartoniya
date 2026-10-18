@@ -280,7 +280,7 @@ class _OnboardingHero extends StatelessWidget {
                 ),
               ),
               if (item.overlayMascot)
-                PositionedDirectional(
+                const PositionedDirectional(
                   end: -10,
                   bottom: -25,
                   child: PreRenderedFlak(

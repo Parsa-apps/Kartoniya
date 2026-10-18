@@ -90,7 +90,7 @@ class CartoonDetailPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  PositionedDirectional(
+                  const PositionedDirectional(
                     start: 16,
                     bottom: 48,
                     child: ExcludeSemantics(

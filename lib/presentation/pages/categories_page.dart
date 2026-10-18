@@ -71,8 +71,8 @@ class CategoriesPage extends ConsumerWidget {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 7, 16, 7),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 7, 16, 7),
           child: KartoniyaStoryBanner(
             scene: KartoniyaScene.storybook,
             height: 146,

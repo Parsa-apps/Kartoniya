@@ -243,7 +243,7 @@ class ProfilePage extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Icon(
+                          const Icon(
                             Icons.arrow_forward_ios_rounded,
                             size: 15,
                             color: AppColors.tealDeep,

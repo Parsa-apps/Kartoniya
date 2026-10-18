@@ -84,9 +84,9 @@ class _AboutUsPageState extends State<AboutUsPage>
               padding: const EdgeInsets.fromLTRB(24, 14, 24, 40),
               child: Column(
                 children: [
-                  StaggeredReveal(
+                  const StaggeredReveal(
                     index: 0,
-                    child: const KartoniyaStoryBanner(
+                    child: KartoniyaStoryBanner(
                       scene: KartoniyaScene.storybook,
                       height: 206,
                       eyebrow: 'آشنایی با کارتونیا',
@@ -334,12 +334,10 @@ class _GoldenGlowFrame extends StatelessWidget {
   const _GoldenGlowFrame({
     required this.animation,
     required this.child,
-    this.circular = false,
   });
 
   final Animation<double> animation;
   final Widget child;
-  final bool circular;
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +345,7 @@ class _GoldenGlowFrame extends StatelessWidget {
       animation: animation,
       builder: (context, _) {
         final value = Curves.easeInOut.transform(animation.value);
-        final radius = circular ? 999.0 : AppTheme.radiusLarge;
+        const radius = AppTheme.radiusLarge;
         return Transform.scale(
           scale: 1 + (value * .014),
           child: Container(
@@ -362,8 +360,7 @@ class _GoldenGlowFrame extends StatelessWidget {
                   AppColors.goldDark,
                 ],
               ),
-              shape: circular ? BoxShape.circle : BoxShape.rectangle,
-              borderRadius: circular ? null : BorderRadius.circular(radius),
+              borderRadius: BorderRadius.circular(radius),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.gold.withOpacity(.22 + (value * .30)),
