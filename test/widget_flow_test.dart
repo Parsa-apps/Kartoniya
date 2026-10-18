@@ -6,6 +6,7 @@ import 'package:kartoniya/data/repositories/local_cartoon_repository.dart';
 import 'package:kartoniya/main.dart';
 import 'package:kartoniya/presentation/global_widgets/parental_gate_widget.dart';
 import 'package:kartoniya/presentation/pages/onboarding_page.dart';
+import 'package:kartoniya/presentation/pages/home_page.dart';
 import 'package:kartoniya/presentation/pages/settings_page.dart';
 import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/favorite_button.dart';
@@ -51,7 +52,9 @@ void main() {
     }
 
     expect(find.byType(OnboardingPage), findsNothing);
-    expect(find.text('همهٔ کارتون‌ها'), findsOneWidget);
+    // The catalogue heading is lazily built below the phone viewport.
+    expect(find.byType(HomePage), findsOneWidget);
+    expect(tester.takeException(), isNull);
     expect(prefs.getBool('onboarding_completed'), isTrue);
   });
 

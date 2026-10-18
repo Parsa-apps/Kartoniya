@@ -50,8 +50,10 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
       context.motion.enabled && widget.cartoons.length > 1;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // MotionScope and MediaQuery are inherited dependencies: read them only
+    // after initState, and restart when reduced-motion settings change.
     _restartAutoAdvance();
   }
 

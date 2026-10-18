@@ -28,6 +28,9 @@ jobs:
     name: بیلد APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     permissions:
       contents: read
       actions: write
