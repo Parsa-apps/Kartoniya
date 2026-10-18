@@ -49,12 +49,25 @@ class _GradientButtonState extends State<GradientButton> {
   void initState() {
     super.initState();
     _focusNode = FocusNode(debugLabel: 'Kartoniya primary action');
+    // حلقهٔ فوکوس مستقیم از خود FocusNode خوانده می‌شود، نه از
+    // onShowFocusHighlightِ FocusableActionDetector: آن callback فقط وقتی
+    // highlightMode برابر traditional باشد صدا زده می‌شود و روی گوشی‌های لمسی
+    // (و در تست‌های ویجت که حالت پیش‌فرض touch است) هرگز اجرا نمی‌شود؛ در
+    // نتیجه کاربر کیبورد/ریموت و TalkBack حلقهٔ فوکوس را نمی‌دید.
+    _focusNode.addListener(_handleFocusChanged);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_handleFocusChanged);
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _handleFocusChanged() {
+    final focused = _focusNode.hasFocus;
+    if (!mounted || _focused == focused) return;
+    setState(() => _focused = focused);
   }
 
   @override
@@ -136,10 +149,6 @@ class _GradientButtonState extends State<GradientButton> {
         mouseCursor: enabled
             ? SystemMouseCursors.click
             : SystemMouseCursors.basic,
-        onShowFocusHighlight: (value) {
-          if (!mounted || _focused == value) return;
-          setState(() => _focused = value);
-        },
         shortcuts: const <ShortcutActivator, Intent>{
           SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
           SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
