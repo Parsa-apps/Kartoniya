@@ -1,82 +1,171 @@
 import 'package:flutter/material.dart';
 
-/// رنگ‌های برند کارتونیا. رنگ‌های خنثی از [ThemeData] خوانده می‌شوند تا
-/// حالت روشن و تاریک در تمام صفحه‌ها یکپارچه بماند.
+/// پالت رسمی برند «کارتونیا».
+///
+/// هویت بصری روی آبی آسمانی، فیروزه‌ای، بنفش ملایم، مرجانی و زرد طلایی
+/// ساخته شده است. رنگ‌های خنثی و سطح‌ها از [ThemeData] خوانده می‌شوند تا
+/// حالت روشن و تاریک در تمام صفحه‌ها یکپارچه بماند. هیچ صفحه‌ای نباید
+/// رنگ خام خارج از این فایل استفاده کند؛ استایل‌های پراکنده عمدتاً از
+/// توکن‌های [AppTheme] می‌آیند.
 abstract final class AppColors {
-  static const primary = Color(0xFFFF8A50);
-  static const primaryLight = Color(0xFFFFB48C);
-  static const primaryDark = Color(0xFFD95F2B);
-  static const primarySoft = Color(0xFFFFF0E7);
+  // ——— رنگ اصلی: آبی آسمانی ———
+  static const sky = Color(0xFF2E9BEB);
+  static const skyLight = Color(0xFF7BC4FF);
+  static const skyDeep = Color(0xFF1071C4);
+  static const skySoft = Color(0xFFE7F4FF);
 
-  static const secondary = Color(0xFF4DB9EE);
-  static const secondaryLight = Color(0xFF9BDFFC);
-  static const secondaryDark = Color(0xFF208DC3);
-  static const secondarySoft = Color(0xFFE9F8FF);
+  // ——— فیروزه‌ای ———
+  static const teal = Color(0xFF17BFA8);
+  static const tealLight = Color(0xFF7BE0D0);
+  static const tealDeep = Color(0xFF0A8F7C);
+  static const tealSoft = Color(0xFFE4FAF6);
 
-  static const pink = Color(0xFFFF6B9D);
-  static const purple = Color(0xFF9B7CEB);
-  static const green = Color(0xFF53B86A);
-  static const yellow = Color(0xFFFFC83D);
-  static const red = Color(0xFFF06A70);
+  // ——— بنفش ملایم ———
+  static const violet = Color(0xFF8F7AED);
+  static const violetLight = Color(0xFFC5B9FA);
+  static const violetDeep = Color(0xFF5F47C4);
+  static const violetSoft = Color(0xFFF1EDFF);
 
-  static const success = Color(0xFF2EAD65);
-  static const warning = Color(0xFFFFA502);
-  static const error = Color(0xFFE65057);
-  static const gold = Color(0xFFFFD56A);
+  // ——— مرجانی ———
+  static const coral = Color(0xFFFF7A59);
+  static const coralLight = Color(0xFFFFB19A);
+  static const coralDeep = Color(0xFFD95433);
+  static const coralSoft = Color(0xFFFFEFEA);
+
+  // ——— زرد طلایی ———
+  static const gold = Color(0xFFFFC53D);
+  static const goldLight = Color(0xFFFFE08A);
   static const goldDark = Color(0xFFC68A1B);
+  static const goldSoft = Color(0xFFFFF6DF);
 
-  static const lightBackground = Color(0xFFFFF9F5);
-  static const darkBackground = Color(0xFF161624);
+  // ——— رنگ‌های کمکی ———
+  static const pink = Color(0xFFFF6BA8);
+  static const pinkDeep = Color(0xFFD63E7C);
+  static const green = Color(0xFF3DC47E);
+  static const greenDeep = Color(0xFF1F9558);
+  static const red = Color(0xFFFF5D6C);
+  static const redDeep = Color(0xFFD63A4A);
+
+  static const success = greenDeep;
+  static const warning = Color(0xFFE9980C);
+  static const error = redDeep;
+
+  // ——— نام‌های سازگار با نسخه‌های قبل (مرجع اصلی خود پالت است) ———
+  static const primary = sky;
+  static const primaryLight = skyLight;
+  static const primaryDark = skyDeep;
+  static const primarySoft = skySoft;
+  static const secondary = teal;
+  static const secondaryLight = tealLight;
+  static const secondaryDark = tealDeep;
+  static const secondarySoft = tealSoft;
+  static const purple = violet;
+
+  // ——— سطوح ———
+  static const lightBackground = Color(0xFFF1F7FE);
   static const lightSurface = Color(0xFFFFFFFF);
-  static const darkSurface = Color(0xFF24243A);
+  static const lightSurfaceAlt = Color(0xFFF7FBFF);
+  static const darkBackground = Color(0xFF0E1526);
+  static const darkSurface = Color(0xFF1A2338);
+  static const darkSurfaceAlt = Color(0xFF222D47);
+  static const lightInk = Color(0xFF1B2436);
+  static const darkInk = Color(0xFFEFF4FE);
 
+  // ——— گرادیان‌های امضای کارتونیا ———
+  static const skyGradient = LinearGradient(
+    colors: [skyLight, sky, skyDeep],
+    stops: [.0, .55, 1],
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+  );
+
+  /// سازگار با نام قدیمی؛ اکنون گرادیان آسمانی برند است.
   static const primaryGradient = LinearGradient(
-    colors: [primary, primaryDark],
+    colors: [sky, skyDeep],
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
   );
 
   static const sunsetGradient = LinearGradient(
-    colors: [yellow, primary],
+    colors: [gold, coral],
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
   );
 
   static const coolGradient = LinearGradient(
-    colors: [secondary, purple],
+    colors: [sky, violet],
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
   );
 
   static const warmGradient = LinearGradient(
-    colors: [pink, primary],
+    colors: [pink, coral],
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
+  );
+
+  static const tealGradient = LinearGradient(
+    colors: [tealLight, teal, tealDeep],
+    stops: [.0, .55, 1],
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+  );
+
+  static const violetGradient = LinearGradient(
+    colors: [violetLight, violet, violetDeep],
+    stops: [.0, .55, 1],
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+  );
+
+  static const coralGradient = LinearGradient(
+    colors: [coralLight, coral, coralDeep],
+    stops: [.0, .55, 1],
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+  );
+
+  static const goldGradient = LinearGradient(
+    colors: [goldLight, gold, goldDark],
+    stops: [.0, .6, 1],
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+  );
+
+  static const nightGradient = LinearGradient(
+    colors: [Color(0xFF35426B), Color(0xFF141B33)],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
 
   static Color categoryColor(String category) {
     switch (category) {
       case 'ماجراجویی':
-        return red;
+        return coral;
       case 'آموزشی':
-        return secondary;
+        return sky;
       case 'سرگرمی':
         return pink;
       case 'هنری':
-        return purple;
+        return violet;
       case 'علمی':
-        return green;
+        return teal;
       case 'موسیقی':
-        return yellow;
+        return gold;
       default:
-        return primary;
+        return sky;
     }
   }
 
   static LinearGradient categoryGradient(String category) {
     final color = categoryColor(category);
     return LinearGradient(
-      colors: [color, Color.lerp(color, Colors.white, .28)!],
+      colors: [
+        Color.lerp(color, Colors.white, .25)!,
+        color,
+        Color.lerp(color, const Color(0xFF101627), .22)!,
+      ],
+      stops: const [0, .62, 1],
       begin: Alignment.topRight,
       end: Alignment.bottomLeft,
     );
