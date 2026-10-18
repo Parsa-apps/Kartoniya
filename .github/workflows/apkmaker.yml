@@ -48,25 +48,28 @@ jobs:
       - name: نصب پکیج‌ها (pub get)
         run: flutter pub get
 
-      # تست‌ها غیرمسدودکننده‌اند؛ اگر خواستید بیلد را متوقف کنند، continue-on-error را حذف کنید
+      # تست‌ها غیرمسدودکننده‌اند؛ برای اجباری‌کردن، continue-on-error را حذف کنید
       - name: تست‌ها (غیرمسدودکننده)
         continue-on-error: true
         run: flutter test --reporter expanded
 
-      - name: بیلد release APK
+      - name: بیلد release APK (تفکیک ABI)
         if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'both' }}
-        run: flutter build apk --release
+        run: flutter build apk --release --split-per-abi
 
       - name: بیلد debug APK
         if: ${{ github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == 'both' }}
         run: flutter build apk --debug
 
-      - name: انتشار release APK (Artifact)
+      - name: انتشار release APKها (Artifact)
         if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'both' }}
         uses: actions/upload-artifact@v4
         with:
-          name: kartoniya-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: kartoniya-release-apks
+          path: |
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            build/app/outputs/flutter-apk/app-x86_64-release.apk
           if-no-files-found: error
           retention-days: 30
 
