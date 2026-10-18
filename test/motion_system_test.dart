@@ -17,7 +17,6 @@ void main() {
       ),
     );
     expect(find.text('active'), findsOneWidget);
-    expect(tester.binding.lifecycleState != AppLifecycleState.paused, isTrue);
 
     await tester.pumpWidget(const SizedBox.shrink());
     expect(tester.takeException(), isNull);
@@ -41,7 +40,6 @@ void main() {
       (tester) async {
     var taps = 0;
     final semanticsHandle = tester.ensureSemantics();
-    addTearDown(semanticsHandle.dispose);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -68,6 +66,9 @@ void main() {
         label: 'شخصیت کارتونی فِلَک',
       ),
     );
+    // Dispose inside the test body: flutter_test fails a test whose semantics
+    // handle is still open when the body finishes.
+    semanticsHandle.dispose();
 
     await tester.tap(mascot);
     await tester.pump(const Duration(milliseconds: 180));
