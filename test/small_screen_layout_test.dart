@@ -19,22 +19,6 @@ void main() {
     addTearDown(tester.view.reset);
   }
 
-  /// سرریزهای چیدمان را جمع می‌کند و در پایان با محل ویجت گزارش می‌دهد.
-  List<String> watchLayoutErrors(WidgetTester tester) {
-    final problems = <String>[];
-    final original = FlutterError.onError;
-    FlutterError.onError = (details) {
-      final where = details.informationCollector
-              ?.call()
-              .map((node) => node.toString())
-              .join('\n') ??
-          '';
-      problems.add('${details.exceptionAsString()}\n$where');
-    };
-    addTearDown(() => FlutterError.onError = original);
-    return problems;
-  }
-
   Future<void> pumpApp(WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({'onboarding_completed': true});
     final prefs = await SharedPreferences.getInstance();
@@ -54,40 +38,38 @@ void main() {
 
   testWidgets('خانه روی گوشی ۳۲۰px بدون سرریز بالا می‌آید', (tester) async {
     useSmallPhone(tester);
-    final problems = watchLayoutErrors(tester);
     await pumpApp(tester);
 
     expect(find.byType(HomePage), findsOneWidget);
-    expect(problems, isEmpty, reason: 'سرریز چیدمان در خانه: $problems');
+    expect(tester.takeException(), isNull, reason: 'چیدمان اول خانه');
 
     // اسکرول تا انتهای محتوا؛ همهٔ ریل‌ها و کارت‌ها ساخته و چیده می‌شوند.
     final scrollable = find.byType(Scrollable).first;
     for (var i = 0; i < 12; i++) {
       await tester.drag(scrollable, const Offset(0, -320));
       await tester.pump(const Duration(milliseconds: 220));
-      expect(problems, isEmpty, reason: 'سرریز چیدمان در خانه: $problems');
+      expect(tester.takeException(), isNull, reason: 'خانه، اسکرول $i');
     }
   });
 
   testWidgets('دسته‌ها و جست‌وجو روی گوشی ۳۲۰px جا می‌شوند', (tester) async {
     useSmallPhone(tester);
-    final problems = watchLayoutErrors(tester);
     await pumpApp(tester);
 
     await tester.tap(find.text('دسته‌ها').last);
     await tester.pump(const Duration(milliseconds: 700));
     await tester.pump(const Duration(milliseconds: 700));
-    expect(problems, isEmpty, reason: 'سرریز چیدمان در دسته‌ها: $problems');
+    expect(tester.takeException(), isNull, reason: 'صفحهٔ دسته‌ها');
 
     await tester.tap(find.text('جست‌وجو').last);
     await tester.pump(const Duration(milliseconds: 700));
     await tester.pump(const Duration(milliseconds: 700));
-    expect(problems, isEmpty, reason: 'سرریز چیدمان در جست‌وجو: $problems');
+    expect(tester.takeException(), isNull, reason: 'صفحهٔ جست‌وجو');
 
     await tester.enterText(find.byType(TextField).first, 'حیوانات');
     for (var i = 0; i < 8; i++) {
       await tester.pump(const Duration(milliseconds: 200));
     }
-    expect(problems, isEmpty, reason: 'سرریز چیدمان در نتایج: $problems');
+    expect(tester.takeException(), isNull, reason: 'نتایج جست‌وجو');
   });
 }

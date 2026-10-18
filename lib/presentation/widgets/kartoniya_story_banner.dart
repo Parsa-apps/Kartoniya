@@ -128,6 +128,9 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
   @override
   Widget build(BuildContext context) {
     final coralAction = AppColors.fillAndText(AppColors.coral);
+    // در ارتفاع کم (مثل بنر خانه روی گوشی ۳۲۰px) متن باید یک‌خطی و جمع‌وجور
+    // بماند تا کارت ثابت‌ارتفاع سرریز نکند.
+    final compact = widget.height < 180;
     final motion = context.motion;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -238,9 +241,9 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   : width - 40,
                             ),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                                vertical: 11,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: compact ? 13 : 15,
+                                vertical: compact ? 8 : 11,
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(.84),
@@ -292,7 +295,7 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   ],
                                   Text(
                                     widget.title,
-                                    maxLines: 2,
+                                    maxLines: compact ? 1 : 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
@@ -318,13 +321,14 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   ),
                                   if (widget.actionLabel != null &&
                                       widget.onAction != null) ...[
-                                    const SizedBox(height: 6),
+                                    SizedBox(height: compact ? 4 : 6),
                                     SizedBox(
-                                      height: 36,
+                                      height: compact ? 32 : 36,
                                       child: FilledButton.icon(
                                         onPressed: widget.onAction,
                                         style: FilledButton.styleFrom(
-                                          minimumSize: const Size(0, 36),
+                                          minimumSize:
+                                              Size(0, compact ? 32 : 36),
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 12,
                                           ),
