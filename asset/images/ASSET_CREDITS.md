@@ -9,7 +9,7 @@ as a local Flutter asset; nothing is fetched at runtime.
 
 | Asset | Content | Pipeline | Runtime classification |
 | --- | --- | --- | --- |
-| `flak_3d.webp` | Felak, Kartoniya's cloud mascot | Original 3D-style render, isolated from its generated checkerboard backdrop, alpha-matted, then converted to WebP | Pre-rendered 3D still (not a rigged model) |
+| `flak_3d.webp` | Felak, Kartoniya's cloud mascot | Original 3D-style render. Phase 6 re-matte: the generated grey checkerboard was flood-filled out, the silhouette was closed with a 5 px dilate/erode pass so no checkerboard bites the scarf or hands, and the alpha edge was softened 0.6 px before WebP encoding (alpha quality 100). | Pre-rendered 3D still (not a rigged model) |
 | `flak_reading_scene.webp` | Felak reading a picture book | Original 3D-style scene rendered with the mascot as an identity reference, resized and compressed to WebP | Pre-rendered 3D still (alternate scene/pose) |
 | `cloudworld_hero.webp` | Floating sky-island environment | Original 3D-style storybook diorama render, resized and compressed to WebP | Pre-rendered 3D still |
 | `storybook_garden.webp` | Storybook garden environment | Original 3D-style felt-and-clay diorama render, resized and compressed to WebP | Pre-rendered 3D still |

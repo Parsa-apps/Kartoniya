@@ -54,6 +54,27 @@ void main() {
     expect(rgba, isNotNull);
     // The cut-out has real alpha, not a checkerboard baked into the image.
     expect(rgba!.getUint8(3), 0);
+
+    // A grey checkerboard would survive as a ring of dark, neutral, fully
+    // opaque pixels around the silhouette. The clean matte keeps only a few
+    // hundred such pixels (eye shading); the old asset had thousands.
+    var darkNeutralOpaque = 0;
+    for (var i = 0; i < rgba.lengthInBytes; i += 4) {
+      final r = rgba.getUint8(i);
+      final g = rgba.getUint8(i + 1);
+      final b = rgba.getUint8(i + 2);
+      final a = rgba.getUint8(i + 3);
+      if (a <= 200) continue;
+      final spread = [r, g, b].reduce((x, y) => x > y ? x : y) -
+          [r, g, b].reduce((x, y) => x < y ? x : y);
+      final luminance = (r * 299 + g * 587 + b * 114) ~/ 1000;
+      if (spread <= 12 && luminance <= 80) darkNeutralOpaque++;
+    }
+    expect(
+      darkNeutralOpaque,
+      lessThan(800),
+      reason: 'لبهٔ برش فِلَک هنوز بقایای صفحه‌شطرنجی/خاکستری دارد.',
+    );
     mascotCodec.dispose();
   });
 
