@@ -180,7 +180,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(container.read(reduceMotionProvider), isTrue);
-    await Future<void>.delayed(Duration.zero);
+    // Widget tests use a fake clock: pump flushes storage microtasks
+    // without waiting on an unadvanced Timer.
+    await tester.pump();
     expect(prefs.getBool('reduce_motion_enabled'), isTrue);
   });
 }

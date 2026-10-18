@@ -27,6 +27,7 @@ jobs:
   build:
     name: بیلد APK
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       actions: write
@@ -51,13 +52,15 @@ jobs:
       - name: نصب پکیج‌ها (pub get)
         run: flutter pub get
 
-      - name: تست‌ها (غیرمسدودکننده)
-        continue-on-error: true
+      - name: تست‌ها
+        timeout-minutes: 5
         run: flutter test --reporter expanded
 
       - name: بیلد release APK (تفکیک ABI)
         if: ${{ github.event.inputs.build_type != 'debug' }}
-        run: flutter build apk --release --split-per-abi
+        run: |
+          flutter build apk --release
+          flutter build apk --release --split-per-abi
 
       - name: بیلد debug APK
         if: ${{ github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == 'both' }}
@@ -69,6 +72,7 @@ jobs:
         with:
           name: kartoniya-release-apks
           path: |
+            build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
             build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
             build/app/outputs/flutter-apk/app-x86_64-release.apk
