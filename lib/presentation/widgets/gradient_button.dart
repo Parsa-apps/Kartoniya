@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
@@ -142,7 +143,9 @@ class _GradientButtonState extends State<GradientButton> {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
-            onTapCancel: enabled ? () => setState(() => _pressed = false) : null,
+            onTapCancel: enabled
+                ? () => setState(() => _pressed = false)
+                : null,
             onTapUp: enabled
                 ? (_) {
                     setState(() => _pressed = false);
