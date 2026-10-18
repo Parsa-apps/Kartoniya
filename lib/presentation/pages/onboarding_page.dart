@@ -7,20 +7,22 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
-import '../widgets/kartoniya_mascot.dart';
+import '../widgets/kartoniya_story_banner.dart';
 import 'home_page.dart';
 
 class _OnboardingData {
   const _OnboardingData({
     required this.icon,
-    required this.mascot,
+    required this.scene,
+    this.overlayMascot = true,
     required this.title,
     required this.description,
     required this.color,
   });
 
   final IconData icon;
-  final MascotMood mascot;
+  final KartoniyaScene scene;
+  final bool overlayMascot;
   final String title;
   final String description;
   final Color color;
@@ -42,7 +44,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   static const _pages = [
     _OnboardingData(
       icon: Icons.auto_awesome_rounded,
-      mascot: MascotMood.cheering,
+      scene: KartoniyaScene.cloudworld,
       title: 'هر روز یک ماجرای تازه',
       description:
           'کارتون‌های کوتاه و رنگی را براساس علاقه و سن کودک پیدا کنید و همان‌جا تماشا کنید.',
@@ -50,15 +52,16 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     ),
     _OnboardingData(
       icon: Icons.favorite_rounded,
-      mascot: MascotMood.happy,
+      scene: KartoniyaScene.reading,
+      overlayMascot: false,
       title: 'فضایی آرام برای کودک',
       description:
-          'علاقه‌مندی‌ها و ادامهٔ تماشا فقط روی همین دستگاه ذخیره می‌شوند؛ بدون حساب کاربری و ردیابی.',
+          'علاقه‌مندی‌ها و ادامهٔ تماشا فقط روی همین دستگاه ذخیره می‌شوند؛ در خود برنامه حساب کاربری ساخته نمی‌شود.',
       color: AppColors.pink,
     ),
     _OnboardingData(
       icon: Icons.family_restroom_rounded,
-      mascot: MascotMood.confused,
+      scene: KartoniyaScene.twilight,
       title: 'کنترل در دست والدین',
       description:
           'تنظیمات مهم با یک پرسش ریاضی تصادفی محافظت می‌شود تا کودک با خیال راحت تماشا کند.',
@@ -238,61 +241,74 @@ class _OnboardingHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 220,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 190,
-            height: 190,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.lerp(item.color, Colors.white, .5)!,
-                  item.color,
-                ],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: item.color.withOpacity(.32),
-                  blurRadius: 40,
-                  offset: const Offset(0, 18),
+      height: 238,
+      width: double.infinity,
+      child: RepaintBoundary(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                item.scene.assetPath,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.medium,
+                errorBuilder: (context, error, stackTrace) => DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.lerp(item.color, Colors.white, .55)!,
+                        item.color,
+                      ],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-          ),
-          PositionedDirectional(
-            bottom: 34,
-            start: 38,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(.9),
-                shape: BoxShape.circle,
-                boxShadow: AppTheme.softShadow(context),
               ),
-              child: Icon(item.icon, color: item.color, size: 22),
-            ),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: AlignmentDirectional.topStart,
+                    end: AlignmentDirectional.bottomEnd,
+                    colors: [
+                      Colors.white.withOpacity(.16),
+                      item.color.withOpacity(.10),
+                      item.color.withOpacity(.30),
+                    ],
+                  ),
+                ),
+              ),
+              if (item.overlayMascot)
+                const PositionedDirectional(
+                  end: -10,
+                  bottom: -25,
+                  child: PreRenderedFlak(
+                    width: 176,
+                    height: 242,
+                    semanticLabel: 'فِلَک، راهنمای سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
+                  ),
+                ),
+              PositionedDirectional(
+                start: 18,
+                top: 18,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.90),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                    border: Border.all(color: Colors.white),
+                    boxShadow: AppTheme.softShadow(context),
+                  ),
+                  child: Icon(item.icon, color: item.color, size: 24),
+                ),
+              ),
+            ],
           ),
-          // ماسکٔ ابری با حال‌وهوای هر صفحهٔ آن‌بوردینگ.
-          _MoodOverlay(mascot: item.mascot),
-        ],
+        ),
       ),
     );
-  }
-}
-
-/// ماسکٔ وسط با mood همان اسلاید؛ روی دایرهٔ رنگی می‌نشیند.
-class _MoodOverlay extends StatelessWidget {
-  const _MoodOverlay({required this.mascot});
-
-  final MascotMood mascot;
-
-  @override
-  Widget build(BuildContext context) {
-    return KartoniyaMascot(size: 150, mood: mascot, accent: Colors.white24, float: false);
   }
 }

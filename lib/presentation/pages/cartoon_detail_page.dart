@@ -14,6 +14,7 @@ import '../widgets/cartoon_card.dart';
 import '../widgets/favorite_button.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/kartoniya_mascot.dart';
+import '../widgets/kartoniya_story_banner.dart';
 import 'player_page.dart';
 
 /// صفحهٔ جزئیات کارتون با Hero Transition از بنر/کارت انتخاب‌شده.
@@ -86,6 +87,17 @@ class CartoonDetailPage extends ConsumerWidget {
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                  const PositionedDirectional(
+                    start: 16,
+                    bottom: 48,
+                    child: ExcludeSemantics(
+                      child: PreRenderedFlak(
+                        width: 72,
+                        height: 88,
+                        semanticLabel: 'فِلَک در تصویر سه‌بعدی',
                       ),
                     ),
                   ),

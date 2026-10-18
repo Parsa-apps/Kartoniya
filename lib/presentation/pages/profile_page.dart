@@ -10,8 +10,9 @@ import '../../core/utils/fa_digits.dart';
 import '../../data/models/child_profile_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../global_widgets/parental_gate_widget.dart';
-import '../widgets/kartoniya_mascot.dart';
+import '../widgets/kartoniya_story_banner.dart';
 import 'about_us_page.dart';
+import 'privacy_page.dart';
 import 'settings_page.dart';
 
 /// فضای والدین؛ ورود به تنظیمات حساس با قفل والدین محافظت می‌شود.
@@ -35,45 +36,16 @@ class ProfilePage extends ConsumerWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppTheme.pageMargin,
-                  18,
-                  AppTheme.pageMargin,
-                  4,
-                ),
-                child: Row(
-                  children: [
-                    const KartoniyaMascot(
-                      size: 52,
-                      mood: MascotMood.happy,
-                      float: false,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'فضای والدین',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          Text(
-                            'سلام $parentName 👋',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: context.secondaryTextColor,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: 'ویرایش نام والد',
-                      onPressed: () => _editParentName(context, ref, parentName),
-                      icon: const Icon(Icons.edit_outlined),
-                    ),
-                  ],
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+                child: KartoniyaStoryBanner(
+                  scene: KartoniyaScene.twilight,
+                  height: 172,
+                  eyebrow: 'فضای والدین',
+                  title: 'سلام $parentName!',
+                  subtitle: 'کنترل‌های امن و آرام برای خانواده',
+                  actionLabel: 'ویرایش نام',
+                  onAction: () => _editParentName(context, ref, parentName),
+                  semanticLabel: 'فضای والدین، تصویر سه‌بعدی از پیش‌رندرشده',
                 ),
               ),
             ),
@@ -225,36 +197,60 @@ class ProfilePage extends ConsumerWidget {
                   AppTheme.pageMargin,
                   110,
                 ),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.tealSoft.withOpacity(
-                      context.isDarkMode ? .08 : 1,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    onTap: () => pushAppPage<void>(
+                      context,
+                      const PrivacyPage(),
                     ),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                    border: Border.all(
-                      color: AppColors.teal.withOpacity(.25),
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(
-                        Icons.privacy_tip_outlined,
-                        color: AppColors.tealDeep,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'کارتونیا در این نسخه حساب کاربری نمی‌سازد و فقط نام نمایشی، '
-                          'علاقه‌مندی‌ها و ادامهٔ تماشا را روی همین دستگاه نگه می‌دارد. '
-                          'هیچ داده‌ای از کودک ارسال یا ردیابی نمی‌شود.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.tealSoft.withOpacity(
+                          context.isDarkMode ? .10 : 1,
+                        ),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                        border: Border.all(
+                          color: AppColors.teal.withOpacity(.25),
                         ),
                       ),
-                    ],
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.privacy_tip_outlined,
+                            color: AppColors.tealDeep,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'حریم خصوصی و داده‌ها',
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  'تنظیمات روی دستگاه می‌ماند؛ پخش ویدئو به سرویس میزبان متصل می‌شود.',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: context.secondaryTextColor,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 15,
+                            color: AppColors.tealDeep,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

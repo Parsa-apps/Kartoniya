@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
-import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_story_banner.dart';
+import 'privacy_page.dart';
 
-/// صفحهٔ رسمی Parsa Apps؛ هویت سازنده با هالهٔ طلایی سبک و بدون asset سنگین.
+/// صفحهٔ رسمی Parsa Apps با تصویر محیط سه‌بعدی از پیش‌رندرشده.
 /// فقط لینک رسمی پشتیبانی موجود نمایش داده می‌شود و اطلاعات تماس تازه‌ای
 /// ساخته نمی‌شود.
 class AboutUsPage extends StatefulWidget {
@@ -82,37 +84,15 @@ class _AboutUsPageState extends State<AboutUsPage>
               padding: const EdgeInsets.fromLTRB(24, 14, 24, 40),
               child: Column(
                 children: [
-                  StaggeredReveal(
+                  const StaggeredReveal(
                     index: 0,
-                    child: Column(
-                      children: [
-                        _GoldenGlowFrame(
-                          animation: _glowController,
-                          circular: true,
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: KartoniyaLogoMark(
-                              size: MediaQuery.sizeOf(context).width > 480 ? 110 : 92,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 22),
-                        Text(
-                          'کارتونیا',
-                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                                color: context.isDarkMode
-                                    ? AppColors.skyLight
-                                    : AppColors.skyDeep,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'ساختهٔ گروه برنامه‌نویسی Parsa Apps',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
-                        ),
-                      ],
+                    child: KartoniyaStoryBanner(
+                      scene: KartoniyaScene.storybook,
+                      height: 206,
+                      eyebrow: 'آشنایی با کارتونیا',
+                      title: 'قصه‌های خوب، تماشای امن',
+                      subtitle: 'ساختهٔ گروه برنامه‌نویسی Parsa Apps',
+                      semanticLabel: 'فِلَک در باغ داستان کارتونیا؛ تصویر سه‌بعدی از پیش‌رندرشده',
                     ),
                   ),
                   const SizedBox(height: 26),
@@ -206,9 +186,33 @@ class _AboutUsPageState extends State<AboutUsPage>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   StaggeredReveal(
                     index: 3,
+                    child: Card(
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.privacy_tip_outlined,
+                          color: AppColors.teal,
+                        ),
+                        title: const Text('حریم خصوصی و داده‌ها'),
+                        subtitle: const Text(
+                          'ذخیرهٔ محلی و اتصال سرویس پخش، با جزئیات',
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                        ),
+                        onTap: () => pushAppPage<void>(
+                          context,
+                          const PrivacyPage(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  StaggeredReveal(
+                    index: 4,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -236,7 +240,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                               children: [
                                 _ValueChip(
                                   icon: Icons.verified_user_rounded,
-                                  label: 'بی‌تبلیغات و بی‌ردیابی',
+                                  label: 'بدون حساب کاربری',
                                   color: AppColors.teal,
                                 ),
                                 _ValueChip(
@@ -258,11 +262,11 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 22),
                   StaggeredReveal(
-                    index: 4,
+                    index: 5,
                     child: Column(
                       children: [
                         Text(
-                          'نسخهٔ ۱.۲.۰',
+                          'نسخهٔ ۱.۲.۱',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: context.secondaryTextColor,
@@ -330,12 +334,10 @@ class _GoldenGlowFrame extends StatelessWidget {
   const _GoldenGlowFrame({
     required this.animation,
     required this.child,
-    this.circular = false,
   });
 
   final Animation<double> animation;
   final Widget child;
-  final bool circular;
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +345,7 @@ class _GoldenGlowFrame extends StatelessWidget {
       animation: animation,
       builder: (context, _) {
         final value = Curves.easeInOut.transform(animation.value);
-        final radius = circular ? 999.0 : AppTheme.radiusLarge;
+        const radius = AppTheme.radiusLarge;
         return Transform.scale(
           scale: 1 + (value * .014),
           child: Container(
@@ -358,8 +360,7 @@ class _GoldenGlowFrame extends StatelessWidget {
                   AppColors.goldDark,
                 ],
               ),
-              shape: circular ? BoxShape.circle : BoxShape.rectangle,
-              borderRadius: circular ? null : BorderRadius.circular(radius),
+              borderRadius: BorderRadius.circular(radius),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.gold.withOpacity(.22 + (value * .30)),

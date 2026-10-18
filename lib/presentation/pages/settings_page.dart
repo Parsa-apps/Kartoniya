@@ -7,6 +7,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/app_feedback.dart';
+import '../widgets/kartoniya_story_banner.dart';
 
 /// تنظیمات والدین: ظاهر، حرکت، پخش و داده‌های محلی.
 /// رسیدن به این صفحه خودش از قفل والدین می‌گذرد و عملیات حساس
@@ -45,6 +46,18 @@ class SettingsPage extends ConsumerWidget {
               children: [
                 const StaggeredReveal(
                   index: 0,
+                  child: KartoniyaStoryBanner(
+                    scene: KartoniyaScene.cloudworld,
+                    height: 164,
+                    eyebrow: 'تنظیمات خانواده',
+                    title: 'تماشا به سبک خانهٔ شما',
+                    subtitle: 'همه‌چیز از همین دستگاه و در اختیار والدین',
+                    semanticLabel: 'فِلَک در دنیای ابری؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                  ),
+                ),
+                const SizedBox(height: 18),
+                const StaggeredReveal(
+                  index: 1,
                   child: _SectionLabel(label: 'ظاهر برنامه'),
                 ),
                 StaggeredReveal(

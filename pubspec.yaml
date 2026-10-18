@@ -30,6 +30,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - asset/images/flak_3d.webp
+    - asset/images/flak_reading_scene.webp
+    - asset/images/cloudworld_hero.webp
+    - asset/images/storybook_garden.webp
+    - asset/images/twilight_library.webp
   # Vazirmatn (OFL 1.1, see asset/fonts/LICENSE-Vazirmatn.txt) is bundled so the
   # first run works fully offline, cold start avoids a font fetch from the
   # network and the rendering never falls back to a non-Persian fallback font.
