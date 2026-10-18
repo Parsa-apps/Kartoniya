@@ -64,13 +64,15 @@ void main() {
       ),
     );
     final frame = await codec.getNextFrame();
-    final rgba = await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    expect(rgba, isNotNull);
+    final rgbaData =
+        await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    expect(rgbaData, isNotNull);
+    final rgba = rgbaData!;
 
     // برش واقعی آلفا دارد: بخش زیادی از کادر شفاف است، نه پس‌زمینهٔ سفید.
     var transparent = 0;
     var darkNeutralOpaque = 0;
-    for (var i = 0; i < rgba!.lengthInBytes; i += 4) {
+    for (var i = 0; i < rgba.lengthInBytes; i += 4) {
       final a = rgba.getUint8(i + 3);
       if (a < 16) {
         transparent++;
@@ -102,7 +104,7 @@ void main() {
       for (var x = 0; x < width; x++) {
         if (x >= 8 && x < width - 8 && y >= 8 && y < height - 8) continue;
         border++;
-        if (rgba[(y * width + x) * 4 + 3] > 128) borderOpaque++;
+        if (rgba.getUint8((y * width + x) * 4 + 3) > 128) borderOpaque++;
       }
     }
     expect(
