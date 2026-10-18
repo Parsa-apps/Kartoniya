@@ -317,8 +317,7 @@ class _OnboardingHero extends StatelessWidget {
                   child: PreRenderedFlak(
                     width: 176,
                     height: 242,
-                    semanticLabel:
-                        'بلوطی، راهنمای کارتونیا',
+                    semanticLabel: 'بلوطی، راهنمای کارتونیا',
                   ),
                 ),
               PositionedDirectional(

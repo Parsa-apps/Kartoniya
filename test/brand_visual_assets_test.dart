@@ -82,9 +82,8 @@ void main() {
       final r = rgba.getUint8(i);
       final g = rgba.getUint8(i + 1);
       final b = rgba.getUint8(i + 2);
-      final spread =
-          [r, g, b].reduce((x, y) => x > y ? x : y) -
-              [r, g, b].reduce((x, y) => x < y ? x : y);
+      final spread = [r, g, b].reduce((x, y) => x > y ? x : y) -
+          [r, g, b].reduce((x, y) => x < y ? x : y);
       final luminance = (r * 299 + g * 587 + b * 114) ~/ 1000;
       if (spread <= 12 && luminance <= 80) darkNeutralOpaque++;
     }

@@ -52,8 +52,7 @@ class SettingsPage extends ConsumerWidget {
                     eyebrow: 'تنظیمات خانواده',
                     title: 'تماشا به سبک خانهٔ شما',
                     subtitle: 'همه‌چیز از همین دستگاه و در اختیار والدین',
-                    semanticLabel:
-                        'بلوطی در دنیای ابری',
+                    semanticLabel: 'بلوطی در دنیای ابری',
                   ),
                 ),
                 const SizedBox(height: 18),

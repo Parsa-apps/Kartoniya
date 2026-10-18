@@ -96,7 +96,8 @@ abstract final class _Rig {
     152,
     Alignment(-1, .987),
   );
-  static const body = _Part(FandaqAssets.body, 38, 0, 504, 598, Alignment.center);
+  static const body =
+      _Part(FandaqAssets.body, 38, 0, 504, 598, Alignment.center);
   static const leaf = _Part(
     FandaqAssets.leaf,
     273,
@@ -311,7 +312,8 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
   @override
   Widget build(BuildContext context) {
     final width = widget.width ?? widget.size;
-    final height = widget.height ?? widget.size * _Rig.frameHeight / _Rig.frameWidth;
+    final height =
+        widget.height ?? widget.size * _Rig.frameHeight / _Rig.frameWidth;
     final mood = widget.mood;
 
     return Semantics(
@@ -366,8 +368,8 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                     : .05 * math.sin(t * math.pi * 2 + 1.2) - .02;
                 final armWave = waveSwing + tap * .35 - (sleepy ? .22 : 0);
 
-                final armLeft = .045 * math.sin(t * math.pi * 2 + 2.2) +
-                    (sleepy ? .12 : 0);
+                final armLeft =
+                    .045 * math.sin(t * math.pi * 2 + 2.2) + (sleepy ? .12 : 0);
                 final legSwing = .022 * math.sin(t * math.pi * 2 + .9);
 
                 final closing = mood == MascotMood.sleepy ||
@@ -388,9 +390,9 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                             constraints.maxWidth / _Rig.frameWidth,
                             constraints.maxHeight / _Rig.frameHeight,
                           );
-                          final dx = (constraints.maxWidth -
-                                  _Rig.frameWidth * scale) /
-                              2;
+                          final dx =
+                              (constraints.maxWidth - _Rig.frameWidth * scale) /
+                                  2;
                           final dy = (constraints.maxHeight -
                                   _Rig.frameHeight * scale) /
                               2;
@@ -440,8 +442,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                                     children: [
                                       part(_Rig.body),
                                       // چهره‌ها روی بدن و زیر برگ.
-                                      if (closing)
-                                        part(_Rig.eyesClosed),
+                                      if (closing) part(_Rig.eyesClosed),
                                       if (wide) part(_Rig.eyesWow),
                                       if (wide && mood == MascotMood.cheering)
                                         part(_Rig.mouthWow),

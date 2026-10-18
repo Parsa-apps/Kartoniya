@@ -24,7 +24,8 @@ extension KartoniyaSceneAssets on KartoniyaScene {
         KartoniyaScene.storybook => 'asset/images/storybook_garden.webp',
         KartoniyaScene.twilight => 'asset/images/twilight_library.webp',
         KartoniyaScene.reading => 'asset/images/flak_reading_scene.webp',
-        KartoniyaScene.fandaqReading => 'asset/images/fandaq_scene_reading.webp',
+        KartoniyaScene.fandaqReading =>
+          'asset/images/fandaq_scene_reading.webp',
         KartoniyaScene.fandaqNight => 'asset/images/fandaq_scene_night.webp',
       };
 }

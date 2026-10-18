@@ -35,8 +35,7 @@ class PrivacyPage extends StatelessWidget {
                   eyebrow: 'برای والدین، با شفافیت',
                   title: 'اطلاعات خانواده مهم است',
                   subtitle: 'تنظیمات کارتونیا روی دستگاه شما می‌ماند.',
-                  semanticLabel:
-                      'بلوطی در کتابخانهٔ مهتابی',
+                  semanticLabel: 'بلوطی در کتابخانهٔ مهتابی',
                 ),
                 const SizedBox(height: 18),
                 Text(
