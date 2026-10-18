@@ -61,7 +61,7 @@
 | ۵۳ | skeleton loading | shimmer برای کارت/بنر | Shimmer widgets | loading بدون spinner خام باشد | انجام شد |
 | ۵۴ | motion splash | ورود لوگو و background ملایم | splash motion | animation سبک و کوتاه باشد | انجام شد |
 | ۵۵ | هاله طلایی | glow/shimmer لوگو و نام سازنده | GoldenGlowFrame | چرخه ۲٫۴ ثانیه و بدون asset سنگین باشد | انجام شد |
-| ۵۶ | preference کاهش motion | گزینه احترام به Reduce Motion دستگاه | motion setting | animationها در حالت کاهش‌یافته کوتاه شوند | برنامه‌ریزی‌شده |
+| ۵۶ | preference کاهش motion | گزینه احترام به Reduce Motion دستگاه + سوئیچ والدین | motion setting + MotionScope | animationها در حالت کاهش‌یافته کوتاه شوند | انجام شد |
 | ۵۷ | پروفایل player | frame/drop و rebuild player را اندازه بگیر | performance report | روی دستگاه ضعیف افت محسوس نداشته باشد | برنامه‌ریزی‌شده |
 | ۵۸ | layout تبلت | تمام breakpoints را روی تبلت تست کن | responsive matrix | grid و dialog overflow ندهند | برنامه‌ریزی‌شده |
 | ۵۹ | اندازه فونت | textScale 0.8 تا 1.5 را بررسی کن | typography QA | CTA و title قطع نشوند | برنامه‌ریزی‌شده |
@@ -86,8 +86,8 @@
 | ۷۸ | startup profiling | زمان cold start را اندازه بگیر | startup metric | splash سنگین نباشد | برنامه‌ریزی‌شده |
 | ۷۹ | accessibility audit | TalkBack، focus order و contrast | a11y report | navigation اصلی قابل استفاده باشد | برنامه‌ریزی‌شده |
 | ۸۰ | child-safety audit | محتوا، link خارجی و parental flow را بازبینی کن | safety checklist | تایید مسئول محتوا/والد حاصل شود | برنامه‌ریزی‌شده |
-| ۸۱ | Unit test گسترش | providerها، preference و repository API را تست کن | unit suite | منطق حیاتی پوشش داشته باشد | شروع شده |
-| ۸۲ | Widget test | onboarding، search و parental gate را تست کن | widget suite | flowهای کلیدی با test پاس شوند | برنامه‌ریزی‌شده |
+| ۸۱ | Unit test گسترش | providerها، preference و repository API را تست کن | unit suite | منطق حیاتی پوشش داشته باشد | انجام شد (اولیه) |
+| ۸۲ | Widget test | onboarding، favorite، parental gate و مسیر اولین اجرا | widget suite | flowهای کلیدی با test پاس شوند | انجام شد (اولیه) |
 | ۸۳ | تست player واقعی | streamهای معتبر/نامعتبر و resume را دستی تست کن | player test matrix | retry و back بی‌نقص باشند | برنامه‌ریزی‌شده |
 | ۸۴ | حالت خطا | قطع اینترنت، DNS بد و URL منقضی را تست کن | error matrix | پیام مناسب و recovery باشد | برنامه‌ریزی‌شده |
 | ۸۵ | Android matrix | API 21 تا جدیدترین نسخه را بررسی کن | device matrix | نصب و launch روی همه پاس شود | برنامه‌ریزی‌شده |

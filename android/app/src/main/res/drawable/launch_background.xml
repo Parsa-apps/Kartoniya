@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/splash_bg" />
+    <!-- اسپلش بومی: پس‌زمینهٔ آسمانی ملایم با هالهٔ فیروزه‌ای؛ لوگوی واقعی
+         درون خودِ Flutter (SplashPage) با انیمیشن نمایش داده می‌شود تا این
+         لایه سبک و بدون asset سنگین بماند. -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:startColor="#EAF5FF"
+                android:centerColor="#F5FAFE"
+                android:endColor="#E3F6F1"
+                android:type="linear" />
+        </shape>
+    </item>
 </layer-list>

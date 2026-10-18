@@ -8,6 +8,7 @@ import '../../core/services/app_preferences.dart';
 import '../../core/utils/text_normalizer.dart';
 import '../../domain/repositories/cartoon_repository.dart';
 import '../models/cartoon_model.dart';
+import '../models/child_profile_model.dart';
 import '../repositories/local_cartoon_repository.dart';
 
 /// در [main] با نمونهٔ واقعی SharedPreferences override می‌شود.
@@ -41,6 +42,13 @@ final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
   return cartoons.where((cartoon) => cartoon.isNew).toList(growable: false);
 });
 
+final popularCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+  final cartoons = await ref.watch(cartoonsProvider.future);
+  final sorted = [...cartoons]
+    ..sort((a, b) => b.rating.compareTo(a.rating));
+  return List.unmodifiable(sorted);
+});
+
 final selectedCategoryProvider = StateProvider<String?>((ref) => null);
 
 final filteredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
@@ -54,11 +62,27 @@ final filteredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async 
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
+/// امتیاز مرتبط‌بودن برای مرتب‌سازی نتایج جست‌وجو.
+/// هرچه عدد کوچک‌تر، مرتبط‌تر.
+int searchRelevanceScore(CartoonModel cartoon, String normalizedQuery) {
+  final title = normalizeForSearch(cartoon.title);
+  if (title == normalizedQuery) return 0;
+  if (title.startsWith(normalizedQuery)) return 1;
+  if (title.contains(normalizedQuery)) return 2;
+  if (normalizeForSearch(cartoon.category).contains(normalizedQuery)) return 3;
+  if (cartoon.tags.any(
+    (tag) => normalizeForSearch(tag).contains(normalizedQuery),
+  )) {
+    return 4;
+  }
+  return 5;
+}
+
 final searchResultsProvider = FutureProvider<List<CartoonModel>>((ref) async {
   final query = normalizeForSearch(ref.watch(searchQueryProvider));
   if (query.isEmpty) return const <CartoonModel>[];
   final cartoons = await ref.watch(cartoonsProvider.future);
-  return cartoons.where((cartoon) {
+  final matches = cartoons.where((cartoon) {
     final searchableText = <String>[
       cartoon.title,
       cartoon.description,
@@ -66,7 +90,15 @@ final searchResultsProvider = FutureProvider<List<CartoonModel>>((ref) async {
       ...cartoon.tags,
     ].join(' ');
     return normalizeForSearch(searchableText).contains(query);
-  }).toList(growable: false);
+  }).toList();
+  matches.sort((a, b) {
+    final score = searchRelevanceScore(a, query).compareTo(
+      searchRelevanceScore(b, query),
+    );
+    if (score != 0) return score; // امتیاز کمتر یعنی مرتبط‌تر
+    return b.rating.compareTo(a.rating);
+  });
+  return List.unmodifiable(matches);
 });
 
 final favoritesProvider =
@@ -84,6 +116,15 @@ class FavoritesNotifier extends StateNotifier<Set<String>> {
     if (!next.add(cartoonId)) next.remove(cartoonId);
     state = Set<String>.unmodifiable(next);
     unawaited(_preferences.saveFavoriteIds(state));
+  }
+
+  /// شناسه‌های نامعتبر (کارتون حذف‌شده از کاتالوگ) از فهرست و حافظه پاک
+  /// می‌شوند تا شمارنده و UI همیشه با دادهٔ واقعی هم‌خوان بمانند.
+  void pruneTo(Set<String> validIds) {
+    if (state.every(validIds.contains)) return;
+    final next = state.where(validIds.contains).toSet();
+    state = Set<String>.unmodifiable(next);
+    unawaited(_preferences.saveFavoriteIds(next));
   }
 
   Future<void> clear() async {
@@ -122,6 +163,24 @@ class AutoplayNotifier extends StateNotifier<bool> {
   }
 }
 
+/// کاهش حرکت (برای گوشی‌های ضعیف یا کودکان حساس به انیمیشن).
+final reduceMotionProvider =
+    StateNotifierProvider<ReduceMotionNotifier, bool>((ref) {
+  return ReduceMotionNotifier(ref.watch(appPreferencesProvider));
+});
+
+class ReduceMotionNotifier extends StateNotifier<bool> {
+  ReduceMotionNotifier(this._preferences)
+    : super(_preferences.reduceMotionEnabled);
+
+  final AppPreferences _preferences;
+
+  Future<void> setEnabled(bool value) async {
+    state = value;
+    await _preferences.saveReduceMotionEnabled(value);
+  }
+}
+
 final profileNameProvider = StateNotifierProvider<ProfileNameNotifier, String>((ref) {
   return ProfileNameNotifier(ref.watch(appPreferencesProvider));
 });
@@ -135,6 +194,37 @@ class ProfileNameNotifier extends StateNotifier<String> {
     final next = value.trim().isEmpty ? 'والد مهربان' : value.trim();
     state = next;
     await _preferences.saveParentName(next);
+  }
+}
+
+final childProfileProvider =
+    StateNotifierProvider<ChildProfileNotifier, ChildProfileModel>((ref) {
+  return ChildProfileNotifier(ref.watch(appPreferencesProvider));
+});
+
+class ChildProfileNotifier extends StateNotifier<ChildProfileModel> {
+  ChildProfileNotifier(this._preferences)
+    : super(
+        ChildProfileModel(
+          name: _preferences.childProfileName ?? '',
+          avatarIndex: _preferences.childAvatarIndex,
+        ),
+      );
+
+  final AppPreferences _preferences;
+
+  Future<void> rename(String value) async {
+    final next = state.copyWith(name: value.trim());
+    state = next;
+    await _preferences.saveChildProfile(name: next.name);
+  }
+
+  Future<void> setAvatar(int index) async {
+    final next = state.copyWith(
+      avatarIndex: index.clamp(0, ChildProfileModel.avatars.length - 1).toInt(),
+    );
+    state = next;
+    await _preferences.saveChildProfile(avatarIndex: next.avatarIndex);
   }
 }
 
@@ -176,6 +266,16 @@ class WatchHistoryNotifier extends StateNotifier<Map<String, double>> {
     unawaited(_preferences.saveWatchProgress(state));
   }
 
+  /// موقعیت‌های مربوط به قسمت‌های حذف‌شده از کاتالوگ پاک می‌شوند.
+  void pruneTo(Set<String> validEpisodeIds) {
+    if (state.keys.every(validEpisodeIds.contains)) return;
+    final next = Map.fromEntries(
+      state.entries.where((entry) => validEpisodeIds.contains(entry.key)),
+    );
+    state = Map<String, double>.unmodifiable(next);
+    unawaited(_preferences.saveWatchProgress(next));
+  }
+
   Future<void> clear() async {
     state = const <String, double>{};
     await _preferences.clearWatchProgress();
@@ -184,4 +284,41 @@ class WatchHistoryNotifier extends StateNotifier<Map<String, double>> {
 
 final episodeProgressProvider = Provider.family<double, String>((ref, episodeId) {
   return ref.watch(watchHistoryProvider)[episodeId] ?? 0.0;
+});
+
+/// یک آیتم «ادامهٔ تماشا»؛ فقط برای قسمت‌های معتبر کاتالوگ ساخته می‌شود.
+class ContinueWatchingEntry {
+  const ContinueWatchingEntry({
+    required this.cartoon,
+    required this.episode,
+    required this.progress,
+  });
+
+  final CartoonModel cartoon;
+  final EpisodeModel episode;
+  final double progress;
+}
+
+/// ردیف ادامهٔ تماشا در خانه و صفحهٔ جزئیات از همین provider تغذیه می‌شود
+/// تا منطق «درصد واقعی + حذف محتوای نامعتبر» یک‌جا و قابل‌تست بماند.
+final continueWatchingProvider =
+    FutureProvider<List<ContinueWatchingEntry>>((ref) async {
+  final cartoons = await ref.watch(cartoonsProvider.future);
+  final history = ref.watch(watchHistoryProvider);
+  final entries = <ContinueWatchingEntry>[];
+  for (final cartoon in cartoons) {
+    for (final episode in cartoon.episodes) {
+      final amount = history[episode.id];
+      if (amount != null && amount > .01 && amount < .995) {
+        entries.add(
+          ContinueWatchingEntry(
+            cartoon: cartoon,
+            episode: episode,
+            progress: amount,
+          ),
+        );
+      }
+    }
+  }
+  return List.unmodifiable(entries);
 });

@@ -1,0 +1,89 @@
+name: CI Verify
+
+on:
+  push:
+    branches: ["main", "arena/**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      artifacts: write
+    steps:
+      - name: دریافت کدها (Checkout)
+        uses: actions/checkout@v4
+
+      - name: راه‌اندازی جاوا (Java)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: راه‌اندازی فلاتر (Flutter)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          channel: 'stable'
+          cache: true
+
+      - name: نصب کتابخانه‌ها (Pub Get)
+        run: flutter pub get
+
+      - name: تحلیل استاتیک (Analyze)
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-infos 2>&1 | tee analyze.log
+
+      - name: تست‌ها (Test)
+        run: |
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee test.log
+
+      - name: بیلد تطبیق Android (Debug APK)
+        run: flutter build apk --debug
+
+      - name: انتشار فایل APK (Artifact)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kartoniya-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
+
+      - name: گزارش خطا در Summary
+        if: failure()
+        run: |
+          {
+            echo "### لاگ تحلیل/تست"
+            echo '```'
+            tail -n 60 analyze.log 2>/dev/null || true
+            echo '```'
+            echo '```'
+            tail -n 60 test.log 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # همان خطوط را به‌صورت annotation قابل‌خواندن از API منتشر کن
+          if [ -f analyze.log ]; then
+            grep -E "error|warning" analyze.log | head -n 12 | while IFS= read -r line; do
+              clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r')"
+              [ -n "$clean" ] && echo "::error::A| $clean"
+            done
+          else
+            echo "::error::A| analyze.log missing (command failed before output?)"
+          fi
+          if [ -f test.log ]; then
+            {
+              grep -E "^00:[0-9]+ .*\[E\]" test.log | head -n 6
+              grep -A 6 "EXCEPTION CAUGHT" test.log | grep -vE "^--$" | head -n 14
+              grep -E "The following .* thrown|Which:|Expected:|Actual:" test.log | head -n 8
+              grep -E "^  .*kartoniya.*\.dart:[0-9]+" test.log | head -n 6
+              tail -n 2 test.log
+            } | while IFS= read -r line; do
+              clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r' | sed 's/::/!!/g')"
+              [ -n "$clean" ] && echo "::error::T| $clean"
+            done
+          fi

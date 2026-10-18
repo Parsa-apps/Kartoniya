@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// تنظیم‌های System UI در یک نقطه تا صفحهٔ پخش بتواند ایمن به حالت عادی برگردد.
