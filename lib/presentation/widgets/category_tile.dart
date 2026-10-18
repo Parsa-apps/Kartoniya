@@ -6,6 +6,33 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
 import '../../data/models/cartoon_model.dart';
 
+/// آیکون برداری هر دسته.
+///
+/// پیش‌تر مدالیون دسته اموجی سیستم را نشان می‌داد؛ چون شکل اموجی به فونت
+/// دستگاه وابسته است و در همه‌جا یکسان رندر نمی‌شود، به آیکون برداری
+/// Material تغییر کرد. شناسهٔ ناشناخته هم آیکون عمومی می‌گیرد تا هرگز
+/// مربع خالی دیده نشود.
+IconData categoryIcon(CategoryModel category) {
+  switch (category.id) {
+    case 'all':
+      return Icons.auto_awesome_rounded;
+    case 'adventure':
+      return Icons.rocket_launch_rounded;
+    case 'education':
+      return Icons.menu_book_rounded;
+    case 'fun':
+      return Icons.celebration_rounded;
+    case 'art':
+      return Icons.palette_rounded;
+    case 'science':
+      return Icons.science_rounded;
+    case 'music':
+      return Icons.music_note_rounded;
+    default:
+      return Icons.category_rounded;
+  }
+}
+
 /// قرص دستهٔ افقی برای ریل خانه و فیلترهای جست‌وجو.
 ///
 /// حالت انتخاب‌شده با گرادیان دسته و متن سفید مشخص می‌شود؛ حالت عادی یک
@@ -82,9 +109,10 @@ class CategoryPill extends StatelessWidget {
                       : color.withOpacity(.14),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  category.emoji,
-                  style: TextStyle(fontSize: compact ? 12 : 13.5, height: 1),
+                child: Icon(
+                  categoryIcon(category),
+                  size: compact ? 14 : 16,
+                  color: AppColors.deepInk.withOpacity(selected ? .92 : .74),
                 ),
               ),
               const SizedBox(width: 7),
@@ -204,9 +232,10 @@ class CategoryTile extends StatelessWidget {
                             color: Colors.white.withOpacity(.70),
                           ),
                         ),
-                        child: Text(
-                          category.emoji,
-                          style: const TextStyle(fontSize: 19, height: 1),
+                        child: Icon(
+                          categoryIcon(category),
+                          size: 20,
+                          color: AppColors.deepInk.withOpacity(.86),
                         ),
                       ),
                       const Spacer(),

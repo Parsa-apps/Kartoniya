@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartoniya/core/theme/app_theme.dart';
 import 'package:kartoniya/main.dart';
 import 'package:kartoniya/presentation/pages/home_page.dart';
 import 'package:kartoniya/presentation/pages/search_page.dart';
@@ -13,6 +14,7 @@ import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/category_tile.dart';
 import 'package:kartoniya/presentation/widgets/kartoniya_mascot.dart';
 import 'package:kartoniya/presentation/widgets/kartoniya_nav_bar.dart';
+import 'package:kartoniya/presentation/widgets/state_views.dart';
 import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -194,6 +196,7 @@ void main() {
         String name,
         Widget child, {
         Duration advance = Duration.zero,
+        Duration settle = const Duration(milliseconds: 1000),
       }) async {
         final key = GlobalKey();
         await tester.pumpWidget(
@@ -201,6 +204,7 @@ void main() {
             key: key,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
               home: Directionality(
                 textDirection: TextDirection.rtl,
                 child: Container(
@@ -218,6 +222,10 @@ void main() {
             await Future<void>.delayed(const Duration(milliseconds: 200));
           });
           await tester.pump();
+        }
+        // ورودهای پلکانی (StaggeredReveal) با گذر زمان کامل می‌شوند.
+        if (settle > Duration.zero) {
+          await tester.pump(settle);
         }
         if (advance > Duration.zero) {
           await tester.pump(advance);
@@ -263,8 +271,42 @@ void main() {
           height: 220,
           child: KartoniyaMascot(width: 180, height: 220, float: false),
         ),
-        // پنجرهٔ پلک در چرخهٔ ۴٫۶ ثانیه‌ای بین ۸۶٪ و ۹۳٪ است.
+        // پنجرهٔ پلک در چرخهٔ ۴٫۶ ثانیه‌ای بین ۸۶٪ و ۹۳٪ است؛ زمان
+        // ورود صفحه هم باید صفر بماند تا فریم دقیقاً داخل پنجره بیفتد.
         advance: const Duration(milliseconds: 4060),
+        settle: Duration.zero,
+      );
+
+      await captureMascot(
+        '11_state_empty',
+        SizedBox(
+          width: 320,
+          height: 430,
+          child: EmptyStateView(
+            title: 'هنوز چیزی اینجا نیست',
+            message: 'اولین کارتون را باز کن؛ بعد از آن، ادامهٔ تماشا '
+                'و دلخواه‌هایت همین‌جا می‌مانند.',
+            action: FilledButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.explore_rounded),
+              label: const Text('گشتن در کارتون‌ها'),
+            ),
+          ),
+        ),
+      );
+
+      await captureMascot(
+        '12_state_error',
+        SizedBox(
+          width: 320,
+          height: 330,
+          child: ErrorStateView(
+            title: 'فهرست کارتون‌ها باز نشد',
+            message: 'اتصال یا فایل محلی محتوا را بررسی کن؛ دوباره '
+                'تلاش کنیم؟',
+            onRetry: () {},
+          ),
+        ),
       );
 
       expect(Directory(outDir.path).listSync(), isNotEmpty);

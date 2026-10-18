@@ -338,7 +338,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                     : _RailSection(
                         title: 'تازه‌ها',
                         subtitle: 'قصه‌های تازه‌رسیده',
-                        emoji: '✨',
+                        icon: Icons.auto_awesome_rounded,
                         accent: AppColors.gold,
                         cartoons: items,
                         onTap: _openDetail,
@@ -390,7 +390,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                     : _RailSection(
                         title: 'محبوب‌ترین‌ها',
                         subtitle: 'پیشنهاد بچه‌ها',
-                        emoji: '⭐',
+                        icon: Icons.local_fire_department_rounded,
                         accent: AppColors.pink,
                         cartoons: items,
                         onTap: _openDetail,
@@ -787,7 +787,7 @@ class _RailSection extends StatelessWidget {
     required this.accent,
     required this.cartoons,
     required this.onTap,
-    this.emoji,
+    required this.icon,
     this.actionLabel,
     this.onAction,
   });
@@ -797,7 +797,7 @@ class _RailSection extends StatelessWidget {
   final Color accent;
   final List<CartoonModel> cartoons;
   final ValueChanged<CartoonModel> onTap;
-  final String? emoji;
+  final IconData icon;
   final String? actionLabel;
   final VoidCallback? onAction;
 
@@ -810,7 +810,7 @@ class _RailSection extends StatelessWidget {
         SectionHeader(
           title: title,
           subtitle: subtitle,
-          emoji: emoji,
+          icon: icon,
           accent: accent,
           actionLabel: actionLabel,
           onAction: onAction,
