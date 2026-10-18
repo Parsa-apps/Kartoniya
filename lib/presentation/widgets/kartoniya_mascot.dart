@@ -484,98 +484,103 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                         scaleY: 1 - squash,
                         alignment: Alignment.bottomCenter,
                         child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final scale = math.min(
-                            constraints.maxWidth / _Rig.frameWidth,
-                            constraints.maxHeight / _Rig.frameHeight,
-                          );
-                          final dx =
-                              (constraints.maxWidth - _Rig.frameWidth * scale) /
-                                  2;
-                          final dy = (constraints.maxHeight -
-                                  _Rig.frameHeight * scale) /
-                              2;
-
-                          Widget part(
-                            _Part spec, {
-                            double angle = 0,
-                            Widget? child,
-                          }) {
-                            final content = child ??
-                                Image.asset(
-                                  spec.asset,
-                                  fit: BoxFit.fill,
-                                  filterQuality: FilterQuality.medium,
-                                  gaplessPlayback: true,
-                                  excludeFromSemantics: true,
-                                );
-                            return Positioned(
-                              left: dx + spec.x * scale,
-                              top: dy + spec.y * scale,
-                              width: spec.width * scale,
-                              height: spec.height * scale,
-                              child: angle == 0
-                                  ? content
-                                  : Transform.rotate(
-                                      angle: angle,
-                                      alignment: spec.pivot,
-                                      child: content,
-                                    ),
+                          builder: (context, constraints) {
+                            final scale = math.min(
+                              constraints.maxWidth / _Rig.frameWidth,
+                              constraints.maxHeight / _Rig.frameHeight,
                             );
-                          }
+                            final dx = (constraints.maxWidth -
+                                    _Rig.frameWidth * scale) /
+                                2;
+                            final dy = (constraints.maxHeight -
+                                    _Rig.frameHeight * scale) /
+                                2;
 
-                          return Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              // پاها و دست‌ها پشت بدن می‌نشینند.
-                              part(_Rig.legLeft, angle: legSwing),
-                              part(_Rig.legRight, angle: -legSwing),
-                              part(_Rig.armLeft, angle: armLeft),
-                              part(_Rig.armWave, angle: armWave),
-                              Transform.rotate(
-                                angle: bodyTilt,
-                                alignment: Alignment.bottomCenter,
-                                child: SizedBox.expand(
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      part(_Rig.body),
-                                      // چهره‌ها روی بدن و زیر برگ؛ ابتدا
-                                      // چهرهٔ حالت، بعد پلک/واکنش روی چشم‌ها.
-                                      if (eyesPatch != null) part(eyesPatch),
-                                      if (mouthPatch != null) part(mouthPatch),
-                                      // پلک آخر از همه می‌آید تا لبهٔ دهان/گونه
-                                      // روی چشم بسته نیفتد.
-                                      if (closing) part(_Rig.eyesClosed),
-                                    ],
+                            Widget part(
+                              _Part spec, {
+                              double angle = 0,
+                              Widget? child,
+                            }) {
+                              final content = child ??
+                                  Image.asset(
+                                    spec.asset,
+                                    fit: BoxFit.fill,
+                                    filterQuality: FilterQuality.medium,
+                                    gaplessPlayback: true,
+                                    excludeFromSemantics: true,
+                                  );
+                              return Positioned(
+                                left: dx + spec.x * scale,
+                                top: dy + spec.y * scale,
+                                width: spec.width * scale,
+                                height: spec.height * scale,
+                                child: angle == 0
+                                    ? content
+                                    : Transform.rotate(
+                                        angle: angle,
+                                        alignment: spec.pivot,
+                                        child: content,
+                                      ),
+                              );
+                            }
+
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                // پاها و دست‌ها پشت بدن می‌نشینند.
+                                part(_Rig.legLeft, angle: legSwing),
+                                part(_Rig.legRight, angle: -legSwing),
+                                part(_Rig.armLeft, angle: armLeft),
+                                part(_Rig.armWave, angle: armWave),
+                                Transform.rotate(
+                                  angle: bodyTilt,
+                                  alignment: Alignment.bottomCenter,
+                                  child: SizedBox.expand(
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        part(_Rig.body),
+                                        // چهره‌ها روی بدن و زیر برگ؛ ابتدا
+                                        // چهرهٔ حالت، بعد پلک/واکنش روی چشم‌ها.
+                                        if (eyesPatch != null) part(eyesPatch),
+                                        if (mouthPatch != null)
+                                          part(mouthPatch),
+                                        // پلک آخر از همه می‌آید تا لبهٔ دهان/گونه
+                                        // روی چشم بسته نیفتد.
+                                        if (closing) part(_Rig.eyesClosed),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              part(_Rig.leaf, angle: leafSwing),
-                              // ——— افکت‌های حالت (بدون فایل تصویری) ———
-                              // خواب: سه «z» کوچک که بالای سر محو می‌شوند.
-                              if (sleepy && _motion && width > 64)
-                                for (var i = 0; i < 3; i++)
-                                  _DozingZ(
-                                    phase: (t + i / 3) % 1,
-                                    left: dx + 120 * scale,
-                                    top: dy + 96 * scale,
-                                    size: (16 * scale + 4).clamp(9.0, 22.0).toDouble(),
-                                    color: AppColors.deepInk,
-                                  ),
-                              // شادی: دو جرقهٔ کوچک اطراف سر.
-                              if (mood == MascotMood.cheering && _motion)
-                                for (var i = 0; i < 2; i++)
-                                  _Twinkle(
-                                    phase: (t * 2 + i * .5) % 1,
-                                    left: dx + (i == 0 ? 96 : 470) * scale,
-                                    top: dy + (i == 0 ? 84 : 200) * scale,
-                                    size: (13 * scale + 3).clamp(8.0, 20.0).toDouble(),
-                                    color: AppColors.gold,
-                                  ),
-                            ],
-                          );
-                        },
+                                part(_Rig.leaf, angle: leafSwing),
+                                // ——— افکت‌های حالت (بدون فایل تصویری) ———
+                                // خواب: سه «z» کوچک که بالای سر محو می‌شوند.
+                                if (sleepy && _motion && width > 64)
+                                  for (var i = 0; i < 3; i++)
+                                    _DozingZ(
+                                      phase: (t + i / 3) % 1,
+                                      left: dx + 120 * scale,
+                                      top: dy + 96 * scale,
+                                      size: (16 * scale + 4)
+                                          .clamp(9.0, 22.0)
+                                          .toDouble(),
+                                      color: AppColors.deepInk,
+                                    ),
+                                // شادی: دو جرقهٔ کوچک اطراف سر.
+                                if (mood == MascotMood.cheering && _motion)
+                                  for (var i = 0; i < 2; i++)
+                                    _Twinkle(
+                                      phase: (t * 2 + i * .5) % 1,
+                                      left: dx + (i == 0 ? 96 : 470) * scale,
+                                      top: dy + (i == 0 ? 84 : 200) * scale,
+                                      size: (13 * scale + 3)
+                                          .clamp(8.0, 20.0)
+                                          .toDouble(),
+                                      color: AppColors.gold,
+                                    ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                     ),
