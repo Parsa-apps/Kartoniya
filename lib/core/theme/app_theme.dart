@@ -37,6 +37,7 @@ abstract final class AppTheme {
       seedColor: AppColors.sky,
       brightness: brightness,
     );
+    final filledColors = AppColors.fillAndText(AppColors.sky);
     final scheme = baseScheme.copyWith(
       primary: AppColors.sky,
       onPrimary: Colors.white,
@@ -179,8 +180,8 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           // همان قاعدهٔ دکمه‌های گرادیانی: پرکننده و متن با هم انتخاب
           // می‌شوند تا کنتراست همیشه ≥۴٫۵:۱ باشد و رنگ برند شاد بماند.
-          backgroundColor: AppColors.fillAndText(scheme.primary).fill,
-          foregroundColor: AppColors.fillAndText(scheme.primary).foreground,
+          backgroundColor: filledColors.fill,
+          foregroundColor: filledColors.foreground,
           minimumSize: const Size(0, 52),
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
           textStyle: textTheme.labelLarge,

@@ -127,6 +127,7 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final coralAction = AppColors.fillAndText(AppColors.coral);
     final motion = context.motion;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -327,12 +328,9 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 12,
                                           ),
-                                          backgroundColor: AppColors
-                                              .fillAndText(AppColors.coral)
-                                              .fill,
-                                          foregroundColor: AppColors
-                                              .fillAndText(AppColors.coral)
-                                              .foreground,
+                                          backgroundColor: coralAction.fill,
+                                          foregroundColor:
+                                              coralAction.foreground,
                                           visualDensity: VisualDensity.compact,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(

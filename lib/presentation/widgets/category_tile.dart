@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
@@ -99,8 +100,11 @@ class CategoryPill extends StatelessWidget {
                   toFaDigits('$count'),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: selected
-                            ? Colors.white.withOpacity(.8)
-                            : color.withOpacity(.9),
+                            ? Colors.white.withOpacity(.86)
+                            : AppColors.readableOn(
+                                context.surfaceColor,
+                                color,
+                              ),
                         fontWeight: FontWeight.w700,
                       ),
                 ),

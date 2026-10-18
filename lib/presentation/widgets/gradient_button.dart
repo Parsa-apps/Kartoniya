@@ -42,7 +42,7 @@ class _GradientButtonState extends State<GradientButton> {
     final requested = widget.gradient ?? AppColors.primaryGradient;
     // رنگ پرکننده و متن با هم انتخاب می‌شوند: روی طلایی/مرجانی متن سرمه‌ای
     // (کنتراست >۷) و روی آبی برند متن سفید با پرکنندهٔ کمی تیره‌تر.
-    final LinearGradient gradient;
+    final Gradient gradient;
     final Color foreground;
     if (requested is LinearGradient) {
       final resolved = AppColors.gradientAndText(requested);

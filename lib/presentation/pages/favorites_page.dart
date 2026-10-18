@@ -67,6 +67,7 @@ class FavoritesPage extends ConsumerWidget {
                   .where((cartoon) => favorites.contains(cartoon.id))
                   .toList(growable: false);
               if (selected.isEmpty) {
+                final pinkAction = AppColors.fillAndText(AppColors.pink);
                 return EmptyStateView(
                   title: 'هنوز چیزی اینجا نیست',
                   message: 'روی قلب هر کارتون بزن تا بعداً سریع‌تر پیدایش کنی.',
@@ -78,9 +79,8 @@ class FavoritesPage extends ConsumerWidget {
                           icon: const Icon(Icons.explore_rounded),
                           label: const Text('گشتن در کارتون‌ها'),
                           style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.fillAndText(AppColors.pink).fill,
-                            foregroundColor:
-                                AppColors.fillAndText(AppColors.pink).foreground,
+                            backgroundColor: pinkAction.fill,
+                            foregroundColor: pinkAction.foreground,
                           ),
                         ),
                 );

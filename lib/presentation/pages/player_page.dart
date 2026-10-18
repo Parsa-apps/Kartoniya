@@ -1030,6 +1030,7 @@ class _NextEpisodeOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final skyAction = AppColors.fillAndText(AppColors.sky);
     return Center(
       child: Container(
         margin: const EdgeInsets.all(24),
@@ -1087,10 +1088,8 @@ class _NextEpisodeOverlay extends StatelessWidget {
                 FilledButton(
                   onPressed: onPlayNow,
                   style: FilledButton.styleFrom(
-                    backgroundColor:
-                        AppColors.fillAndText(AppColors.sky).fill,
-                    foregroundColor:
-                        AppColors.fillAndText(AppColors.sky).foreground,
+                    backgroundColor: skyAction.fill,
+                    foregroundColor: skyAction.foreground,
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                     minimumSize: const Size(0, 38),
                   ),
