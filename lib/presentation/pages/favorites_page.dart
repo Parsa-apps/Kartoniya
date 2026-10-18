@@ -9,6 +9,7 @@ import '../../core/utils/fa_digits.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/app_feedback.dart';
 import '../widgets/cartoon_card.dart';
+import '../widgets/kartoniya_story_banner.dart';
 import '../widgets/shimmer_loader.dart';
 import '../widgets/state_views.dart';
 import 'cartoon_detail_page.dart';
@@ -67,18 +68,10 @@ class FavoritesPage extends ConsumerWidget {
                   onPressed: () => _confirmClear(context, ref),
                   icon: const Icon(Icons.delete_outline_rounded),
                 ),
-              Container(
-                width: 46,
-                height: 46,
-                margin: const EdgeInsetsDirectional.only(start: 4),
-                decoration: BoxDecoration(
-                  gradient: AppColors.warmGradient,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                ),
-                child: const Icon(
-                  Icons.favorite_rounded,
-                  color: Colors.white,
-                ),
+              const PreRenderedFlak(
+                width: 56,
+                height: 62,
+                semanticLabel: 'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده در علاقه‌مندی‌ها',
               ),
             ],
           ),

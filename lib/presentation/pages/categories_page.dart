@@ -11,6 +11,7 @@ import '../../data/models/cartoon_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/cartoon_card.dart';
 import '../widgets/kartoniya_mascot.dart';
+import '../widgets/kartoniya_story_banner.dart';
 import '../widgets/section_header.dart';
 import '../widgets/shimmer_loader.dart';
 import '../widgets/state_views.dart';
@@ -68,6 +69,17 @@ class CategoriesPage extends ConsumerWidget {
                 ),
               ),
             ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 7, 16, 7),
+          child: KartoniyaStoryBanner(
+            scene: KartoniyaScene.storybook,
+            height: 146,
+            eyebrow: 'قصه‌های جورواجور',
+            title: 'کشف قصهٔ بعدی',
+            subtitle: 'آموزش، بازی و هنر',
+            semanticLabel: 'تصویر سه‌بعدی باغ داستان کارتونیا',
           ),
         ),
         Expanded(

@@ -13,6 +13,7 @@ import '../../data/models/cartoon_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/cartoon_card.dart';
 import '../widgets/kartoniya_mascot.dart';
+import '../widgets/kartoniya_story_banner.dart';
 import '../widgets/state_views.dart';
 import 'cartoon_detail_page.dart';
 
@@ -335,17 +336,58 @@ class _SearchSuggestions extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              KartoniyaMascot(size: 52, mood: MascotMood.happy, float: false),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'دنبال چه کارتونی می‌گردی؟ یک دسته را انتخاب کن یا نامش را بنویس.',
-                  style: TextStyle(height: 1.6),
-                ),
+          Container(
+            padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 16, 10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: AlignmentDirectional.centerStart,
+                end: AlignmentDirectional.centerEnd,
+                colors: [
+                  AppColors.sky.withOpacity(context.isDarkMode ? .18 : .12),
+                  context.surfaceColor,
+                ],
               ),
-            ],
+              borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+              border: Border.all(color: AppColors.sky.withOpacity(.18)),
+            ),
+            child: Row(
+              children: [
+                Semantics(
+                  image: true,
+                  label: 'فِلَک هنگام کتاب‌خواندن؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                    child: Image.asset(
+                      KartoniyaScene.reading.assetPath,
+                      width: 82,
+                      height: 78,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.medium,
+                      excludeFromSemantics: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'چی تماشا کنیم؟',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'نام کارتون را بنویس یا از دسته‌ها شروع کن.',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: context.secondaryTextColor,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Text(

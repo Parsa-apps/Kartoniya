@@ -1,0 +1,359 @@
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_theme.dart';
+import 'kartoniya_mascot.dart';
+
+/// Original Kartoniya scene illustrations. These are pre-rendered 3D stills;
+/// they are not a live scene or a 3D model viewer.
+enum KartoniyaScene { cloudworld, storybook, twilight, reading }
+
+extension KartoniyaSceneAssets on KartoniyaScene {
+  String get assetPath => switch (this) {
+        KartoniyaScene.cloudworld => 'asset/images/cloudworld_hero.webp',
+        KartoniyaScene.storybook => 'asset/images/storybook_garden.webp',
+        KartoniyaScene.twilight => 'asset/images/twilight_library.webp',
+        KartoniyaScene.reading => 'asset/images/flak_reading_scene.webp',
+      };
+}
+
+/// Fallback 2D vector version of Felak. The bundled image normally wins; the
+/// fallback keeps a missing asset from becoming a blank brand surface.
+class PreRenderedFlak extends StatelessWidget {
+  const PreRenderedFlak({
+    super.key,
+    this.width,
+    this.height,
+    this.alignment = Alignment.center,
+    this.semanticLabel = 'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+  });
+
+  final double? width;
+  final double? height;
+  final AlignmentGeometry alignment;
+  final String semanticLabel;
+
+  static const assetPath = 'asset/images/flak_3d.webp';
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      image: true,
+      label: semanticLabel,
+      child: Image.asset(
+        assetPath,
+        width: width,
+        height: height,
+        alignment: alignment,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.medium,
+        excludeFromSemantics: true,
+        errorBuilder: (context, error, stackTrace) => const KartoniyaMascot(
+          size: 96,
+          float: false,
+        ),
+      ),
+    );
+  }
+}
+
+/// Layered storybook banner using real bundled art and a light-touch pointer
+/// parallax. No continuously running ticker: movement is driven only by touch
+/// or pointer input, is muted outside the foreground, and disappears under
+/// Reduce Motion.
+class KartoniyaStoryBanner extends StatefulWidget {
+  const KartoniyaStoryBanner({
+    required this.title,
+    required this.subtitle,
+    super.key,
+    this.eyebrow,
+    this.scene = KartoniyaScene.cloudworld,
+    this.height = 194,
+    this.actionLabel,
+    this.onAction,
+    this.showMascot = true,
+    this.semanticLabel,
+  });
+
+  final String title;
+  final String subtitle;
+  final String? eyebrow;
+  final KartoniyaScene scene;
+  final double height;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+  final bool showMascot;
+  final String? semanticLabel;
+
+  @override
+  State<KartoniyaStoryBanner> createState() => _KartoniyaStoryBannerState();
+}
+
+class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
+  Offset _parallax = Offset.zero;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!context.motion.enabled) _parallax = Offset.zero;
+  }
+
+  void _move(PointerEvent event, Size size) {
+    if (!context.motion.enabled || !TickerMode.of(context) ||
+        size.width <= 0 || size.height <= 0) {
+      return;
+    }
+    final target = Offset(
+      (((event.localPosition.dx / size.width) - .5) * 2)
+          .clamp(-1.0, 1.0)
+          .toDouble(),
+      (((event.localPosition.dy / size.height) - .5) * 2)
+          .clamp(-1.0, 1.0)
+          .toDouble(),
+    );
+    if ((target - _parallax).distance < .07) return;
+    setState(() => _parallax = target);
+  }
+
+  void _reset() {
+    if (_parallax == Offset.zero) return;
+    setState(() => _parallax = Offset.zero);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final motion = context.motion;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final double mascotWidth = widget.showMascot
+            ? math.min(widget.height * .79, width * .38).toDouble()
+            : 0.0;
+        final double textEndInset =
+            widget.showMascot ? mascotWidth * .68 + 7 : 14.0;
+
+        return Semantics(
+          container: true,
+          explicitChildNodes: true,
+          label: widget.semanticLabel,
+          child: Listener(
+            onPointerMove: (event) => _move(event, Size(width, widget.height)),
+            onPointerUp: (_) => _reset(),
+            onPointerCancel: (_) => _reset(),
+            child: RepaintBoundary(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: widget.height,
+                  child: Stack(
+                    clipBehavior: Clip.hardEdge,
+                    fit: StackFit.expand,
+                    children: [
+                      IgnorePointer(
+                        child: AnimatedContainer(
+                          duration: motion.dur(AppMotion.quick),
+                          curve: AppMotion.curveStandard,
+                          transform: Matrix4.translationValues(
+                            _parallax.dx * 5,
+                            _parallax.dy * 4,
+                            0,
+                          ),
+                          child: Transform.scale(
+                            scale: 1.06,
+                            child: Image.asset(
+                              widget.scene.assetPath,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.medium,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: AppColors.skyGradient,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      IgnorePointer(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: AlignmentDirectional.centerStart,
+                              end: AlignmentDirectional.centerEnd,
+                              colors: [
+                                Colors.white.withOpacity(.08),
+                                Colors.white.withOpacity(.02),
+                                AppColors.skyDeep.withOpacity(.08),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (widget.showMascot)
+                        PositionedDirectional(
+                          end: -8,
+                          bottom: -math.max(8.0, widget.height * .06).toDouble(),
+                          child: IgnorePointer(
+                            child: AnimatedContainer(
+                              duration: motion.dur(AppMotion.quick),
+                              curve: AppMotion.curveStandard,
+                              transform: Matrix4.translationValues(
+                                -_parallax.dx * 11,
+                                -_parallax.dy * 7,
+                                0,
+                              ),
+                              child: Transform.rotate(
+                                angle: motion.enabled ? _parallax.dx * .035 : 0,
+                                child: PreRenderedFlak(
+                                  width: mascotWidth,
+                                  height: widget.height * .99,
+                                  semanticLabel:
+                                      'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      PositionedDirectional(
+                        start: 12,
+                        end: textEndInset,
+                        top: 12,
+                        bottom: 12,
+                        child: Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: widget.showMascot
+                                  ? math
+                                      .max(150.0, width - textEndInset - 20)
+                                      .toDouble()
+                                  : width - 40,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 11,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(.84),
+                                borderRadius: BorderRadius.circular(
+                                  AppTheme.radiusLarge,
+                                ),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(.78),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.skyDeep.withOpacity(.10),
+                                    blurRadius: 14,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (widget.eyebrow != null) ...[
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.auto_awesome_rounded,
+                                          color: AppColors.coral,
+                                          size: 14,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Flexible(
+                                          child: Text(
+                                            widget.eyebrow!,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelMedium
+                                                ?.copyWith(
+                                                  color: AppColors.skyDeep,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 3),
+                                  ],
+                                  Text(
+                                    widget.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          color: const Color(0xFF18324B),
+                                          height: 1.28,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    widget.subtitle,
+                                    maxLines: widget.actionLabel == null ? 2 : 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: const Color(0xFF425970),
+                                          height: 1.45,
+                                        ),
+                                  ),
+                                  if (widget.actionLabel != null &&
+                                      widget.onAction != null) ...[
+                                    const SizedBox(height: 6),
+                                    SizedBox(
+                                      height: 36,
+                                      child: FilledButton.icon(
+                                        onPressed: widget.onAction,
+                                        style: FilledButton.styleFrom(
+                                          minimumSize: const Size(0, 36),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                          ),
+                                          backgroundColor: AppColors.coral,
+                                          foregroundColor: Colors.white,
+                                          visualDensity: VisualDensity.compact,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              AppTheme.radiusCircular,
+                                            ),
+                                          ),
+                                        ),
+                                        icon: const Icon(
+                                          Icons.arrow_back_rounded,
+                                          size: 17,
+                                        ),
+                                        label: Text(widget.actionLabel!),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

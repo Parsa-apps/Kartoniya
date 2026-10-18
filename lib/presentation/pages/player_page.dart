@@ -16,6 +16,7 @@ import '../../data/providers/cartoons_provider.dart';
 import '../widgets/animated_progress.dart';
 import '../widgets/aparat_player.dart';
 import '../widgets/gradient_button.dart';
+import '../widgets/kartoniya_story_banner.dart';
 
 /// پخش‌کنندهٔ واقعی ویدئو کارتونیا.
 ///
@@ -657,10 +658,10 @@ class _PlayerError extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.play_disabled_rounded,
-                  color: Colors.white,
-                  size: 44,
+                const PreRenderedFlak(
+                  width: 92,
+                  height: 106,
+                  semanticLabel: 'فِلَک در وضعیت خطای پخش؛ تصویر سه‌بعدی از پیش‌رندرشده',
                 ),
                 const SizedBox(height: 13),
                 const Text(

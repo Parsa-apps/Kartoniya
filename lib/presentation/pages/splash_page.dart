@@ -11,7 +11,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/kartoniya_logo.dart';
-import '../widgets/kartoniya_mascot.dart';
+import '../widgets/kartoniya_story_banner.dart';
 import 'home_page.dart';
 import 'onboarding_page.dart';
 
@@ -90,6 +90,35 @@ class _SplashPageState extends ConsumerState<SplashPage>
         child: Stack(
           fit: StackFit.expand,
           children: [
+            Positioned.fill(
+              child: Image.asset(
+                KartoniyaScene.twilight.assetPath,
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+                filterQuality: FilterQuality.medium,
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: context.isDarkMode
+                        ? [
+                            Colors.black.withOpacity(.32),
+                            Colors.black.withOpacity(.48),
+                            Colors.black.withOpacity(.62),
+                          ]
+                        : [
+                            Colors.white.withOpacity(.34),
+                            Colors.white.withOpacity(.54),
+                            Colors.white.withOpacity(.73),
+                          ],
+                  ),
+                ),
+              ),
+            ),
             AnimatedBuilder(
               animation: _drift,
               builder: (context, child) {
@@ -132,7 +161,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
       opacity: CurvedAnimation(parent: _enter, curve: Curves.easeOut),
       child: ScaleTransition(
         scale: CurvedAnimation(parent: _enter, curve: Curves.easeOutBack),
-        child: _SplashContents(still: false, enter: _enter),
+        child: _SplashContents(still: false, enter: _enter, drift: _drift),
       ),
     );
   }
@@ -140,16 +169,38 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
 /// محتوای اسپلش با ورود پلکانی: نشان برند، نام برنامه و سپس «فِلَک».
 class _SplashContents extends StatelessWidget {
-  const _SplashContents({required this.still, this.enter});
+  const _SplashContents({required this.still, this.enter, this.drift});
 
   final bool still;
 
   /// انیمیشن ورود اسپلش؛ با «کاهش حرکت» مقدار آن از ابتدا ۱ است و همهٔ
   /// مراحل بلافاصله در وضعیت نهایی دیده می‌شوند.
   final Animation<double>? enter;
+  final Animation<double>? drift;
 
   @override
   Widget build(BuildContext context) {
+    final character = drift == null
+        ? const PreRenderedFlak(
+            width: 84,
+            height: 92,
+            semanticLabel: 'فِلَک، شخصیت سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
+          )
+        : AnimatedBuilder(
+            animation: drift!,
+            builder: (context, child) => Transform.translate(
+              offset: Offset(
+                0,
+                math.sin(drift!.value * 2 * math.pi) * 4,
+              ),
+              child: child,
+            ),
+            child: const PreRenderedFlak(
+              width: 84,
+              height: 92,
+              semanticLabel: 'فِلَک، شخصیت سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
+            ),
+          );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -176,11 +227,7 @@ class _SplashContents extends StatelessWidget {
               curve: const Interval(.4, .92, curve: AppMotion.curvePop),
             ),
           ),
-          child: const KartoniyaMascot(
-            size: 78,
-            mood: MascotMood.cheering,
-            accent: AppColors.gold,
-          ),
+          child: character,
         ),
         const SizedBox(height: 26),
         _LoadingDots(still: still),

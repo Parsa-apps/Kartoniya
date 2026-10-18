@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import 'kartoniya_mascot.dart';
+import 'kartoniya_story_banner.dart';
 
 /// نمای حالت خالی استاندارد با ماسکٔ رابط و ورود نرم.
 class EmptyStateView extends StatelessWidget {
@@ -33,7 +34,13 @@ class EmptyStateView extends StatelessWidget {
           children: [
             StaggeredReveal(
               index: 0,
-              child: KartoniyaMascot(mood: mascot, size: 118, accent: color),
+              child: mascot == MascotMood.sleepy
+                  ? const PreRenderedFlak(
+                      width: 124,
+                      height: 132,
+                      semanticLabel: 'فِلَک، تصویر سه‌بعدی در حالت انتظار',
+                    )
+                  : KartoniyaMascot(mood: mascot, size: 118, accent: color),
             ),
             const SizedBox(height: 20),
             StaggeredReveal(
@@ -87,11 +94,10 @@ class ErrorStateView extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!compact)
-          const KartoniyaMascot(
-            mood: MascotMood.confused,
-            size: 96,
-            accent: AppColors.coral,
-            float: false,
+          const PreRenderedFlak(
+            width: 104,
+            height: 114,
+            semanticLabel: 'فِلَک، تصویر سه‌بعدی برای وضعیت خطا',
           ),
         if (!compact) const SizedBox(height: 16),
         Text(
