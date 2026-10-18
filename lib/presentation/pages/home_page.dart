@@ -15,6 +15,7 @@ import '../widgets/cartoon_card.dart';
 import '../widgets/category_tile.dart';
 import '../widgets/featured_carousel.dart';
 import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_mascot.dart';
 import '../widgets/kartoniya_nav_bar.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import '../widgets/section_header.dart';
@@ -365,6 +366,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   scene: KartoniyaScene.fandaqNight,
                   height: 172,
                   showMascot: true,
+                  mood: MascotMood.cheering,
                   eyebrow: 'همراه فندوقی',
                   title: childProfile.hasName
                       ? '${childProfile.name}، امروز کجا بریم؟'
@@ -413,6 +415,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   scene: KartoniyaScene.cloudworld,
                   height: 158,
                   showMascot: true,
+                  mood: MascotMood.sleepy,
                   eyebrow: 'وقت خواب',
                   title: 'قصه‌های آرام شب',
                   subtitle: 'فندوقی قصه‌های خیلی آرام را پیشنهاد می‌دهد.',
