@@ -65,7 +65,13 @@ jobs:
             echo "::error::A| analyze.log missing (command failed before output?)"
           fi
           if [ -f test.log ]; then
-            tail -n 120 test.log | while IFS= read -r line; do
+            {
+              grep -E "^00:[0-9]+ .*\[E\]" test.log | head -n 12
+              grep -A 10 "EXCEPTION CAUGHT" test.log | head -n 40
+              grep -E "The following|Which:|Expected:|Actual:|assert" test.log | head -n 25
+              grep -E "^  .*kartoniya.*\.dart:[0-9]+" test.log | head -n 20
+              tail -n 6 test.log
+            } | while IFS= read -r line; do
               clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r' | sed 's/::/!!/g')"
               [ -n "$clean" ] && echo "::error::T| $clean"
             done
