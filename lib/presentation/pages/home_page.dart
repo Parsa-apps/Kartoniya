@@ -617,17 +617,20 @@ class _ChipsLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.pageMargin),
-      itemCount: 4,
-      separatorBuilder: (_, __) => const SizedBox(width: 8),
-      itemBuilder: (_, __) => Container(
-        width: 96,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
-          borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
+    return SizedBox(
+      height: 46,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: AppTheme.pageMargin),
+        itemCount: 4,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (_, __) => Container(
+          width: 96,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceVariant,
+            borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
+          ),
         ),
       ),
     );

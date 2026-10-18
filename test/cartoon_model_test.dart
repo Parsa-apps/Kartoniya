@@ -44,6 +44,37 @@ void main() {
     });
   });
 
+  group('Aparat sources', () {
+    EpisodeModel source(String url) => EpisodeModel(
+      id: 'source', title: 'منبع', durationSeconds: 60, videoUrl: url,
+    );
+
+    test('watch page becomes the official embed URL, preserving hash case', () {
+      final value = source('https://www.aparat.com/v/SfomR');
+      expect(value.aparatVideoHash, 'SfomR');
+      expect(value.aparatEmbedUri.toString(),
+          'https://www.aparat.com/video/video/embed/videohash/SfomR/vt/frame');
+      expect(source('https://aparat.com/v/ddy5427').aparatVideoHash, 'ddy5427');
+    });
+
+    test('non-Aparat, malformed and insecure sources cannot enter WebView', () {
+      for (final url in [
+        'https://example.com/video.mp4',
+        'http://www.aparat.com/v/abc',
+        'https://aparat.com.evil.test/v/abc',
+        'https://evil.test@www.aparat.com/v/abc',
+        'https://www.aparat.com:444/v/abc',
+        'https://www.aparat.com/v/abc?redirect=evil',
+        'https://www.aparat.com/v/abc#fragment',
+        'https://www.aparat.com/v/',
+        'https://www.aparat.com/v/abc/extra',
+        'https://www.aparat.com/v/ab%2Fcd',
+      ]) {
+        expect(source(url).aparatEmbedUri, isNull, reason: url);
+      }
+    });
+  });
+
   group('EpisodeModel.durationLabel', () {
     test('دقیق دقیقه‌ای بدون ثانیه نمایش داده می‌شود', () {
       expect(episode(1, 14).durationLabel, '14 دقیقه');

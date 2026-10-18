@@ -14,6 +14,7 @@ import '../../core/utils/full_screen_utils.dart';
 import '../../data/models/cartoon_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/animated_progress.dart';
+import '../widgets/aparat_player.dart';
 import '../widgets/gradient_button.dart';
 
 /// پخش‌کنندهٔ واقعی ویدئو کارتونیا.
@@ -82,7 +83,9 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
     _historyNotifier = ref.read(watchHistoryProvider.notifier);
     WidgetsBinding.instance.addObserver(this);
     unawaited(FullScreenUtils.enablePlayerMode());
-    unawaited(_initializePlayer(_episode));
+    if (_episode.aparatEmbedUri == null) {
+      unawaited(_initializePlayer(_episode));
+    }
   }
 
   @override
@@ -414,6 +417,9 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
 
   @override
   Widget build(BuildContext context) {
+    if (_episode.aparatEmbedUri != null) {
+      return AparatPlayer(cartoon: widget.cartoon, initialEpisode: _episode);
+    }
     final controller = _videoController;
     final ready = controller != null && controller.value.isInitialized;
 

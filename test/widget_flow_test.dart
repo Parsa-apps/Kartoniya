@@ -6,6 +6,7 @@ import 'package:kartoniya/data/repositories/local_cartoon_repository.dart';
 import 'package:kartoniya/main.dart';
 import 'package:kartoniya/presentation/global_widgets/parental_gate_widget.dart';
 import 'package:kartoniya/presentation/pages/onboarding_page.dart';
+import 'package:kartoniya/presentation/pages/home_page.dart';
 import 'package:kartoniya/presentation/pages/settings_page.dart';
 import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/favorite_button.dart';
@@ -51,7 +52,9 @@ void main() {
     }
 
     expect(find.byType(OnboardingPage), findsNothing);
-    expect(find.text('همهٔ کارتون‌ها'), findsOneWidget);
+    // The catalogue heading is lazily built below the phone viewport.
+    expect(find.byType(HomePage), findsOneWidget);
+    expect(tester.takeException(), isNull);
     expect(prefs.getBool('onboarding_completed'), isTrue);
   });
 
@@ -180,7 +183,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(container.read(reduceMotionProvider), isTrue);
-    await Future<void>.delayed(Duration.zero);
+    // Widget tests use a fake clock: pump flushes storage microtasks
+    // without waiting on an unadvanced Timer.
+    await tester.pump();
     expect(prefs.getBool('reduce_motion_enabled'), isTrue);
   });
 }

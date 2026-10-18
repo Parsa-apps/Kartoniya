@@ -50,8 +50,10 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
       context.motion.enabled && widget.cartoons.length > 1;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // MotionScope and MediaQuery are inherited dependencies: read them only
+    // after initState, and restart when reduced-motion settings change.
     _restartAutoAdvance();
   }
 
@@ -119,7 +121,8 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                     animation: _controller,
                     builder: (context, child) {
                       double delta = 0;
-                      if (_controller.hasClients) {
+                      if (_controller.hasClients &&
+                          _controller.position.hasContentDimensions) {
                         final page =
                             _controller.page ?? _controller.initialPage.toDouble();
                         delta = (page - index).clamp(-1.0, 1.0).abs();
