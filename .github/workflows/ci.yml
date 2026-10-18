@@ -38,7 +38,7 @@ jobs:
       - name: تست‌ها (Test)
         run: |
           set -o pipefail
-          flutter test 2>&1 | tee test.log
+          flutter test --reporter expanded 2>&1 | tee test.log
 
       - name: بیلد تطبیق Android (Debug APK)
         run: flutter build apk --debug
@@ -65,8 +65,8 @@ jobs:
             echo "::error::A| analyze.log missing (command failed before output?)"
           fi
           if [ -f test.log ]; then
-            { sed -n '1,20p' test.log; tail -n 70 test.log; } | while IFS= read -r line; do
-              clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r')"
+            tail -n 120 test.log | while IFS= read -r line; do
+              clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r' | sed 's/::/!!/g')"
               [ -n "$clean" ] && echo "::error::T| $clean"
             done
           fi
