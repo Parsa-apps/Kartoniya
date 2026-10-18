@@ -31,6 +31,7 @@ jobs:
     permissions:
       contents: read
       actions: write
+      checks: write
 
     steps:
       - name: دریافت کدها (Checkout)
@@ -54,13 +55,13 @@ jobs:
 
       - name: تست‌ها
         timeout-minutes: 5
-        run: flutter test --reporter expanded
+        run: flutter test --reporter expanded 2>&1 | tee /tmp/flutter-tests.log
 
       - name: بیلد release APK (تفکیک ABI)
         if: ${{ github.event.inputs.build_type != 'debug' }}
         run: |
-          flutter build apk --release
-          flutter build apk --release --split-per-abi
+          flutter build apk --release 2>&1 | tee /tmp/flutter-build.log
+          flutter build apk --release --split-per-abi 2>&1 | tee -a /tmp/flutter-build.log
 
       - name: بیلد debug APK
         if: ${{ github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == 'both' }}
@@ -87,3 +88,31 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Build diagnostics
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, pathlib, subprocess
+          parts = []
+          for name in ('/tmp/flutter-tests.log', '/tmp/flutter-build.log'):
+              path = pathlib.Path(name)
+              if path.exists():
+                  parts.append(path.read_text(errors='replace')[-24000:])
+          payload = {
+              'name': 'Flutter diagnostics',
+              'head_sha': os.environ['GITHUB_SHA'],
+              'status': 'completed',
+              'conclusion': 'neutral',
+              'output': {
+                  'title': 'Flutter test and Android build logs',
+                  'summary': 'Captured build diagnostics (test and build steps remain blocking).',
+                  'text': '```text\n' + '\n'.join(parts) + '\n```',
+              },
+          }
+          subprocess.run(['gh', 'api', '--method', 'POST',
+              'repos/' + os.environ['GITHUB_REPOSITORY'] + '/check-runs',
+              '--input', '-'], input=json.dumps(payload), text=True, check=True)
+          PYTHON
