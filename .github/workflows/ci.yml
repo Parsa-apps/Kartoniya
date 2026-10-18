@@ -65,7 +65,7 @@ jobs:
             echo "::error::A| analyze.log missing (command failed before output?)"
           fi
           if [ -f test.log ]; then
-            sed -n '1,90p' test.log | while IFS= read -r line; do
+            { sed -n '1,20p' test.log; tail -n 70 test.log; } | while IFS= read -r line; do
               clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r')"
               [ -n "$clean" ] && echo "::error::T| $clean"
             done
