@@ -58,6 +58,14 @@ void main() {
     // با همان نسبت حافظهٔ قبلی بالا می‌رود، نه بی‌حساب.
     expect(rigBytes, lessThan(250 * 1024));
 
+    // ——— پرترهٔ برند ———
+    final markData = await rootBundle.load(FandaqAssets.faceMark);
+    expect(markData.lengthInBytes, lessThan(60 * 1024));
+    final mark = await decode(FandaqAssets.faceMark);
+    expect(mark.width, 320);
+    expect(mark.height, 320);
+    mark.dispose();
+
     final stillBytes = await rootBundle.load(FandaqAssets.still);
     final codec = await ui.instantiateImageCodec(
       stillBytes.buffer.asUint8List(

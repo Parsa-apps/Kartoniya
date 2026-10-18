@@ -4,19 +4,22 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
+import 'kartoniya_mascot.dart';
 
 /// نشان برند کارتونیا؛ کاملاً برداری تا در اسپلش، هدر و دربارهٔ ما بدون
 /// asset و با هر تراکم پیکسلی تیز بماند.
 ///
-/// نشان از سه عنصر هویت می‌سازد: ابرِ فِلَک (سفید نرم)، مثلث پخش (مرجانی) و
-/// دو ستارهٔ طلایی. پس‌زمینهٔ نشان یک squircle آسمانی با هایلایت شیشه‌ای است؛
-/// همان زبان بصری در آیکون اپ و بنرها تکرار می‌شود.
+/// نشان اصلی، پرترهٔ «فندوقی» روی یک squircle آسمانی با هایلایت شیشه‌ای
+/// است تا شخصیت، خودِ هویت برند باشد. نسخهٔ برداری قبلی (ابر + مثلث پخش)
+/// با `showFace: false` برای سازگاری و مقایسه حفظ شده است؛ همان زبان بصری
+/// در بنرها و آیکون اپ هم تکرار می‌شود.
 class KartoniyaLogoMark extends StatelessWidget {
   const KartoniyaLogoMark({
     super.key,
     this.size = 56,
     this.gradient,
     this.showOrbit = false,
+    this.showFace = true,
     this.semanticLabel = 'نشان کارتونیا',
   });
 
@@ -25,6 +28,9 @@ class KartoniyaLogoMark extends StatelessWidget {
 
   /// دو نقطهٔ در حال چرخش دور لوگو؛ فقط در اسپلش/هالهٔ برند استفاده شود.
   final bool showOrbit;
+
+  /// پرترهٔ فندوقی داخل کاشی؛ پیش‌فرض روشن است.
+  final bool showFace;
   final String semanticLabel;
 
   @override
@@ -53,8 +59,24 @@ class KartoniyaLogoMark extends StatelessWidget {
                   gradient: paintGradient,
                   corner: size * .3,
                   detail: size >= 44,
+                  glyph: !showFace,
                 ),
               ),
+              if (showFace)
+                Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(size * .3),
+                    child: Image.asset(
+                      FandaqAssets.faceMark,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.medium,
+                      excludeFromSemantics: true,
+                      cacheWidth: math.max(64, (size * 3).round()),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -68,6 +90,7 @@ class _LogoPainter extends CustomPainter {
     required this.gradient,
     required this.corner,
     required this.detail,
+    this.glyph = true,
   });
 
   final Gradient gradient;
@@ -75,6 +98,9 @@ class _LogoPainter extends CustomPainter {
 
   /// ستاره‌ها و هایلایت‌های ریز فقط در اندازه‌های خوانا رسم می‌شوند.
   final bool detail;
+
+  /// وقتی پرترهٔ فندوقی روی کاشی است، ابر و مثلث پخش رسم نمی‌شوند.
+  final bool glyph;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -122,6 +148,8 @@ class _LogoPainter extends CustomPainter {
         ..strokeWidth = w * .018
         ..color = Colors.white.withOpacity(.20),
     );
+
+    if (!glyph) return;
 
     // ——— ابر فِلَک ———
     final cloud = Path()
@@ -209,7 +237,8 @@ class _LogoPainter extends CustomPainter {
   bool shouldRepaint(_LogoPainter oldDelegate) =>
       oldDelegate.gradient != gradient ||
       oldDelegate.corner != corner ||
-      oldDelegate.detail != detail;
+      oldDelegate.detail != detail ||
+      oldDelegate.glyph != glyph;
 }
 
 /// نشان + نام برند + شعار؛ برای اسپلش و سطوح برندی استفاده می‌شود.

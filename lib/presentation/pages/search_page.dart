@@ -527,9 +527,10 @@ class _SearchLanding extends StatelessWidget {
               runSpacing: 8,
               children: [
                 for (final tag in tags)
+                  // آیکون تکراری روی هر برچسب حذف شد؛ یک آیکون در تیتر
+                  // کافی است و ردیف برچسب‌ها آرام‌تر دیده می‌شود.
                   _SuggestionChip(
                     label: tag,
-                    icon: Icons.auto_awesome_rounded,
                     color: AppColors.violet,
                     onTap: () => onSuggestion(tag),
                   ),
