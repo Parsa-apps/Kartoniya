@@ -29,10 +29,15 @@ abstract final class AppMotion {
 
   /// ماتریس «فشرده‌شدن» سطح: پرسپکتیو بسیار کم و کج‌شدن چند‌درجه‌ای که
   /// حس لمس فیزیکی می‌دهد. فقط تا وقتی انگشت روی سطح است اعمال می‌شود.
-  static Matrix4 pressTilt(double press) => Matrix4.identity()
-    ..setEntry(3, 2, .0011)
-    ..rotateX(.05 * press)
-    ..rotateY(-.035 * press);
+  static Matrix4 pressTilt(double press) {
+    // در حالت رها، ماتریس دقیقاً همانی می‌ماند تا هیچ تبدیل پرسپکتیوی (و
+    // هیچ هزینهٔ رستر) روی سطوح غیرفعال باقی نماند.
+    if (press <= 0) return Matrix4.identity();
+    return Matrix4.identity()
+      ..setEntry(3, 2, .0011)
+      ..rotateX(.05 * press)
+      ..rotateY(-.035 * press);
+  }
 }
 
 /// اطلاعات حرکت برای یک BuildContext.
