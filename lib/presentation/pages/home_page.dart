@@ -362,8 +362,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   2,
                 ),
                 child: KartoniyaStoryBanner(
-                  scene: KartoniyaScene.cloudworld,
-                  height: 164,
+                  scene: KartoniyaScene.fandaqReading,
+                  height: 172,
                   eyebrow: 'همراه فندوقی',
                   title: childProfile.hasName
                       ? '${childProfile.name}، امروز کجا بریم؟'
@@ -395,6 +395,31 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                         onAction: widget.onOpenCategories,
                       ),
                 orElse: () => const _RailLoading(title: 'محبوب‌ترین‌ها'),
+              ),
+            ),
+          ),
+          // ——— پیشنهاد آرام شب ———
+          SliverToBoxAdapter(
+            child: StaggeredReveal(
+              index: 6,
+              offsetY: 14,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.pageMargin,
+                  18,
+                  AppTheme.pageMargin,
+                  2,
+                ),
+                child: KartoniyaStoryBanner(
+                  scene: KartoniyaScene.fandaqNight,
+                  height: 158,
+                  eyebrow: 'وقت خواب',
+                  title: 'قصه‌های آرام شب',
+                  subtitle: 'فندوقی قصه‌های خیلی آرام را پیشنهاد می‌دهد.',
+                  actionLabel: 'قصه‌های شب',
+                  onAction: widget.onOpenCategories,
+                  semanticLabel: 'فندوقی خوابیده روی ابرها',
+                ),
               ),
             ),
           ),

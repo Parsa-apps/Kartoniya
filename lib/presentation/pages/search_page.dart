@@ -600,22 +600,17 @@ class _FelakSearchPrompt extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Semantics(
-              image: true,
-              label: 'فندوقی در حال کتاب‌خواندن',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                child: Image.asset(
-                  KartoniyaScene.reading.assetPath,
-                  width: 82,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  filterQuality: FilterQuality.medium,
-                  excludeFromSemantics: true,
-                  cacheWidth: 246,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const SizedBox(width: 82, height: 80),
-                ),
+            // خود شخصیت (لایه‌ای) به‌جای عکس ثابت: در صفحهٔ جست‌وجو هم
+            // فندوقی زنده و هم‌هویت با بقیهٔ برنامه دیده می‌شود.
+            const SizedBox(
+              width: 82,
+              height: 80,
+              child: KartoniyaMascot(
+                width: 82,
+                height: 92,
+                float: false,
+                greet: true,
+                semanticLabel: 'فندوقی در حال کتاب‌خواندن',
               ),
             ),
             const SizedBox(width: 12),

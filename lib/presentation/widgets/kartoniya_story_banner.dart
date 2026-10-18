@@ -9,7 +9,14 @@ import 'kartoniya_mascot.dart';
 
 /// Original Kartoniya scene illustrations. These are pre-rendered 3D stills;
 /// they are not a live scene or a 3D model viewer.
-enum KartoniyaScene { cloudworld, storybook, twilight, reading }
+enum KartoniyaScene {
+  cloudworld,
+  storybook,
+  twilight,
+  reading,
+  fandaqReading,
+  fandaqNight,
+}
 
 extension KartoniyaSceneAssets on KartoniyaScene {
   String get assetPath => switch (this) {
@@ -17,6 +24,8 @@ extension KartoniyaSceneAssets on KartoniyaScene {
         KartoniyaScene.storybook => 'asset/images/storybook_garden.webp',
         KartoniyaScene.twilight => 'asset/images/twilight_library.webp',
         KartoniyaScene.reading => 'asset/images/flak_reading_scene.webp',
+        KartoniyaScene.fandaqReading => 'asset/images/fandaq_scene_reading.webp',
+        KartoniyaScene.fandaqNight => 'asset/images/fandaq_scene_night.webp',
       };
 }
 

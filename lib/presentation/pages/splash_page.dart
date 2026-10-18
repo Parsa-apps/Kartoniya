@@ -12,7 +12,6 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/kartoniya_logo.dart';
 import '../widgets/kartoniya_mascot.dart';
-import '../widgets/kartoniya_story_banner.dart';
 import 'home_page.dart';
 import 'onboarding_page.dart';
 
@@ -406,7 +405,7 @@ class _CharacterStage extends StatelessWidget {
                 height: height,
                 // ورود نرم (محو + مقیاس) کار خود شخصیت است؛ اینجا فقط
                 // بالا آمدن از لبهٔ ابر اضافه می‌شود تا دو محو روی هم نیفتد.
-                child: child,
+                child: child!,
               ),
             ],
           );

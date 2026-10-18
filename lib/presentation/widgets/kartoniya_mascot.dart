@@ -337,7 +337,6 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                 );
 
                 // ——— نفس و شناوری ———
-                final breathe = math.sin(t * math.pi * 2);
                 final bob = widget.float && _motion
                     ? math.sin(t * math.pi) * height * .012
                     : 0.0;
