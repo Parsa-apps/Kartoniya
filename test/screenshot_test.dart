@@ -69,12 +69,16 @@ void main() {
 
       Future<void> settleImages() async {
         // decode تصاویر asset در تست نیاز به زمان واقعی دارد.
-        for (var i = 0; i < 2; i++) {
+        for (var i = 0; i < 3; i++) {
           await tester.runAsync(() async {
-            await Future<void>.delayed(const Duration(milliseconds: 250));
+            await Future<void>.delayed(const Duration(milliseconds: 220));
           });
           await tester.pump();
         }
+        // ورودهای پلکانی (StaggeredReveal) و محو‌شدن تصاویر با فریم
+        // جلو می‌روند؛ بدون این پمپ، کارت‌ها در فریم صفر (شفاف) ثبت می‌شدند.
+        await tester.pump(const Duration(milliseconds: 900));
+        await tester.pump();
       }
 
       Future<void> capture(String name) async {
@@ -103,7 +107,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 150));
       }
       expect(find.byType(HomePage), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 900));
       await capture('02_home_top');
 
       await tester.drag(
@@ -146,8 +150,8 @@ void main() {
         matching: find.byType(TextField),
       );
       await tester.enterText(field, 'حيوانات');
-      await tester.pump(const Duration(milliseconds: 350));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump(const Duration(milliseconds: 900));
       await capture('07_search_results');
 
       // ——— Detail ———
