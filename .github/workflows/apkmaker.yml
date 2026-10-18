@@ -128,7 +128,10 @@ jobs:
           retention-days: 30
 
       - name: API delivery for restricted clients
-        if: ${{ (inputs.api_delivery || github.ref == 'refs/heads/arena/e2506bbc-kartoniya') && github.event.inputs.build_type != 'debug' }}
+        # کلاینت‌های محدود (بدون دسترسی به دامنهٔ blob/artifact) فایل APK را از
+        # راه API گیت‌هاب می‌گیرند: blob ساخته می‌شود و SHA آن در check-run
+        # «Flutter diagnostics» ثبت می‌شود. برای همهٔ شاخه‌های نشست فعال است.
+        if: ${{ (inputs.api_delivery || startsWith(github.ref, 'refs/heads/arena/')) && github.event.inputs.build_type != 'debug' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
