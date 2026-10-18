@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../data/models/cartoon_model.dart';
+import 'motion_progress_indicator.dart';
 
 /// Official Aparat player. We do not scrape signed CDN URLs or pretend that
 /// native-player seek/history/autoplay controls work with a third-party iframe.
@@ -27,6 +29,7 @@ class _AparatPlayerState extends State<AparatPlayer>
   late EpisodeModel _episode;
   Timer? _timeout;
   bool _loading = true;
+  bool _suspended = false;
   String? _error;
   int _generation = 0;
 
@@ -38,9 +41,10 @@ class _AparatPlayerState extends State<AparatPlayer>
     unawaited(_load(_episode));
   }
 
-  Future<void> _pause() async {
+  Future<void> _pause([WebViewController? target]) async {
+    final controller = target ?? _controller;
     try {
-      await _controller?.runJavaScript(
+      await controller?.runJavaScript(
         'document.querySelectorAll("video,audio").forEach(function(v){v.pause();});',
       );
     } catch (_) {
@@ -50,7 +54,34 @@ class _AparatPlayerState extends State<AparatPlayer>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) unawaited(_pause());
+    if (state == AppLifecycleState.resumed) {
+      if (!_suspended) return;
+      _suspended = false;
+      unawaited(_load(_episode));
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      unawaited(_pause());
+      return;
+    }
+
+    if (_suspended) return;
+    _suspended = true;
+    ++_generation;
+    _timeout?.cancel();
+    final controller = _controller;
+    // Remove the platform view as well as requesting a pause. A cross-origin
+    // media frame may not be script-accessible; destroying its WebView avoids
+    // leaving an invisible embed playing audio in the background.
+    if (mounted) {
+      setState(() {
+        _controller = null;
+        _loading = false;
+        _error = null;
+      });
+    }
+    unawaited(_pause(controller));
   }
 
   Future<void> _load(EpisodeModel episode) async {
@@ -111,8 +142,8 @@ class _AparatPlayerState extends State<AparatPlayer>
     _timeout?.cancel();
     setState(() {
       _loading = false;
-      _error = 'پخش‌کنندهٔ آپارات باز نشد. اینترنت، دسترسی به آپارات و '
-          'به‌روز بودن Android System WebView را بررسی کنید.';
+      _error = 'پخش‌کننده باز نشد. اتصال اینترنت و به‌روز بودن '
+          'Android System WebView را بررسی کنید.';
     });
   }
 
@@ -161,7 +192,7 @@ class _AparatPlayerState extends State<AparatPlayer>
                       controller: controller,
                     ),
                   if (_loading)
-                    const Center(child: CircularProgressIndicator()),
+                    const Center(child: MotionProgressIndicator()),
                   if (_error != null)
                     Center(
                       child: SingleChildScrollView(
@@ -183,16 +214,14 @@ class _AparatPlayerState extends State<AparatPlayer>
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: Text(
-                '${_episode.description}\n'
-                'پخش آنلاین آپارات؛ شروع پخش با لمس ویدیو. '
-                'تبلیغات احتمالی با آپارات است. ادامهٔ تماشا و پخش خودکار '
-                'برنامه در این حالت فعال نیست.',
+                'برای شروع، روی ویدئو بزن. از کنترل‌هایی که خود پخش‌کننده '
+                'نمایش می‌دهد استفاده کن.',
                 textAlign: TextAlign.center,
-                maxLines: 3,
-                style: const TextStyle(color: Colors.white70, fontSize: 11),
+                maxLines: 2,
+                style: TextStyle(color: Colors.white70, fontSize: 11),
               ),
             ),
             SizedBox(
@@ -204,9 +233,16 @@ class _AparatPlayerState extends State<AparatPlayer>
                 itemCount: widget.cartoon.episodes.length,
                 itemBuilder: (context, index) {
                   final episode = widget.cartoon.episodes[index];
+                  final selected = _episode.id == episode.id;
                   return ChoiceChip(
-                    label: Text(episode.title),
-                    selected: _episode.id == episode.id,
+                    label: Text(
+                      episode.title,
+                      style: selected
+                          ? const TextStyle(color: Colors.white)
+                          : null,
+                    ),
+                    selected: selected,
+                    selectedColor: AppColors.skyDeep,
                     onSelected: (_) => unawaited(_load(episode)),
                   );
                 },

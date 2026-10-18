@@ -32,6 +32,31 @@ void main() {
       expect(episodes.any((episode) => episode.videoUrl.contains('bee.mp4')), isFalse);
     });
 
+    test('دادهٔ تأییدنشده به‌عنوان رتبه، ردهٔ سنی یا تازگی نمایش‌پذیر نیست', () async {
+      final cartoons = await LocalCartoonRepository().fetchCartoons();
+      expect(
+        cartoons.every(
+          (cartoon) =>
+              cartoon.rating == null &&
+              (cartoon.ageRange == null || cartoon.ageRange!.isEmpty) &&
+              !cartoon.isNew &&
+              cartoon.episodes.every((episode) => !episode.isNew),
+        ),
+        isTrue,
+      );
+      expect(
+        cartoons.every(
+          (cartoon) =>
+              cartoon.totalDurationSeconds ==
+              cartoon.episodes.fold<int>(
+                0,
+                (sum, episode) => sum + episode.durationSeconds,
+              ),
+        ),
+        isTrue,
+      );
+    });
+
     test('دستهٔ همه در ابتدای فهرست قرار دارد', () async {
       final categories = await LocalCartoonRepository().fetchCategories();
       expect(categories.first.id, 'all');

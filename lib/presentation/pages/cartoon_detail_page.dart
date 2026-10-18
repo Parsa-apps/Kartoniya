@@ -27,9 +27,12 @@ class CartoonDetailPage extends ConsumerWidget {
     final isFavorite = ref.watch(favoritesProvider).contains(cartoon.id);
     final history = ref.watch(watchHistoryProvider);
     final categoryColor = AppColors.categoryColor(cartoon.category);
+    final categoryForeground = AppColors.categoryForeground(
+      cartoon.category,
+      brightness: Theme.of(context).brightness,
+    );
 
     final resume = _resumeTarget(history);
-    final nextEpisode = _nextEpisode(history);
 
     return Scaffold(
       body: CustomScrollView(
@@ -118,29 +121,6 @@ class CartoonDetailPage extends ConsumerWidget {
                                 style: Theme.of(context).textTheme.headlineMedium,
                               ),
                             ),
-                            if (cartoon.isNew)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: AppColors.sunsetGradient,
-                                  borderRadius: BorderRadius.circular(
-                                    AppTheme.radiusCircular,
-                                  ),
-                                ),
-                                child: Text(
-                                  'جدید',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 11,
-                                      ),
-                                ),
-                              ),
                           ],
                         ),
                       ),
@@ -152,25 +132,18 @@ class CartoonDetailPage extends ConsumerWidget {
                           runSpacing: 8,
                           children: [
                             InfoPill(
-                              icon: Icons.star_rounded,
-                              color: AppColors.goldDark,
-                              text: toFaDigits(cartoon.rating.toStringAsFixed(1)),
+                              icon: Icons.category_outlined,
+                              color: categoryForeground,
+                              text: cartoon.category,
                             ),
                             InfoPill(
                               icon: Icons.schedule_rounded,
-                              text: 'هر قسمت ${toFaDigits('${cartoon.duration}')} دقیقه',
+                              text: 'مجموع زمان ${toFaDigits(cartoon.durationLabel)}',
                             ),
-                            if (cartoon.ageRange.trim().isNotEmpty)
-                              InfoPill(
-                                icon: Icons.child_care_rounded,
-                                color: AppColors.secondary,
-                                text: 'سن ${cartoon.ageRange}',
-                              ),
                             InfoPill(
                               icon: Icons.movie_outlined,
-                              color: categoryColor,
-                              text:
-                                  '${toFaDigits('${cartoon.episodeCount}')} قسمت',
+                              color: categoryForeground,
+                              text: '${toFaDigits('${cartoon.episodeCount}')} قسمت',
                             ),
                           ],
                         ),
@@ -196,7 +169,7 @@ class CartoonDetailPage extends ConsumerWidget {
                                   Icon(
                                     Icons.menu_book_rounded,
                                     size: 19,
-                                    color: categoryColor,
+                                    color: categoryForeground,
                                   ),
                                   const SizedBox(width: 7),
                                   Text(
@@ -227,31 +200,15 @@ class CartoonDetailPage extends ConsumerWidget {
                               ? Icons.play_circle_fill_rounded
                               : Icons.play_arrow_rounded,
                           expand: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.lerp(categoryColor, Colors.white, .28)!,
-                              categoryColor,
-                            ],
-                          ),
+                          gradient: AppColors.actionGradient(categoryColor),
                           glowColor: categoryColor,
                           onPressed: () =>
                               _play(context, resume?.episode ?? cartoon.firstEpisode),
                         ),
                       ),
-                      if (nextEpisode != null) ...[
-                        const SizedBox(height: 14),
-                        StaggeredReveal(
-                          index: 4,
-                          child: _NextEpisodeCard(
-                            episode: nextEpisode.episode,
-                            color: categoryColor,
-                            onTap: () => _play(context, nextEpisode.episode),
-                          ),
-                        ),
-                      ],
                       const SizedBox(height: 26),
                       StaggeredReveal(
-                        index: 5,
+                        index: 4,
                         child: Row(
                           children: [
                             Text(
@@ -272,7 +229,7 @@ class CartoonDetailPage extends ConsumerWidget {
                                 toFaDigits('${cartoon.episodeCount}'),
                                 style:
                                     Theme.of(context).textTheme.labelMedium?.copyWith(
-                                          color: categoryColor,
+                                          color: categoryForeground,
                                         ),
                               ),
                             ),
@@ -283,15 +240,17 @@ class CartoonDetailPage extends ConsumerWidget {
                       ...cartoon.episodes.map(
                         (episode) => _EpisodeTile(
                           episode: episode,
-                          color: categoryColor,
-                          progress: history[episode.id] ?? 0.0,
+                          color: categoryForeground,
+                          progress: episode.secureDirectVideoUri == null
+                              ? 0.0
+                              : history[episode.id] ?? 0.0,
                           onTap: () => _play(context, episode),
                         ),
                       ),
                       if (cartoon.tags.isNotEmpty) ...[
                         const SizedBox(height: 10),
                         StaggeredReveal(
-                          index: 6,
+                          index: 5,
                           child: Wrap(
                             spacing: 8,
                             runSpacing: 8,
@@ -318,7 +277,7 @@ class CartoonDetailPage extends ConsumerWidget {
                           SizedBox(width: 10),
                           Flexible(
                             child: Text(
-                              'تماشای این کارتون فقط برای کودکان با اجازهٔ بزرگ‌ترها باشد 🌈',
+                              'رده‌بندی سنی رسمی ثبت نشده؛ بزرگ‌ترها پیش از پخش، محتوا را بررسی کنند.',
                               style: TextStyle(fontSize: 12),
                             ),
                           ),
@@ -342,6 +301,7 @@ class CartoonDetailPage extends ConsumerWidget {
     EpisodeModel? best;
     var bestValue = 0.0;
     for (final episode in cartoon.episodes) {
+      if (episode.secureDirectVideoUri == null) continue;
       final value = history[episode.id] ?? 0.0;
       if (value > .01 && value < .995 && value > bestValue) {
         best = episode;
@@ -350,17 +310,6 @@ class CartoonDetailPage extends ConsumerWidget {
     }
     if (best == null) return null;
     return (episode: best, episodeTitle: best.title);
-  }
-
-  /// معرفی قسمت بعدی؛ اولین قسمتی که هنوز تماشا نشده است.
-  ({EpisodeModel episode})? _nextEpisode(Map<String, double> history) {
-    for (final episode in cartoon.episodes) {
-      final value = history[episode.id] ?? 0.0;
-      if (value <= .01) {
-        return (episode: episode);
-      }
-    }
-    return null;
   }
 
   void _play(BuildContext context, EpisodeModel episode) {
@@ -408,66 +357,6 @@ class _CircleIconButton extends StatelessWidget {
   }
 }
 
-class _NextEpisodeCard extends StatelessWidget {
-  const _NextEpisodeCard({
-    required this.episode,
-    required this.color,
-    required this.onTap,
-  });
-
-  final EpisodeModel episode;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(.08),
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-        border: Border.all(color: color.withOpacity(.25)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: color.withOpacity(.16),
-              borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-            ),
-            child: Icon(Icons.skip_next_rounded, color: color),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'قسمت بعدی',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: color,
-                      ),
-                ),
-                Text(
-                  '${episode.title} · ${episode.durationLabel}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 14,
-                      ),
-                ),
-              ],
-            ),
-          ),
-          TextButton(onPressed: onTap, child: const Text('پخش')),
-        ],
-      ),
-    );
-  }
-}
-
 class _EpisodeTile extends StatelessWidget {
   const _EpisodeTile({
     required this.episode,
@@ -494,84 +383,61 @@ class _EpisodeTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(13),
             child: Row(
-                children: [
-                  ProgressRing(
-                    value: isDone ? 1 : progress,
+              children: [
+                ProgressRing(
+                  value: isDone ? 1 : progress,
+                  color: color,
+                  size: 46,
+                  child: Icon(
+                    hasProgress
+                        ? Icons.play_arrow_rounded
+                        : isDone
+                            ? Icons.check_rounded
+                            : Icons.movie_rounded,
                     color: color,
-                    size: 46,
-                    child: Icon(
-                      hasProgress
-                          ? Icons.play_arrow_rounded
-                          : isDone
-                              ? Icons.check_rounded
-                              : Icons.movie_rounded,
-                      color: color,
-                      size: 22,
-                    ),
+                    size: 22,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                episode.title,
-                                style:
-                                    Theme.of(context).textTheme.titleMedium,
-                              ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        episode.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        toFaDigits(episode.durationLabel),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: context.secondaryTextColor,
                             ),
-                            if (episode.isNew)
-                              Text(
-                                'جدید',
-                                style:
-                                    Theme.of(context).textTheme.labelLarge?.copyWith(
-                                          color: color,
-                                          fontSize: 11,
-                                        ),
-                              ),
-                          ],
+                      ),
+                      if (hasProgress) ...[
+                        const SizedBox(height: 7),
+                        AnimatedProgressBar(
+                          value: progress,
+                          color: color,
+                          height: 4.5,
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          episode.description,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          toFaDigits(episode.durationLabel),
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
-                        ),
-                        if (hasProgress) ...[
-                          const SizedBox(height: 7),
-                          AnimatedProgressBar(
-                            value: progress,
-                            color: color,
-                            height: 4.5,
-                          ),
-                        ],
                       ],
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.play_circle_fill_rounded,
-                    color: color,
-                    size: 26,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.play_circle_fill_rounded,
+                  color: color,
+                  size: 26,
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

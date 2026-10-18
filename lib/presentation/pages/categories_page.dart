@@ -134,7 +134,7 @@ class CategoriesPage extends ConsumerWidget {
                         hasScrollBody: false,
                         child: EmptyStateView(
                           title: 'هنوز چیزی در این دسته نیست',
-                          message: 'این دسته به‌زودی با کارتون‌های تازه پر می‌شود؛ '
+                          message: 'در فهرست فعلی موردی برای این دسته نیست؛ '
                               'یک دستهٔ دیگر را امتحان کن.',
                           mascot: MascotMood.sleepy,
                         ),
@@ -173,7 +173,7 @@ class CategoriesPage extends ConsumerWidget {
                   error: (_, __) => SliverToBoxAdapter(
                     child: ErrorStateView(
                       title: 'کاتالوگ باز نشد',
-                      message: 'اتصال را بررسی کنید و دوباره تلاش کنید.',
+                      message: 'دادهٔ فهرست در دسترس نیست؛ دوباره تلاش کنید.',
                       onRetry: () => ref.invalidate(cartoonsProvider),
                     ),
                   ),
@@ -263,16 +263,7 @@ class _CategoryTile extends StatelessWidget {
           duration: context.motion.dur(AppMotion.quick),
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
-            gradient: selected
-                ? LinearGradient(
-                    colors: [
-                      Color.lerp(color, Colors.white, .22)!,
-                      color,
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                  )
-                : null,
+            gradient: selected ? AppColors.actionGradient(color) : null,
             color: selected ? null : context.surfaceColor,
             borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
             border: Border.all(
@@ -320,7 +311,7 @@ class _CategoryTile extends StatelessWidget {
                     toFaDigits('$count'),
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: selected
-                              ? Colors.white70
+                              ? Colors.white
                               : context.secondaryTextColor,
                           fontSize: 12,
                         ),

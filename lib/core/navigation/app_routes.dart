@@ -21,9 +21,8 @@ Route<T> kartoniyaPageRoute<T>({
         curve: AppMotion.curveEntrance,
         reverseCurve: AppMotion.curveExit,
       );
-      if (fadeOnly || !context.motion.enabled) {
-        return FadeTransition(opacity: curved, child: child);
-      }
+      if (!context.motion.enabled) return child;
+      if (fadeOnly) return FadeTransition(opacity: curved, child: child);
       return FadeTransition(
         opacity: curved,
         child: SlideTransition(

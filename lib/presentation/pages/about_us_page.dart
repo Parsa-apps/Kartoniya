@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
+import '../global_widgets/parental_gate_widget.dart';
 import '../widgets/kartoniya_logo.dart';
+import 'privacy_information_page.dart';
 
 /// صفحهٔ رسمی Parsa Apps؛ هویت سازنده با هالهٔ طلایی سبک و بدون asset سنگین.
 /// فقط لینک رسمی پشتیبانی موجود نمایش داده می‌شود و اطلاعات تماس تازه‌ای
@@ -22,15 +25,31 @@ class _AboutUsPageState extends State<AboutUsPage>
   static const _telegramUri = 'https://t.me/Parsaappsadmin';
 
   late final AnimationController _glowController;
+  late bool _motionEnabled;
 
   @override
   void initState() {
     super.initState();
+    _motionEnabled = !MotionScope.reducedGlobally;
     _glowController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2400),
     );
-    if (context.motionEnabledAtInit) _glowController.repeat(reverse: true);
+    if (_motionEnabled) _glowController.repeat(reverse: true);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final enabled = context.motion.enabled;
+    if (enabled == _motionEnabled) return;
+    _motionEnabled = enabled;
+    if (enabled) {
+      _glowController.repeat(reverse: true);
+    } else {
+      _glowController.stop();
+      _glowController.value = 0;
+    }
   }
 
   @override
@@ -40,15 +59,29 @@ class _AboutUsPageState extends State<AboutUsPage>
   }
 
   Future<void> _openTelegram() async {
-    final opened = await launchUrl(
-      Uri.parse(_telegramUri),
-      mode: LaunchMode.externalApplication,
-    );
-    if (!opened && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('باز کردن تلگرام ممکن نشد.')),
+    try {
+      final opened = await launchUrl(
+        Uri.parse(_telegramUri),
+        mode: LaunchMode.externalApplication,
       );
+      if (!opened && mounted) _showTelegramError();
+    } catch (_) {
+      if (mounted) _showTelegramError();
     }
+  }
+
+  void _showTelegramError() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('باز کردن تلگرام ممکن نشد.')),
+    );
+  }
+
+  Future<void> _confirmAndOpenTelegram() async {
+    final allowed = await showParentalGate(
+      context,
+      reason: 'ارتباط با پشتیبانی',
+    );
+    if (allowed && mounted) await _openTelegram();
   }
 
   @override
@@ -124,7 +157,9 @@ class _AboutUsPageState extends State<AboutUsPage>
                                   'فرشاد پارسا',
                                   style:
                                       Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                            color: AppColors.goldDark,
+                                            color: context.isDarkMode
+                                                ? AppColors.goldLight
+                                                : AppColors.goldDark,
                                           ),
                                 ),
                               ),
@@ -148,7 +183,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                       child: InkWell(
                         onTap: () {
                           HapticFeedback.lightImpact();
-                          _openTelegram();
+                          _confirmAndOpenTelegram();
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -210,9 +245,11 @@ class _AboutUsPageState extends State<AboutUsPage>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'کارتونیا محیطی گرم، ساده و مناسب خانواده برای پیدا کردن '
-                              'و تماشای محتوای کودک است. تنظیمات و فهرست علاقه‌مندی‌ها '
-                              'به‌صورت محلی روی دستگاه نگه‌داری می‌شوند.',
+                              'نام و آواتار نمایشی، تنظیمات، علاقه‌مندی‌ها و پیشرفتِ پخش '
+                              'بومی روی همین دستگاه ذخیره می‌شوند. ویدئوهای فهرست فعلی '
+                              'در میزبان بیرونی باز می‌شوند؛ سیاست داده و تبلیغات آن '
+                              'سرویس جداست. والدین پیش از پخش، محتوا و صفحهٔ میزبان را '
+                              'بررسی کنند.',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: context.secondaryTextColor,
@@ -225,21 +262,30 @@ class _AboutUsPageState extends State<AboutUsPage>
                               runSpacing: 8,
                               children: [
                                 _ValueChip(
-                                  icon: Icons.verified_user_rounded,
-                                  label: 'بی‌تبلیغات و بی‌ردیابی',
+                                  icon: Icons.save_rounded,
+                                  label: 'تنظیمات محلی',
                                   color: AppColors.teal,
+                                ),
+                                _ValueChip(
+                                  icon: Icons.open_in_new_rounded,
+                                  label: 'پخش با میزبان بیرونی',
+                                  color: AppColors.violet,
                                 ),
                                 _ValueChip(
                                   icon: Icons.lock_rounded,
                                   label: 'قفل والدین',
-                                  color: AppColors.violet,
-                                ),
-                                _ValueChip(
-                                  icon: Icons.favorite_rounded,
-                                  label: 'متن متناسب با کودک',
                                   color: AppColors.pink,
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton.icon(
+                              onPressed: () => pushAppPage<void>(
+                                context,
+                                const PrivacyInformationPage(),
+                              ),
+                              icon: const Icon(Icons.privacy_tip_outlined),
+                              label: const Text('جزئیات حریم خصوصی'),
                             ),
                           ],
                         ),
@@ -252,7 +298,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                     child: Column(
                       children: [
                         Text(
-                          'نسخهٔ ۱.۲.۰',
+                          'نسخهٔ ۱.۲.۱ • بیلد ۴',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: context.secondaryTextColor,
@@ -291,6 +337,9 @@ class _ValueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = context.isDarkMode
+        ? color
+        : AppColors.readableOnLightSurface(color);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
@@ -301,12 +350,12 @@ class _ValueChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 15, color: color),
+          Icon(icon, size: 15, color: accent),
           const SizedBox(width: 6),
           Text(
             label,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: color,
+                  color: accent,
                   fontWeight: FontWeight.w700,
                 ),
           ),

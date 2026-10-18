@@ -31,14 +31,18 @@ class CartoonCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isFavorite = ref.watch(favoritesProvider).contains(cartoon.id);
     final categoryColor = AppColors.categoryColor(cartoon.category);
+    final categoryForeground = AppColors.categoryForeground(
+      cartoon.category,
+      brightness: Theme.of(context).brightness,
+    );
     final progress = showProgress
-        ? _maxProgress(ref.watch(watchHistoryProvider))
+        ? cartoon.maxDirectPlaybackProgress(ref.watch(watchHistoryProvider))
         : 0.0;
 
     return Semantics(
       button: true,
-      label: '${cartoon.title}، ${cartoon.category}، امتیاز '
-          '${toFaDigits(cartoon.rating.toStringAsFixed(1))}',
+      label: '${cartoon.title}، ${cartoon.category}، '
+          '${toFaDigits('${cartoon.episodeCount}')} قسمت',
       child: PressableScale(
         onTap: onTap,
         child: Card(
@@ -117,21 +121,21 @@ class CartoonCard extends ConsumerWidget {
                                     .textTheme
                                     .labelLarge
                                     ?.copyWith(
-                                      color: categoryColor,
+                                      color: categoryForeground,
                                       fontSize: 10,
                                     ),
                               ),
                             ),
                           ),
-                          const Spacer(),
-                          const Icon(
-                            Icons.star_rounded,
-                            color: AppColors.gold,
-                            size: 15,
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.video_library_outlined,
+                            color: context.secondaryTextColor,
+                            size: 14,
                           ),
-                          const SizedBox(width: 2),
+                          const SizedBox(width: 3),
                           Text(
-                            toFaDigits(cartoon.rating.toStringAsFixed(1)),
+                            toFaDigits('${cartoon.episodeCount}'),
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge
@@ -148,15 +152,6 @@ class CartoonCard extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  double _maxProgress(Map<String, double> history) {
-    var max = 0.0;
-    for (final episode in cartoon.episodes) {
-      final value = history[episode.id] ?? 0.0;
-      if (value > max) max = value;
-    }
-    return max;
   }
 }
 
@@ -191,7 +186,7 @@ class RowSectionTitle extends StatelessWidget {
   }
 }
 
-/// برچسب‌های اطلاعاتی یکپارچه (امتیاز، مدت، سن، تعداد قسمت).
+/// برچسب اطلاعاتی یکپارچهٔ کارت (تعداد واقعی قسمت‌ها و اطلاعات تأییدشده).
 class InfoPill extends StatelessWidget {
   const InfoPill({
     required this.icon,

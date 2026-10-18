@@ -2,7 +2,7 @@
 
 ## جایگاه فعلی
 
-در شاخهٔ فعلی، پایهٔ محصول تا **فاز ۵۵** پیاده‌سازی شده است: ساختار لایه‌ای، design system، RTL، onboarding، صفحات اصلی، persistence محلی، قفل والدین، player واقعی و motion اصلی وجود دارند. فازهای ۵۶ تا ۱۰۰ برنامهٔ تکمیل، QA و انتشارند. «پیاده‌سازی‌شده» به معنی جایگزین‌شدن با تست release روی دستگاه واقعی نیست؛ آن بخش در فازهای QA باقی مانده است.
+در شاخهٔ فعلی، پایهٔ محصول تا **فاز ۵۶** در کد پیاده‌سازی شده است: ساختار لایه‌ای، design system، RTL، onboarding، صفحات اصلی، persistence محلی، قفل والدین، player و کاهش حرکت وجود دارند. این به معنی تأیید QA روی دستگاه واقعی نیست؛ فازهای QA و انتشار همچنان باز هستند. صفحهٔ «وضعیت خرید» فقط پیش‌نیازها را نشان می‌دهد و paywall/پرداخت واقعی نیست؛ تصمیم‌های فازهای ۶۱ به بعد همچنان بازند.
 
 | فاز | عنوان و هدف کوتاه | Task List | Deliverable | Definition of Done | وضعیت |
 |---:|---|---|---|---|---|
@@ -26,7 +26,7 @@
 | ۱۸ | فرم‌ها | Input و error state فارسی را بساز | Input theme | focus/error خوانا باشد | انجام شد |
 | ۱۹ | stateهای UI | loading، empty و error را استاندارد کن | state components | صفحه‌های اصلی هر سه حالت داشته باشند | انجام شد |
 | ۲۰ | دسترس‌پذیری پایه | semantic label، اندازه لمس و contrast را اعمال کن | a11y baseline | کنترل‌های کلیدی label داشته باشند | انجام شد |
-| ۲۱ | Splash | شروع سبک و مسیر اولیه بساز | SplashPage | پس از زمان کوتاه به مسیر صحیح برود | انجام شد |
+| ۲۱ | Splash | شروع سبک، مسیر اولیه و ردکردن اسپلش | SplashPage | پس از زمان کوتاه به مسیر صحیح برود و دکمهٔ ردکردن کار کند | انجام شد |
 | ۲۲ | Onboarding | ارزش محصول و حریم خصوصی را معرفی کن | OnboardingPage | فقط یک‌بار نمایش داده شود | انجام شد |
 | ۲۳ | App shell | NavigationBar و حفظ state برگه‌ها | HomePage shell | تغییر tab state را از بین نبرد | انجام شد |
 | ۲۴ | Home dashboard | header، banner و بخش‌های کاتالوگ را بساز | Discover tab | featured و همهٔ محتوا نمایش یابد | انجام شد |
@@ -35,9 +35,9 @@
 | ۲۷ | علاقه‌مندی | افزودن/حذف و empty state | FavoritesPage | تغییر کارت فوراً بازتاب یابد | انجام شد |
 | ۲۸ | پروفایل والد | نام محلی و آمار مختصر را بساز | ProfilePage | نام ذخیره و بازخوانی شود | انجام شد |
 | ۲۹ | تنظیمات | تم، autoplay و حذف دادهٔ محلی | SettingsPage | تغییرها پایدار و قابل‌برگشت باشند | انجام شد |
-| ۳۰ | درباره ما | اطلاعات Parsa Apps و تلگرام | AboutUsPage | لینک تلگرام قابل کلیک باشد | انجام شد |
+| ۳۰ | درباره ما | اطلاعات Parsa Apps و پشتیبانی | AboutUsPage | لینک خروجی پس از پرسش والد باز شود | انجام شد |
 | ۳۱ | قرارداد domain | CartoonRepository را تعریف کن | interface | UI مستقیم به data source وصل نباشد | انجام شد |
-| ۳۲ | مدل داده | Cartoon/Episode/Category را مدل‌سازی کن | models | null و metadata نامعتبر نداشته باشیم | انجام شد |
+| ۳۲ | مدل داده | Cartoon/Episode/Category را مدل‌سازی کن | models | metadata تأییدنشده خالی بماند و زمان از قسمت‌ها محاسبه شود | انجام شد |
 | ۳۳ | repository محلی | کاتالوگ محلی قابل تعویض بساز | LocalCartoonRepository | fetch قرارداد را رعایت کند | انجام شد |
 | ۳۴ | composition Riverpod | repository و serviceها را inject کن | providers | source قابل override باشد | انجام شد |
 | ۳۵ | preference service | wrapper واحد برای SharedPreferences | AppPreferences | keyها خارج از UI باشند | انجام شد |
@@ -46,7 +46,7 @@
 | ۳۸ | persistence progress | درصد ادامهٔ تماشا ذخیره کن | WatchHistoryNotifier | مقدار ۰ تا ۱ معتبر باشد | انجام شد |
 | ۳۹ | strategy آفلاین | رفتار کاتالوگ محلی و خطای stream را تعریف کن | offline behavior | UI crash نکند | انجام شد |
 | ۴۰ | API-ready design | محل جایگزینی CMS/API را مشخص کن | repository seam | صفحه‌ها بدون تغییر قابل اتصال باشند | انجام شد |
-| ۴۱ | metadata محتوا | عنوان، سن، تگ و دسته را ثبت کن | sample catalog | هر عنوان metadata کامل داشته باشد | انجام شد |
+| ۴۱ | metadata محتوا | عنوان، دسته و تگ؛ رتبه/ردهٔ سنی فقط با منبع معتبر | sample catalog | اطلاعات ناموجود حدس زده نشود | انجام شد (سنی/رتبه‌ای تأیید نشده) |
 | ۴۲ | مجوز محتوا | منبع نمونه را از محتوای تجاری جدا کن | licensing note | URL نهایی دارای حق پخش باشد | در انتظار محتوا |
 | ۴۳ | مسیر category | Chip خانه به فیلتر دسته وصل شود | category flow | انتخاب کاربر به grid منتقل شود | انجام شد |
 | ۴۴ | نرمال‌سازی فارسی | ي/ی، ك/ک و فاصله را normalize کن | utility + test | جست‌وجوی نمونه پاس شود | انجام شد |
@@ -54,7 +54,7 @@
 | ۴۶ | فهرست قسمت‌ها | episode tile و progress را بساز | episode list | هر قسمت CTA مستقل داشته باشد | انجام شد |
 | ۴۷ | player واقعی | video_player و init/error state | PlayerPage | URL HTTPS واقعاً به player داده شود | انجام شد |
 | ۴۸ | ادامهٔ تماشا | seek از درصد ذخیره‌شده | resume logic | بازگشت به قسمت از موقعیت سابق باشد | انجام شد |
-| ۴۹ | autoplay | preference پخش خودکار | autoplay setting | setting در player اعمال شود | انجام شد |
+| ۴۹ | autoplay | preference پخش خودکار فقط برای player بومی | autoplay setting | محدودیت embed به اشتباه نادیده گرفته نشود | انجام شد |
 | ۵۰ | خطای محتوا | retry و پیام امن برای stream خطادار | player error state | URL خطادار crash ندهد | انجام شد |
 | ۵۱ | transition صفحه‌ها | routeهای Material و motion نرم را یکپارچه کن | navigation motion | انتقال ناگهانی/خراب نباشد | انجام شد |
 | ۵۲ | feedback تعامل | ink، ripple و haptic سبک | micro-interactions | tapهای مهم feedback داشته باشند | انجام شد |
@@ -69,7 +69,7 @@
 | ۶۱ | تصمیم monetization | رایگان/اشتراک/خرید را با مالک محصول نهایی کن | monetization ADR | هیچ SDK قبل از تأیید اضافه نشود | برنامه‌ریزی‌شده |
 | ۶۲ | مدل entitlement | اگر پولی شد، free/premium را مدل کن | entitlement model | وضعیت کاربر قابل بازیابی باشد | وابسته به ۶۱ |
 | ۶۳ | gate پرداخت | Parental Gate را پیش از خرید قرار بده | purchase gate | کودک به خرید دسترسی مستقیم نداشته باشد | وابسته به ۶۱ |
-| ۶۴ | صفحه خرید | قیمت، مزیت و خطای خرید را طراحی کن | paywall UI | loading/cancel/error کامل باشد | وابسته به ۶۱ |
+| ۶۴ | صفحه خرید | فقط پس از تصمیم محصول، قیمت و خطاهای فروشگاه | paywall UI | قیمت/مزیت واقعی و حالت‌های loading/cancel/error تأیید شوند | وابسته به ۶۱؛ فعلاً فقط صفحهٔ وضعیتِ بدون خرید داریم |
 | ۶۵ | Poolakey | SDK رسمی و lifecycle امن را اضافه کن | billing integration | اتصال/قطع race condition نداشته باشد | وابسته به ۶۱ |
 | ۶۶ | سناریو خرید | موفق، ناموفق، لغو و restore را تست کن | purchase test report | همهٔ سناریوها پاس شوند | وابسته به ۶۵ |
 | ۶۷ | بازیابی خرید | restore پس از نصب مجدد | restore flow | entitlement درست برگردد | وابسته به ۶۵ |

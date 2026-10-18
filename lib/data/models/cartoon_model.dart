@@ -20,7 +20,7 @@ class EpisodeModel {
 
   /// Only canonical HTTPS Aparat watch pages can enter the embedded player.
   String? get aparatVideoHash {
-    final uri = Uri.tryParse(videoUrl);
+    final uri = Uri.tryParse(videoUrl.trim());
     if (uri == null || uri.scheme != 'https' ||
         !const ['www.aparat.com', 'aparat.com'].contains(uri.host) ||
         uri.userInfo.isNotEmpty || uri.hasPort || uri.hasQuery ||
@@ -32,8 +32,24 @@ class EpisodeModel {
 
   Uri? get aparatEmbedUri {
     final hash = aparatVideoHash;
-    return hash == null ? null : Uri.https('www.aparat.com',
-        '/video/video/embed/videohash/$hash/vt/frame');
+    return hash == null
+        ? null
+        : Uri.https('www.aparat.com', '/video/video/embed/videohash/$hash/vt/frame');
+  }
+
+  /// Only secure, non-Aparat HTTPS URLs may enter the native-player path.
+  Uri? get secureDirectVideoUri {
+    final uri = Uri.tryParse(videoUrl.trim());
+    if (uri == null) return null;
+    final isAparatHost =
+        uri.host == 'aparat.com' || uri.host.endsWith('.aparat.com');
+    if (uri.scheme != 'https' ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty ||
+        isAparatHost) {
+      return null;
+    }
+    return uri;
   }
 
   String get durationLabel {
@@ -51,12 +67,11 @@ class CartoonModel {
     required this.title,
     required this.description,
     required this.category,
-    required this.duration,
-    required this.rating,
-    required this.ageRange,
     required this.artworkEmoji,
     required this.artworkColorValue,
     required this.episodes,
+    this.rating,
+    this.ageRange,
     this.isNew = false,
     this.isFeatured = false,
     this.tags = const [],
@@ -66,26 +81,53 @@ class CartoonModel {
   final String title;
   final String description;
   final String category;
-  final int duration;
-  final double rating;
-  final String ageRange;
+
+  /// Null unless the rating has a verified source; never inferred locally.
+  final double? rating;
+
+  /// Null until an age suitability review is confirmed.
+  final String? ageRange;
   final String artworkEmoji;
   final int artworkColorValue;
   final List<EpisodeModel> episodes;
   final bool isNew;
+
+  /// An editorial homepage pick, not a popularity or watch-count claim.
   final bool isFeatured;
   final List<String> tags;
 
   Color get artworkColor => Color(artworkColorValue);
   int get episodeCount => episodes.length;
-  String get durationLabel => '$duration دقیقه';
+  int get totalDurationSeconds =>
+      episodes.fold(0, (total, episode) => total + episode.durationSeconds);
+
+  /// بیشترین پیشرفت فقط از قسمت‌هایی می‌آید که واقعاً با پلیر بومی پشتیبانی
+  /// می‌شوند؛ وضعیت embed آپارات از این خلاصهٔ «ادامهٔ تماشا» کنار گذاشته می‌شود.
+  double maxDirectPlaybackProgress(Map<String, double> progressByEpisode) {
+    var maximum = 0.0;
+    for (final episode in episodes) {
+      if (episode.secureDirectVideoUri == null) continue;
+      final progress = progressByEpisode[episode.id] ?? 0.0;
+      if (progress > maximum) maximum = progress;
+    }
+    return maximum;
+  }
+
+  /// مجموع زمان واقعی قسمت‌های فهرست‌شده؛ هر قسمت مستقل از بقیه محاسبه می‌شود.
+  String get durationLabel {
+    final minutes = totalDurationSeconds ~/ 60;
+    final seconds = totalDurationSeconds % 60;
+    return seconds == 0
+        ? '$minutes دقیقه'
+        : '$minutes:${seconds.toString().padLeft(2, '0')} دقیقه';
+  }
+
   EpisodeModel get firstEpisode => episodes.first;
 
   CartoonModel copyWith({
     String? title,
     String? description,
     String? category,
-    int? duration,
     double? rating,
     String? ageRange,
     String? artworkEmoji,
@@ -100,7 +142,6 @@ class CartoonModel {
       title: title ?? this.title,
       description: description ?? this.description,
       category: category ?? this.category,
-      duration: duration ?? this.duration,
       rating: rating ?? this.rating,
       ageRange: ageRange ?? this.ageRange,
       artworkEmoji: artworkEmoji ?? this.artworkEmoji,

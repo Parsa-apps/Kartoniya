@@ -42,13 +42,6 @@ final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
   return cartoons.where((cartoon) => cartoon.isNew).toList(growable: false);
 });
 
-final popularCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
-  final sorted = [...cartoons]
-    ..sort((a, b) => b.rating.compareTo(a.rating));
-  return List.unmodifiable(sorted);
-});
-
 final selectedCategoryProvider = StateProvider<String?>((ref) => null);
 
 final filteredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
@@ -91,12 +84,16 @@ final searchResultsProvider = FutureProvider<List<CartoonModel>>((ref) async {
     ].join(' ');
     return normalizeForSearch(searchableText).contains(query);
   }).toList();
+  final catalogOrder = <String, int>{
+    for (var index = 0; index < cartoons.length; index++)
+      cartoons[index].id: index,
+  };
   matches.sort((a, b) {
     final score = searchRelevanceScore(a, query).compareTo(
       searchRelevanceScore(b, query),
     );
     if (score != 0) return score; // امتیاز کمتر یعنی مرتبط‌تر
-    return b.rating.compareTo(a.rating);
+    return catalogOrder[a.id]!.compareTo(catalogOrder[b.id]!);
   });
   return List.unmodifiable(matches);
 });
@@ -286,7 +283,7 @@ final episodeProgressProvider = Provider.family<double, String>((ref, episodeId)
   return ref.watch(watchHistoryProvider)[episodeId] ?? 0.0;
 });
 
-/// یک آیتم «ادامهٔ تماشا»؛ فقط برای قسمت‌های معتبر کاتالوگ ساخته می‌شود.
+/// یک آیتم «ادامهٔ تماشا»؛ فقط برای URL مستقیم امن با progress واقعی ساخته می‌شود.
 class ContinueWatchingEntry {
   const ContinueWatchingEntry({
     required this.cartoon,
@@ -303,11 +300,12 @@ class ContinueWatchingEntry {
 /// تا منطق «درصد واقعی + حذف محتوای نامعتبر» یک‌جا و قابل‌تست بماند.
 final continueWatchingProvider =
     FutureProvider<List<ContinueWatchingEntry>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
-  final history = ref.watch(watchHistoryProvider);
-  final entries = <ContinueWatchingEntry>[];
+    final history = ref.watch(watchHistoryProvider);
+    final cartoons = await ref.watch(cartoonsProvider.future);
+    final entries = <ContinueWatchingEntry>[];
   for (final cartoon in cartoons) {
     for (final episode in cartoon.episodes) {
+      if (episode.secureDirectVideoUri == null) continue;
       final amount = history[episode.id];
       if (amount != null && amount > .01 && amount < .995) {
         entries.add(

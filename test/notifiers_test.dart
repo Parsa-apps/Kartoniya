@@ -1,20 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartoniya/data/providers/cartoons_provider.dart';
+import 'package:kartoniya/data/models/cartoon_model.dart';
 import 'package:kartoniya/data/models/child_profile_model.dart';
+import 'package:kartoniya/data/providers/cartoons_provider.dart';
+import 'package:kartoniya/domain/repositories/cartoon_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _container([
   Map<String, Object> initialValues = const {},
+  CartoonRepository? repository,
 ]) async {
   SharedPreferences.setMockInitialValues(initialValues);
   final prefs = await SharedPreferences.getInstance();
   final container = ProviderContainer(
-    overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      if (repository != null)
+        cartoonRepositoryProvider.overrideWithValue(repository),
+    ],
   );
   addTearDown(container.dispose);
   return container;
+}
+
+class _TestCartoonRepository implements CartoonRepository {
+  const _TestCartoonRepository(this.cartoons);
+
+  final List<CartoonModel> cartoons;
+
+  @override
+  Future<List<CartoonModel>> fetchCartoons() async => cartoons;
+
+  @override
+  Future<List<CategoryModel>> fetchCategories() async => const <CategoryModel>[];
 }
 
 void main() {
@@ -121,21 +140,51 @@ void main() {
       expect(results.map((c) => c.id), contains('felak'));
     });
 
-    test('مرت‌سازی بر اساس مرتبط‌بودن و امتیاز', () async {
+    test('مرتب‌سازی بر اساس مرتبط‌بودن است و در تساوی ترتیب کاتالوگ می‌ماند', () async {
       final container = await _container();
       container.read(searchQueryProvider.notifier).state = 'آموزشی';
       final results = await container.read(searchResultsProvider.future);
-      expect(results.length, greaterThanOrEqualTo(2));
-      // هر دو آموزشی‌اند و کارتونی با امتیاز بالاتر اول است.
-      expect(results.first.rating, greaterThanOrEqualTo(results.last.rating));
+      expect(results.map((cartoon) => cartoon.id), ['alefba', 'math']);
     });
 
-    test('continueWatching فقط قسمت‌های معتبر و نیمه‌تمام را نشان می‌دهد', () async {
+    test('continueWatching پیشرفت embed را قابل ازسرگیری نشان نمی‌دهد', () async {
       final container = await _container({
         'watch_progress': '{"felak-1":0.5,"felak-99":0.5,"math-1":0.999}',
       });
       final entries = await container.read(continueWatchingProvider.future);
-      expect(entries.map((e) => e.episode.id), ['felak-1']);
+      expect(entries, isEmpty);
+    });
+
+    test('continueWatching فقط پیشرفت URL مستقیم امن را نشان می‌دهد', () async {
+      final cartoon = CartoonModel(
+        id: 'test',
+        title: 'آزمون',
+        description: '',
+        category: 'آموزشی',
+        artworkEmoji: '🧪',
+        artworkColorValue: 0xFFFFFFFF,
+        episodes: const [
+          EpisodeModel(
+            id: 'native-1',
+            title: 'ویدئوی مستقیم',
+            durationSeconds: 60,
+            videoUrl: 'https://cdn.example.test/video.mp4',
+          ),
+          EpisodeModel(
+            id: 'embed-1',
+            title: 'ویدئوی embed',
+            durationSeconds: 60,
+            videoUrl: 'https://www.aparat.com/v/abc123',
+          ),
+        ],
+      );
+      final container = await _container(
+        {'watch_progress': '{"native-1":0.5,"embed-1":0.6}'},
+        _TestCartoonRepository([cartoon]),
+      );
+
+      final entries = await container.read(continueWatchingProvider.future);
+      expect(entries.map((entry) => entry.episode.id), ['native-1']);
     });
   });
 }

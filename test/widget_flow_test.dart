@@ -7,6 +7,8 @@ import 'package:kartoniya/main.dart';
 import 'package:kartoniya/presentation/global_widgets/parental_gate_widget.dart';
 import 'package:kartoniya/presentation/pages/onboarding_page.dart';
 import 'package:kartoniya/presentation/pages/home_page.dart';
+import 'package:kartoniya/presentation/pages/premium_readiness_page.dart';
+import 'package:kartoniya/presentation/pages/privacy_information_page.dart';
 import 'package:kartoniya/presentation/pages/settings_page.dart';
 import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/favorite_button.dart';
@@ -38,9 +40,9 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('دنیای شاد و امن کودکان'), findsOneWidget);
+    expect(find.text('قصه‌ها اینجا شروع می‌شوند'), findsOneWidget);
 
-    // اسپلش پس از ~۱٫۵ ثانیه جای خود را به آن‌بوردینگ می‌دهد.
+    // اسپلش کوتاه و قابل ردکردن است؛ در این جریان، زمان‌سنج خودکار آن را رد می‌کند.
     await tester.pump(const Duration(milliseconds: 1700));
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('رد کردن'), findsOneWidget);
@@ -57,6 +59,49 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(prefs.getBool('onboarding_completed'), isTrue);
   });
+
+  testWidgets('اسپلش با دکمهٔ ردکردن سریع به آن‌بوردینگ می‌رود', (tester) async {
+    usePhone(tester);
+    final prefs = await initPrefs();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: const KartoniyaApp(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('قصه‌ها اینجا شروع می‌شوند'), findsOneWidget);
+    await tester.tap(find.text('رد کردن'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 450));
+
+    expect(find.byType(OnboardingPage), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'آن‌بوردینگ با بزرگ‌نمایی متن قابل پیمایش می‌ماند',
+    (tester) async {
+      usePhone(tester);
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: const OnboardingPage(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      expect(find.text('ماجرای بعدی را پیدا کن'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('قلب کارت، علاقه‌مندی را ذخیره می‌کند', (tester) async {
     usePhone(tester);
@@ -91,6 +136,36 @@ void main() {
     await tester.pump(const Duration(milliseconds: 700));
 
     expect(prefs.getStringList('favorite_cartoon_ids'), contains(cartoon.id));
+  });
+
+  testWidgets('صفحهٔ وضعیت خرید قیمت یا تراکنش ساختگی ندارد', (tester) async {
+    usePhone(tester);
+    await tester.pumpWidget(
+      const MaterialApp(home: PremiumReadinessPage()),
+    );
+    await tester.pump();
+
+    expect(find.text('خرید هنوز فعال نیست'), findsOneWidget);
+    expect(find.text('انتخاب فروشگاه مقصد'), findsOneWidget);
+    expect(find.text('اعتبارسنجی و بازیابی'), findsOneWidget);
+    expect(find.textContaining('تومان'), findsNothing);
+    expect(find.textContaining('€'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('خلاصهٔ حریم خصوصی تفاوت ذخیرهٔ محلی و میزبان بیرونی را می‌گوید',
+      (tester) async {
+    usePhone(tester);
+    await tester.pumpWidget(
+      const MaterialApp(home: PrivacyInformationPage()),
+    );
+    await tester.pump();
+
+    expect(find.text('حریم خصوصی'), findsOneWidget);
+    expect(find.text('اطلاعات ذخیره‌شده روی دستگاه'), findsOneWidget);
+    expect(find.text('پخش و پیوندهای بیرونی'), findsOneWidget);
+    expect(find.textContaining('جایگزین سیاست حقوقی'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('قفل والدین: پاسخ غلط دیالوگ را باز نگه می‌دارد و '

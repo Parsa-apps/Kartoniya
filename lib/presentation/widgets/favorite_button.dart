@@ -35,10 +35,12 @@ class _FavoriteButtonState extends State<FavoriteButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _burst;
   late final Animation<double> _scale;
+  late bool _motionEnabled;
 
   @override
   void initState() {
     super.initState();
+    _motionEnabled = !MotionScope.reducedGlobally;
     _burst = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 520),
@@ -64,6 +66,18 @@ class _FavoriteButtonState extends State<FavoriteButton>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final enabled = context.motion.enabled;
+    if (enabled == _motionEnabled) return;
+    _motionEnabled = enabled;
+    if (!enabled) {
+      _burst.stop();
+      _burst.value = 0;
+    }
+  }
+
+  @override
   void didUpdateWidget(covariant FavoriteButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!oldWidget.isFavorite && widget.isFavorite && context.motion.enabled) {
@@ -86,21 +100,22 @@ class _FavoriteButtonState extends State<FavoriteButton>
   @override
   Widget build(BuildContext context) {
     final isFav = widget.isFavorite;
+    final heartColor = context.isDarkMode ? AppColors.red : AppColors.redDeep;
     final background = switch (widget.style) {
       FavoriteButtonStyle.glass => isFav
-          ? AppColors.red.withOpacity(.95)
+          ? AppColors.redDeep
           : Colors.white.withOpacity(.92),
       FavoriteButtonStyle.solid => isFav
-          ? AppColors.red
+          ? AppColors.redDeep
           : Theme.of(context).colorScheme.surfaceVariant,
       FavoriteButtonStyle.plain =>
-        isFav ? AppColors.red.withOpacity(.14) : Colors.transparent,
+        isFav ? heartColor.withOpacity(.14) : Colors.transparent,
     };
     final foreground = switch (widget.style) {
-      FavoriteButtonStyle.glass => isFav ? Colors.white : AppColors.red,
+      FavoriteButtonStyle.glass => isFav ? Colors.white : AppColors.redDeep,
       FavoriteButtonStyle.solid =>
         isFav ? Colors.white : context.secondaryTextColor,
-      FavoriteButtonStyle.plain => isFav ? AppColors.red : context.secondaryTextColor,
+      FavoriteButtonStyle.plain => isFav ? heartColor : context.secondaryTextColor,
     };
 
     Widget icon = AnimatedSwitcher(
@@ -133,7 +148,7 @@ class _FavoriteButtonState extends State<FavoriteButton>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.red.withOpacity(.45 * ripple),
+                    color: heartColor.withOpacity(.45 * ripple),
                     width: 2,
                   ),
                 ),

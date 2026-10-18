@@ -8,6 +8,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/kartoniya_mascot.dart';
+import '../widgets/motion_progress_indicator.dart';
 import 'home_page.dart';
 
 class _OnboardingData {
@@ -43,25 +44,25 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     _OnboardingData(
       icon: Icons.auto_awesome_rounded,
       mascot: MascotMood.cheering,
-      title: 'هر روز یک ماجرای تازه',
+      title: 'ماجرای بعدی را پیدا کن',
       description:
-          'کارتون‌های کوتاه و رنگی را براساس علاقه و سن کودک پیدا کنید و همان‌جا تماشا کنید.',
+          'فهرست را براساس دسته‌بندی مرور کن. رده‌بندی سنی رسمی برای همهٔ عنوان‌ها ثبت نشده؛ یک بزرگ‌تر پیش از پخش بررسی کند.',
       color: AppColors.sky,
     ),
     _OnboardingData(
       icon: Icons.favorite_rounded,
       mascot: MascotMood.happy,
-      title: 'فضایی آرام برای کودک',
+      title: 'چیزهای دوست‌داشتنی را نگه دار',
       description:
-          'علاقه‌مندی‌ها و ادامهٔ تماشا فقط روی همین دستگاه ذخیره می‌شوند؛ بدون حساب کاربری و ردیابی.',
+          'علاقه‌مندی‌ها و تنظیمات روی همین دستگاه می‌مانند. پخش ویدئو با آپارات است و سیاست داده و تبلیغات میزبان می‌تواند جدا باشد؛ کنار یک بزرگ‌تر تماشا کن.',
       color: AppColors.pink,
     ),
     _OnboardingData(
       icon: Icons.family_restroom_rounded,
       mascot: MascotMood.confused,
-      title: 'کنترل در دست والدین',
+      title: 'بزرگ‌ترها همراه‌اند',
       description:
-          'تنظیمات مهم با یک پرسش ریاضی تصادفی محافظت می‌شود تا کودک با خیال راحت تماشا کند.',
+          'یک پرسش ریاضی جلوی ورود اتفاقی به بعضی تنظیمات را می‌گیرد؛ این قفل جایگزین نظارت والدین یا امنیت حساب نیست.',
       color: AppColors.teal,
     ),
   ];
@@ -143,28 +144,42 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           ),
                         );
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _OnboardingHero(item: item),
-                            const SizedBox(height: 34),
-                            Text(
-                              item.title,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              item.description,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: context.secondaryTextColor,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(horizontal: 28),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: constraints.maxHeight,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _OnboardingHero(item: item),
+                                  const SizedBox(height: 34),
+                                  Text(
+                                    item.title,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
                                   ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    item.description,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          color: context.secondaryTextColor,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                     );
                   },
@@ -172,7 +187,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Row(
+                child: OverflowBar(
+                  alignment: MainAxisAlignment.spaceBetween,
+                  overflowAlignment: OverflowBarAlignment.end,
+                  overflowSpacing: 8,
                   children: [
                     Row(
                       children: List.generate(_pages.length, (index) {
@@ -192,21 +210,18 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         );
                       }),
                     ),
-                    const Spacer(),
                     FilledButton.icon(
                       style: FilledButton.styleFrom(
-                        backgroundColor: page.color,
+                        backgroundColor: AppColors.actionColor(page.color),
+                        foregroundColor: Colors.white,
                         minimumSize: const Size(150, 54),
                       ),
                       onPressed: _isCompleting ? null : _next,
                       icon: _isCompleting
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
+                          ? const MotionProgressIndicator(
+                              size: 18,
+                              strokeWidth: 2,
+                              color: Colors.white,
                             )
                           : Icon(
                               _currentPage == _pages.length - 1
@@ -274,7 +289,11 @@ class _OnboardingHero extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: AppTheme.softShadow(context),
               ),
-              child: Icon(item.icon, color: item.color, size: 22),
+              child: Icon(
+                item.icon,
+                color: AppColors.readableOnLightSurface(item.color),
+                size: 22,
+              ),
             ),
           ),
           // ماسکٔ ابری با حال‌وهوای هر صفحهٔ آن‌بوردینگ.
@@ -293,6 +312,12 @@ class _MoodOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return KartoniyaMascot(size: 150, mood: mascot, accent: Colors.white24, float: false);
+    return KartoniyaMascot(
+      size: 150,
+      mood: mascot,
+      accent: Colors.white24,
+      float: false,
+      reactToTouch: true,
+    );
   }
 }

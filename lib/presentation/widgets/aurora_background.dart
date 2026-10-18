@@ -28,15 +28,31 @@ class AuroraBackground extends StatefulWidget {
 class _AuroraBackgroundState extends State<AuroraBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late bool _motionEnabled;
 
   @override
   void initState() {
     super.initState();
+    _motionEnabled = !MotionScope.reducedGlobally;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 26),
     );
-    if (context.motionEnabledAtInit) _controller.repeat();
+    if (_motionEnabled) _controller.repeat();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final enabled = context.motion.enabled;
+    if (enabled == _motionEnabled) return;
+    _motionEnabled = enabled;
+    if (enabled) {
+      _controller.repeat();
+    } else {
+      _controller.stop();
+      _controller.value = 0;
+    }
   }
 
   @override

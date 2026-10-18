@@ -90,9 +90,7 @@ class _LogoPainter extends CustomPainter {
     canvas.drawPath(
       play,
       Paint()
-        ..shader = const LinearGradient(
-          colors: [AppColors.coral, AppColors.coralDeep],
-        ).createShader(rect),
+        ..shader = AppColors.actionGradient(AppColors.coral).createShader(rect),
     );
   }
 
@@ -113,16 +111,30 @@ class _LogoOrbits extends StatefulWidget {
 class _LogoOrbitsState extends State<_LogoOrbits>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late bool _motionEnabled;
 
   @override
   void initState() {
     super.initState();
+    _motionEnabled = !MotionScope.reducedGlobally;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 7),
     );
-    if (context.motionEnabledFallback) {
+    if (_motionEnabled) _controller.repeat();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final enabled = context.motion.enabled && TickerMode.of(context);
+    if (enabled == _motionEnabled) return;
+    _motionEnabled = enabled;
+    if (enabled) {
       _controller.repeat();
+    } else {
+      _controller.stop();
+      _controller.value = 0;
     }
   }
 
@@ -160,10 +172,4 @@ class _LogoOrbitsState extends State<_LogoOrbits>
       },
     );
   }
-}
-
-extension on BuildContext {
-  /// در initState نمی‌توان از InheritedWidget خواند؛ flag ایستای MotionScope
-  /// توسط ریشهٔ برنامه نگه‌داشته می‌شود.
-  bool get motionEnabledFallback => !MotionScope.reducedGlobally;
 }

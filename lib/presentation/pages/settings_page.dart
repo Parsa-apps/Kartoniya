@@ -103,7 +103,8 @@ class SettingsPage extends ConsumerWidget {
                           secondary: const Icon(Icons.play_circle_outline_rounded),
                           title: const Text('پخش خودکار'),
                           subtitle: const Text(
-                            'شروع خودکار ویدئو و رفتن به قسمت بعد پس از پایان',
+                            'شروع خودکار ویدئوی مستقیمِ پشتیبانی‌شده و رفتن به قسمت بعد؛ '
+                            'روی پخش embed آپارات اثر ندارد.',
                           ),
                         ),
                       ],
@@ -158,15 +159,20 @@ class SettingsPage extends ConsumerWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.info_outline_rounded,
-                          color: AppColors.tealDeep,
+                          color: context.isDarkMode
+                              ? AppColors.tealLight
+                              : AppColors.tealDeep,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'تغییرات بلافاصله و فقط به‌صورت محلی ذخیره می‌شوند. '
-                            'این نسخه دادهٔ کودک را به سرور ارسال نمی‌کند.',
+                            'نام و تنظیمات نمایشی، علاقه‌مندی‌ها و پیشرفت پخش بومی '
+                            'روی همین دستگاه می‌مانند؛ حساب یا backend اختصاصی نداریم. '
+                            'پخش ویدئو به میزبان بیرونی واگذار می‌شود و ممکن است آن '
+                            'سرویس دادهٔ فنی یا تبلیغات خودش را داشته باشد. جزئیات '
+                            'در صفحهٔ «دربارهٔ ما» آمده است.',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: context.secondaryTextColor,
                                 ),

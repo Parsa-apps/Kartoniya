@@ -101,7 +101,8 @@ class FavoritesPage extends ConsumerWidget {
                           icon: const Icon(Icons.explore_rounded),
                           label: const Text('گشتن در کارتون‌ها'),
                           style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.pink,
+                            backgroundColor: AppColors.actionColor(AppColors.pink),
+                            foregroundColor: Colors.white,
                           ),
                         ),
                 );
