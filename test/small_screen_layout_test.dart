@@ -3,16 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:kartoniya/main.dart';
-import 'package:kartoniya/presentation/pages/categories_page.dart';
 import 'package:kartoniya/presentation/pages/home_page.dart';
-import 'package:kartoniya/presentation/pages/search_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// نگهبان چیدمان روی کوچک‌ترین گوشی‌های واقعی (۳۲۰×۵۶۸ logical pixel).
 ///
 /// نسبت ابعاد کارت‌ها از عرض واقعی کاشی حساب می‌شود؛ این تست تضمین می‌کند
 /// که با آن محاسبه هیچ سرریزی روی صفحهٔ کوچک رخ نمی‌دهد و متن‌ها/قرص‌های
-/// دسته هم جا می‌شوند.
+/// دسته هم جا می‌شوند. اگر سرریزی رخ دهد، نام و محل ویجت مقصر در پیام
+/// خطا گزارش می‌شود تا رفع آن سرراست باشد.
 void main() {
   void useSmallPhone(WidgetTester tester) {
     tester.view.physicalSize = const Size(320, 568);
@@ -20,13 +19,25 @@ void main() {
     addTearDown(tester.view.reset);
   }
 
-  Future<SharedPreferences> initPrefs() async {
-    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
-    return SharedPreferences.getInstance();
+  /// سرریزهای چیدمان را جمع می‌کند و در پایان با محل ویجت گزارش می‌دهد.
+  List<String> watchLayoutErrors(WidgetTester tester) {
+    final problems = <String>[];
+    final original = FlutterError.onError;
+    FlutterError.onError = (details) {
+      final where = details.informationCollector
+              ?.call()
+              .map((node) => node.toString())
+              .join('\n') ??
+          '';
+      problems.add('${details.exceptionAsString()}\n$where');
+    };
+    addTearDown(() => FlutterError.onError = original);
+    return problems;
   }
 
   Future<void> pumpApp(WidgetTester tester) async {
-    final prefs = await initPrefs();
+    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
+    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
@@ -43,53 +54,40 @@ void main() {
 
   testWidgets('خانه روی گوشی ۳۲۰px بدون سرریز بالا می‌آید', (tester) async {
     useSmallPhone(tester);
+    final problems = watchLayoutErrors(tester);
     await pumpApp(tester);
 
     expect(find.byType(HomePage), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    expect(problems, isEmpty, reason: 'سرریز چیدمان در خانه: $problems');
 
     // اسکرول تا انتهای محتوا؛ همهٔ ریل‌ها و کارت‌ها ساخته و چیده می‌شوند.
     final scrollable = find.byType(Scrollable).first;
     for (var i = 0; i < 12; i++) {
       await tester.drag(scrollable, const Offset(0, -320));
       await tester.pump(const Duration(milliseconds: 220));
+      expect(problems, isEmpty, reason: 'سرریز چیدمان در خانه: $problems');
     }
-    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('گروه‌بندی و جست‌وجو روی گوشی ۳۲۰px جا می‌شوند', (tester) async {
+  testWidgets('دسته‌ها و جست‌وجو روی گوشی ۳۲۰px جا می‌شوند', (tester) async {
     useSmallPhone(tester);
-    final prefs = await initPrefs();
-    final container = ProviderContainer(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-    );
-    addTearDown(container.dispose);
+    final problems = watchLayoutErrors(tester);
+    await pumpApp(tester);
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(home: CategoriesPage()),
-      ),
-    );
-    await tester.pump(const Duration(milliseconds: 900));
-    expect(find.byType(CategoriesPage), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('دسته‌ها').last);
+    await tester.pump(const Duration(milliseconds: 700));
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(problems, isEmpty, reason: 'سرریز چیدمان در دسته‌ها: $problems');
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(home: SearchPage()),
-      ),
-    );
-    await tester.pump(const Duration(milliseconds: 900));
-    expect(find.byType(SearchPage), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('جست‌وجو').last);
+    await tester.pump(const Duration(milliseconds: 700));
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(problems, isEmpty, reason: 'سرریز چیدمان در جست‌وجو: $problems');
 
     await tester.enterText(find.byType(TextField).first, 'حیوانات');
-    await tester.pump(const Duration(milliseconds: 400));
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 8; i++) {
       await tester.pump(const Duration(milliseconds: 200));
     }
-    expect(tester.takeException(), isNull);
+    expect(problems, isEmpty, reason: 'سرریز چیدمان در نتایج: $problems');
   });
 }
