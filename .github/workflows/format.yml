@@ -51,3 +51,6 @@ jobs:
           git add lib test
           git commit -m "${{ inputs.commit_message || 'style: dart format lib and test' }}"
           git push
+
+# نکته: اگر dispatch از توکن ربات مجاز نباشد، ثبت یک تغییر در همین فایل
+# (همین شرط paths) اجرای قالب‌بندی و commit خودکار را راه می‌اندازد.
