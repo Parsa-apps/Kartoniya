@@ -377,7 +377,7 @@ class _SpotlightCard extends StatelessWidget {
                         _MetaChip(
                           icon: Icons.sell_outlined,
                           label: cartoon.category,
-                          tint: accent,
+                          iconColor: accent,
                         ),
                       ],
                     ),
@@ -540,34 +540,41 @@ class _MetaChip extends StatelessWidget {
     required this.icon,
     required this.label,
     this.iconColor,
-    this.tint,
   });
 
   final IconData icon;
   final String label;
   final Color? iconColor;
-  final Color? tint;
 
   @override
   Widget build(BuildContext context) {
+    // روی تصویر، شیشه‌ای روشن با متن سفید بسته به روشنایی پوستر خوانا
+    // نبود؛ قرص سفید با متن سرمه‌ای همیشه >۱۰:۱ است و با قرص «منتخب
+    // این هفته» هم‌خانواده می‌شود.
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: (tint ?? Colors.white).withOpacity(tint == null ? .16 : .30),
+        color: Colors.white.withOpacity(.92),
         borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
         border: Border.all(
-          color: Colors.white.withOpacity(.22),
+          color: Colors.white.withOpacity(.65),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: iconColor ?? Colors.white),
+          Icon(
+            icon,
+            size: 12,
+            color: iconColor == null
+                ? AppColors.deepInk.withOpacity(.72)
+                : AppColors.readableOn(Colors.white, iconColor!),
+          ),
           const SizedBox(width: 4),
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.white,
+                  color: AppColors.deepInk,
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                 ),
