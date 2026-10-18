@@ -1,5 +1,3 @@
-import 'dart:ui' show Brightness;
-
 import 'package:flutter/services.dart';
 
 /// تنظیم‌های System UI در یک نقطه تا صفحهٔ پخش بتواند ایمن به حالت عادی برگردد.

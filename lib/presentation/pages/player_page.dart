@@ -247,7 +247,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
       _historyNotifier.saveProgress(_current.id, progress);
     }
 
-    if (controller.value.completed && _nextEpisodeTimer == null &&
+    if (controller.value.isCompleted && _nextEpisodeTimer == null &&
         _errorMessage == null) {
       _startNextEpisodeFlow();
       return;
@@ -415,7 +415,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   @override
   Widget build(BuildContext context) {
     final controller = _videoController;
-    final ready = controller?.value.isInitialized == true;
+    final ready = controller != null && controller.value.isInitialized;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -440,8 +440,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                 child: AspectRatio(
                   aspectRatio: controller!.value.aspectRatio <= 0
                       ? 16 / 9
-                      : controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+                      : controller!.value.aspectRatio,
+                  child: VideoPlayer(controller!),
                 ),
               ),
             if (_isLoading) const _PlayerLoading(),
@@ -465,8 +465,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                 orientationLocked: _landscapeLock,
               ),
               _PlayerCenterControl(
-                isPlaying: controller.value.isPlaying,
-                visible: _showControls || !controller.value.isPlaying,
+                isPlaying: controller!.value.isPlaying,
+                visible: _showControls || !controller!.value.isPlaying,
                 onPressed: () => unawaited(_togglePlay()),
               ),
               _PlayerBottomControls(

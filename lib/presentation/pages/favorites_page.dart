@@ -107,40 +107,29 @@ class FavoritesPage extends ConsumerWidget {
                         ),
                 );
               }
-              return CustomScrollView(
+              return GridView.builder(
                 physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppTheme.pageMargin,
-                      10,
-                      AppTheme.pageMargin,
-                      100,
-                    ),
-                    sliver: SliverAnimatedGrid(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 220,
-                        mainAxisSpacing: 14,
-                        crossAxisSpacing: 14,
-                        childAspectRatio: .74,
-                      ),
-                      duration: context.motion.dur(AppMotion.soft),
-                      curve: AppMotion.curveStandard,
-                      childCount: selected.length,
-                      sliverBuilder: (context, index) => [
-                        CartoonCard(
-                          key: ValueKey(selected[index].id),
-                          cartoon: selected[index],
-                          onTap: () => pushAppPage<void>(
-                            context,
-                            CartoonDetailPage(cartoon: selected[index]),
-                          ),
-                        ),
-                      ],
-                    ),
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.pageMargin,
+                  10,
+                  AppTheme.pageMargin,
+                  100,
+                ),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 220,
+                  mainAxisSpacing: 14,
+                  crossAxisSpacing: 14,
+                  childAspectRatio: .74,
+                ),
+                itemCount: selected.length,
+                itemBuilder: (context, index) => CartoonCard(
+                  key: ValueKey(selected[index].id),
+                  cartoon: selected[index],
+                  onTap: () => pushAppPage<void>(
+                    context,
+                    CartoonDetailPage(cartoon: selected[index]),
                   ),
-                ],
+                ),
               );
             },
             loading: () => const _FavoritesLoading(),
