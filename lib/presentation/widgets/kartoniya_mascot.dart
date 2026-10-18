@@ -440,10 +440,12 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                 final waveSwing = waving
                     ? .20 * math.sin(t * math.pi * 4) + .10
                     : .05 * math.sin(t * math.pi * 2 + 1.2) - .02;
+                // چرخش مثبت دستِ بالا را کمی پایین می‌آورد؛ بیش از این
+                // مقدار، شانه از بدن جدا می‌شود.
                 final armWave = waveSwing +
-                    tap * .35 -
-                    (sleepy ? .22 : 0) -
-                    (sad ? .34 : 0);
+                    tap * .35 +
+                    (sleepy ? .12 : 0) +
+                    (sad ? .20 : 0);
 
                 final armLeft = .045 * math.sin(t * math.pi * 2 + 2.2) +
                     (sleepy ? .12 : 0) +
