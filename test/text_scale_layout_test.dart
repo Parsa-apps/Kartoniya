@@ -45,13 +45,13 @@ void main() {
               child: child ?? const SizedBox.shrink(),
             ),
           ),
-          home: MediaQuery(
-            data: const MediaQueryData(
+          home: const MediaQuery(
+            data: MediaQueryData(
               size: phone,
               devicePixelRatio: 1,
               textScaler: TextScaler.linear(1.3),
             ),
-            child: const HomePage(),
+            child: HomePage(),
           ),
         ),
       ),
