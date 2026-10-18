@@ -242,6 +242,9 @@ class KartoniyaMascot extends StatefulWidget {
   final Color accent;
 
   /// شناوری عمودی آرام؛ در ردیف‌های کوچک خاموش شود.
+  ///
+  /// نفس کشیدن، تاب برگ و تکان دست‌ها مستقل از این پرچم همیشه زنده‌اند؛
+  /// این پرچم فقط بالا–پایین رفتن کل بدن را روشن/خاموش می‌کند.
   final bool float;
 
   final VoidCallback? onTap;
@@ -341,11 +344,9 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
   void _applyMotion() {
     if (!mounted) return;
     if (_motion) {
-      if (widget.float) {
-        if (!_idle.isAnimating) _idle.repeat(reverse: true);
-      } else if (_idle.value != 0) {
-        _idle.value = 0;
-      }
+      // چرخهٔ آیدل همیشه می‌چرخد تا آواتارهای کوچک هم «زنده» باشند؛
+      // فقط شناوری عمودی بدن به [widget.float] گره خورده است.
+      if (!_idle.isAnimating) _idle.repeat(reverse: true);
       if (!_blink.isAnimating) _blink.repeat();
     } else {
       _idle.stop();
