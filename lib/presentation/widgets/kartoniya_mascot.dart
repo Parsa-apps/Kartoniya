@@ -465,6 +465,13 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                   MascotMood.happy => (null, null),
                 };
 
+                // اسکواش و استرچ کارتونی هنگام لمس؛ با کاهش حرکت خنثی
+                // می‌شود. نفس هم یک کشش بسیار ملایم عمودی دارد.
+                final squash = _motion
+                    ? math.sin(math.pi * tap) * .06 +
+                        math.sin(t * math.pi * 2) * .006
+                    : 0.0;
+
                 return Opacity(
                   opacity: _intro.value.clamp(0.0, 1.0),
                   child: Transform.scale(
@@ -472,7 +479,11 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                     alignment: Alignment.bottomCenter,
                     child: Transform.translate(
                       offset: Offset(0, bob + jump),
-                      child: LayoutBuilder(
+                      child: Transform.scale(
+                        scaleX: 1 + squash * .6,
+                        scaleY: 1 - squash,
+                        alignment: Alignment.bottomCenter,
+                        child: LayoutBuilder(
                         builder: (context, constraints) {
                           final scale = math.min(
                             constraints.maxWidth / _Rig.frameWidth,
@@ -541,15 +552,114 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                                 ),
                               ),
                               part(_Rig.leaf, angle: leafSwing),
+                              // ——— افکت‌های حالت (بدون فایل تصویری) ———
+                              // خواب: سه «z» کوچک که بالای سر محو می‌شوند.
+                              if (sleepy && _motion && width > 64)
+                                for (var i = 0; i < 3; i++)
+                                  _DozingZ(
+                                    phase: (t + i / 3) % 1,
+                                    left: dx + 400 * scale,
+                                    top: dy + 120 * scale,
+                                    size: (16 * scale + 4).clamp(9.0, 22.0).toDouble(),
+                                    color: AppColors.deepInk,
+                                  ),
+                              // شادی: دو جرقهٔ کوچک اطراف سر.
+                              if (mood == MascotMood.cheering && _motion)
+                                for (var i = 0; i < 2; i++)
+                                  _Twinkle(
+                                    phase: (t * 2 + i * .5) % 1,
+                                    left: dx +
+                                        (i == 0 ? 92 : 470) * scale,
+                                    top: dy + (i == 0 ? 96 : 150) * scale,
+                                    size: (13 * scale + 3).clamp(8.0, 20.0).toDouble(),
+                                    color: AppColors.gold,
+                                  ),
                             ],
                           );
                         },
+                        ),
                       ),
                     ),
                   ),
                 );
               },
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// «z» خواب که به‌آرامی بالا می‌رود و محو می‌شود.
+class _DozingZ extends StatelessWidget {
+  const _DozingZ({
+    required this.phase,
+    required this.left,
+    required this.top,
+    required this.size,
+    required this.color,
+  });
+
+  final double phase;
+  final double left;
+  final double top;
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final fade = math.sin(math.pi * phase).clamp(0.0, 1.0).toDouble();
+    return Positioned(
+      left: left + phase * size * .9,
+      top: top - phase * size * 2.4,
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: fade * .75,
+          child: Text(
+            'z',
+            style: TextStyle(
+              fontSize: size,
+              fontWeight: FontWeight.w800,
+              height: 1,
+              color: color,
+              fontFamily: 'Vazirmatn',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// جرقهٔ چهارپر کوچک برای حالت هیجان‌زده.
+class _Twinkle extends StatelessWidget {
+  const _Twinkle({
+    required this.phase,
+    required this.left,
+    required this.top,
+    required this.size,
+    required this.color,
+  });
+
+  final double phase;
+  final double left;
+  final double top;
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final pulse = .5 + .5 * math.sin(phase * math.pi * 2);
+    return Positioned(
+      left: left,
+      top: top,
+      child: IgnorePointer(
+        child: Transform.scale(
+          scale: .7 + .5 * pulse,
+          child: Opacity(
+            opacity: .35 + .5 * pulse,
+            child: Icon(Icons.auto_awesome_rounded, size: size, color: color),
           ),
         ),
       ),
