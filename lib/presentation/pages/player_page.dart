@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -111,24 +110,38 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final controller = _videoController;
     if (controller == null || !controller.value.isInitialized) return;
-    switch (state) {
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-        if (controller.value.isPlaying) {
-          _wasPlayingBeforeBackground = true;
-          unawaited(controller.pause());
-          unawaited(WakelockPlus.disable());
-          _saveCurrentProgress();
-        }
-      case AppLifecycleState.resumed:
-        if (_wasPlayingBeforeBackground && mounted) {
-          _wasPlayingBeforeBackground = false;
-          unawaited(controller.play());
-          unawaited(WakelockPlus.enable());
-          _scheduleControlsHide();
-        }
+    // if/else به‌جای switch: با هر نسخهٔ Flutter (عضوهای جدید enum) سازگار است.
+    if (state == AppLifecycleState.resumed) {
+      if (_wasPlayingBeforeBackground && mounted) {
+        _wasPlayingBeforeBackground = false;
+        unawaited(controller.play());
+        unawaited(WakelockPlus.enable());
+        _scheduleControlsHide();
+      }
+      return;
     }
+    if (controller.value.isPlaying) {
+      _wasPlayingBeforeBackground = true;
+      unawaited(controller.pause());
+      unawaited(WakelockPlus.disable());
+      _saveCurrentProgress();
+    }
+  }
+
+  /// ذخیرهٔ موقعیت هنگام ترک صفحه یا تعویض قسمت؛ بدون throttle و با آستانهٔ
+  /// یک درصد تا نوشتن‌های بی‌فایده انجام نشود.
+  void _saveCurrentProgress() {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) return;
+    final duration = controller.value.duration;
+    if (duration.inMilliseconds <= 0) return;
+    final progress =
+        (controller.value.position.inMilliseconds / duration.inMilliseconds)
+            .clamp(0.0, 1.0)
+            .toDouble();
+    if ((progress - _lastSavedProgress).abs() < .01 && progress < .995) return;
+    _lastSavedProgress = progress;
+    _historyNotifier.saveProgress(_episode.id, progress);
   }
 
   Future<void> _initializePlayer(EpisodeModel episode) async {

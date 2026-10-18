@@ -5,6 +5,7 @@ import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
+import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/kartoniya_mascot.dart';
 import 'home_page.dart';

@@ -96,22 +96,24 @@ class StaggeredReveal extends StatefulWidget {
 class _StaggeredRevealState extends State<StaggeredReveal>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final double _startFraction;
 
   @override
   void initState() {
     super.initState();
     final reduced = !context.motion.enabled;
+    // تأخیر پلکانی با Interval ساخته می‌شود؛ forward پارامتر delay ندارد.
+    final step = AppMotion.staggerStep * widget.index.clamp(0, 8);
+    final total = AppMotion.entrance + step;
+    _startFraction = step.inMilliseconds / total.inMilliseconds;
     _controller = AnimationController(
       vsync: this,
-      duration: AppMotion.entrance,
+      duration: total,
     );
     if (reduced) {
       _controller.value = 1;
     } else {
-      _controller.forward(
-        delay: AppMotion.staggerStartDelay +
-            AppMotion.staggerStep * widget.index.clamp(0, 8),
-      );
+      _controller.forward();
     }
   }
 
@@ -125,7 +127,11 @@ class _StaggeredRevealState extends State<StaggeredReveal>
   Widget build(BuildContext context) {
     final curved = CurvedAnimation(
       parent: _controller,
-      curve: AppMotion.curveEntrance,
+      curve: Interval(
+        _startFraction,
+        1,
+        curve: AppMotion.curveEntrance,
+      ),
     );
     return FadeTransition(
       opacity: curved,

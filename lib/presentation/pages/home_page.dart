@@ -224,7 +224,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                 if (entries.isEmpty) return const SizedBox.shrink();
                 return Column(
                   children: [
-                    SectionHeader(
+                    const SectionHeader(
                       title: 'ادامهٔ تماشا',
                       subtitle: 'از همان‌جا که ول کردی ادامه بده',
                     ),
@@ -299,8 +299,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
             ),
           ),
           // ——— همهٔ کارتون‌ها ———
-          SliverToBoxAdapter(
-            child: const SectionHeader(title: 'همهٔ کارتون‌ها'),
+          const SliverToBoxAdapter(
+            child: SectionHeader(title: 'همهٔ کارتون‌ها'),
           ),
           cartoons.when(
             data: (items) => _CartoonGridSliver(

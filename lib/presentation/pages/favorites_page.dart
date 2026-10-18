@@ -107,31 +107,40 @@ class FavoritesPage extends ConsumerWidget {
                         ),
                 );
               }
-              return AnimatedGrid.builder(
+              return CustomScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(
-                  AppTheme.pageMargin,
-                  10,
-                  AppTheme.pageMargin,
-                  100,
-                ),
-                duration: context.motion.dur(AppMotion.soft),
-                curve: AppMotion.curveStandard,
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 220,
-                  mainAxisSpacing: 14,
-                  crossAxisSpacing: 14,
-                  childAspectRatio: .74,
-                ),
-                itemCount: selected.length,
-                itemBuilder: (context, index) => CartoonCard(
-                  key: ValueKey(selected[index].id),
-                  cartoon: selected[index],
-                  onTap: () => pushAppPage<void>(
-                    context,
-                    CartoonDetailPage(cartoon: selected[index]),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppTheme.pageMargin,
+                      10,
+                      AppTheme.pageMargin,
+                      100,
+                    ),
+                    sliver: SliverAnimatedGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 220,
+                        mainAxisSpacing: 14,
+                        crossAxisSpacing: 14,
+                        childAspectRatio: .74,
+                      ),
+                      duration: context.motion.dur(AppMotion.soft),
+                      curve: AppMotion.curveStandard,
+                      childCount: selected.length,
+                      sliverBuilder: (context, index) => [
+                        CartoonCard(
+                          key: ValueKey(selected[index].id),
+                          cartoon: selected[index],
+                          onTap: () => pushAppPage<void>(
+                            context,
+                            CartoonDetailPage(cartoon: selected[index]),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               );
             },
             loading: () => const _FavoritesLoading(),
