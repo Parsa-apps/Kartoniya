@@ -11,6 +11,7 @@ import 'package:kartoniya/presentation/pages/home_page.dart';
 import 'package:kartoniya/presentation/pages/search_page.dart';
 import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/category_tile.dart';
+import 'package:kartoniya/presentation/widgets/kartoniya_mascot.dart';
 import 'package:kartoniya/presentation/widgets/kartoniya_nav_bar.dart';
 import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -183,10 +184,91 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
       await capture('08_detail');
 
+      // چیدمان صفحه‌ها با Scaffold و تم روشن رندر شد.
+      expect(find.byType(Scaffold), findsWidgets);
+
+      // ——— حالات بلوطی (ریگ لایه‌ای) ———
+      // این دو تصویر برای بازبینی طراحی شخصیت است: چهره‌ها، زاویهٔ دست/پا و
+      // هم‌ترازی لایه‌های چشم/دهان با بدن. رندر تست است، نه گوشی واقعی.
+      Future<void> captureMascot(
+        String name,
+        Widget child, {
+        Duration advance = Duration.zero,
+      }) async {
+        final key = GlobalKey();
+        await tester.pumpWidget(
+          RepaintBoundary(
+            key: key,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Container(
+                  color: const Color(0xFFEAF4FF),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(16),
+                  child: child,
+                ),
+              ),
+            ),
+          ),
+        );
+        for (var i = 0; i < 3; i++) {
+          await tester.runAsync(() async {
+            await Future<void>.delayed(const Duration(milliseconds: 200));
+          });
+          await tester.pump();
+        }
+        if (advance > Duration.zero) {
+          await tester.pump(advance);
+        }
+        await tester.pump();
+        final boundary =
+            tester.renderObject<RenderRepaintBoundary>(find.byKey(key));
+        await tester.runAsync(() async {
+          final image = await boundary.toImage(pixelRatio: 2);
+          final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+          image.dispose();
+          File('${outDir.path}/$name.png')
+              .writeAsBytesSync(bytes!.buffer.asUint8List());
+        });
+      }
+
+      await captureMascot(
+        '09_mascot_states',
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            KartoniyaMascot(width: 104, height: 132, float: false),
+            KartoniyaMascot(
+              width: 104,
+              height: 132,
+              float: false,
+              mood: MascotMood.cheering,
+            ),
+            KartoniyaMascot(
+              width: 104,
+              height: 132,
+              float: false,
+              mood: MascotMood.sleepy,
+            ),
+          ],
+        ),
+      );
+
+      await captureMascot(
+        '10_mascot_blink',
+        const SizedBox(
+          width: 180,
+          height: 220,
+          child: KartoniyaMascot(width: 180, height: 220, float: false),
+        ),
+        // پنجرهٔ پلک در چرخهٔ ۴٫۶ ثانیه‌ای بین ۸۶٪ و ۹۳٪ است.
+        advance: const Duration(milliseconds: 4060),
+      );
+
       expect(Directory(outDir.path).listSync(), isNotEmpty);
       expect(tester.takeException(), isNull);
-      // اطمینان از اینکه چیدمان در دستگاه 390×844 با تم روشن رندر شد.
-      expect(find.byType(Scaffold), findsWidgets);
     },
     skip: !_enabled,
   );

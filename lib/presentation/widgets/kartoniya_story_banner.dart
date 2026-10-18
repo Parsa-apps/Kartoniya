@@ -42,6 +42,8 @@ class PreRenderedFlak extends StatelessWidget {
     this.alignment = Alignment.center,
     this.semanticLabel = 'بلوطی، شخصیت کارتونی کارتونیا',
     this.animate = true,
+    this.mood = MascotMood.happy,
+    this.greet = false,
   });
 
   final double? width;
@@ -51,6 +53,12 @@ class PreRenderedFlak extends StatelessWidget {
 
   /// حرکت آرام (پلک/تاب)؛ برای آواتارهای کوچک خاموش شود.
   final bool animate;
+
+  /// چهرهٔ شخصیت؛ حالت‌های خالی/خطا چهرهٔ متفاوت می‌گیرند.
+  final MascotMood mood;
+
+  /// سلام کوتاه (تکان دست) پس از ورود.
+  final bool greet;
 
   static const assetPath = FandaqAssets.still;
 
@@ -68,6 +76,8 @@ class PreRenderedFlak extends StatelessWidget {
           width: 240,
           height: 240 * 651 / 599,
           animate: animate,
+          mood: mood,
+          greet: greet,
           float: false,
           interactive: false,
           semanticLabel: semanticLabel,
