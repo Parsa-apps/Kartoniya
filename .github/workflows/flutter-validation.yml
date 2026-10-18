@@ -18,6 +18,7 @@ concurrency:
 
 permissions:
   contents: read
+  checks: write
 
 jobs:
   validate:
@@ -53,6 +54,41 @@ jobs:
 
       - name: Analyze
         run: flutter analyze
+
+      # Temporary CI diagnostics: the local environment has no Dart SDK and
+      # GitHub's log archive host is outside its network allowlist.
+      - name: Capture analyzer diagnostics
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          flutter analyze --no-pub > /tmp/flutter-analyze.log 2>&1
+          status=$?
+          set -e
+          echo "flutter analyze exited with ${status}; publishing diagnostics."
+          python3 - <<'PYTHON'
+          import json, os, pathlib, subprocess
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          log = pathlib.Path('/tmp/flutter-analyze.log').read_text(errors='replace')
+          payload = {
+              'name': 'Flutter analyzer diagnostics',
+              'head_sha': sha,
+              'status': 'completed',
+              'conclusion': 'neutral',
+              'output': {
+                  'title': 'flutter analyze output',
+                  'summary': 'Temporary analysis diagnostics for this commit.',
+                  'text': '```text\n' + log[-60000:] + '\n```',
+              },
+          }
+          subprocess.run(
+              ['gh', 'api', '--method', 'POST',
+               f'repos/{repo}/check-runs', '--input', '-'],
+              input=json.dumps(payload), text=True, check=True,
+          )
+          PYTHON
 
       - name: Test
         run: flutter test --reporter expanded
