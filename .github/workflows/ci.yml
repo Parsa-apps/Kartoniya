@@ -1,0 +1,57 @@
+name: CI Verify
+
+on:
+  push:
+    branches: ["main", "arena/**"]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: دریافت کدها (Checkout)
+        uses: actions/checkout@v4
+
+      - name: راه‌اندازی جاوا (Java)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: راه‌اندازی فلاتر (Flutter)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          channel: 'stable'
+          cache: true
+
+      - name: نصب کتابخانه‌ها (Pub Get)
+        run: flutter pub get
+
+      - name: تحلیل استاتیک (Analyze)
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee analyze.log
+
+      - name: تست‌ها (Test)
+        run: |
+          set -o pipefail
+          flutter test 2>&1 | tee test.log
+
+      - name: بیلد تطبیق Android (Debug APK)
+        run: flutter build apk --debug
+
+      - name: گزارش خطا در Summary
+        if: failure()
+        run: |
+          {
+            echo "### لاگ تحلیل/تست"
+            echo '```'
+            tail -n 60 analyze.log 2>/dev/null || true
+            echo '```'
+            echo '```'
+            tail -n 60 test.log 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
