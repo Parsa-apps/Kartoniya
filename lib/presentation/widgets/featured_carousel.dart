@@ -270,40 +270,47 @@ class _SpotlightCard extends StatelessWidget {
               PositionedDirectional(
                 top: 12,
                 start: 12,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const _GlassPill(
-                      icon: Icons.auto_awesome_rounded,
-                      label: 'منتخب این هفته',
-                      color: AppColors.goldLight,
-                    ),
-                    if (cartoon.isNew) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 9,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.coral,
-                          borderRadius:
-                              BorderRadius.circular(AppTheme.radiusCircular),
-                          boxShadow:
-                              AppTheme.glow(AppColors.coral, opacity: .4),
-                        ),
-                        child: Text(
-                          'تازه',
-                          style:
-                              Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                        ),
+                end: 54,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const _GlassPill(
+                        icon: Icons.auto_awesome_rounded,
+                        label: 'منتخب این هفته',
+                        color: AppColors.goldLight,
                       ),
+                      if (cartoon.isNew) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.coral,
+                            borderRadius:
+                                BorderRadius.circular(AppTheme.radiusCircular),
+                            boxShadow:
+                                AppTheme.glow(AppColors.coral, opacity: .4),
+                          ),
+                          child: Text(
+                            'تازه',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
               PositionedDirectional(

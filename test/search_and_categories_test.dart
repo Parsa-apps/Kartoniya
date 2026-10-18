@@ -122,9 +122,10 @@ void main() {
     await openTab(tester, 'دسته‌ها');
 
     expect(find.byType(CategoryTile), findsWidgets);
+    // «ماجراجویی» دومین کاشی است و در عرض ۳۹۰px بدون اسکرول ریل دیده می‌شود.
     final tile = find.descendant(
       of: find.byType(CategoryTile),
-      matching: find.text('علمی'),
+      matching: find.text('ماجراجویی'),
     );
     expect(tile, findsOneWidget);
     await tester.tap(tile);
@@ -138,7 +139,10 @@ void main() {
       ),
     );
     expect(cards, isNotEmpty);
-    expect(cards.every((card) => card.cartoon.category == 'علمی'), isTrue);
+    expect(
+      cards.every((card) => card.cartoon.category == 'ماجراجویی'),
+      isTrue,
+    );
 
     await tester.tap(find.text('پاک کردن'));
     await tester.pump();
@@ -151,7 +155,7 @@ void main() {
       ),
     );
     expect(
-      cards.any((card) => card.cartoon.category != 'علمی'),
+      cards.any((card) => card.cartoon.category != 'ماجراجویی'),
       isTrue,
       reason: 'پس از پاک کردن فیلتر، کاتالوگ کامل باید برگردد.',
     );

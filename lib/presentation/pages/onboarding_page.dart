@@ -119,38 +119,28 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   children: [
                     const KartoniyaLogoMark(size: 34),
                     const SizedBox(width: 8),
-                    Text(
-                      'کارتونیا',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                          ),
-                    ),
-                    const SizedBox(width: 10),
-                    AnimatedSwitcher(
-                      duration: context.motion.dur(AppMotion.quick),
-                      child: Container(
-                        key: ValueKey(_currentPage),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 9,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: page.color.withOpacity(.14),
-                          borderRadius:
-                              BorderRadius.circular(AppTheme.radiusCircular),
-                        ),
-                        child: Text(
-                          '${toFaDigits('${_currentPage + 1}')} از '
-                          '${toFaDigits('${_pages.length}')}',
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: page.color,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                        ),
+                    Expanded(
+                      child: Text(
+                        'کارتونیا',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                ),
                       ),
                     ),
-                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 8),
+                      child: Text(
+                        '${toFaDigits('${_currentPage + 1}')} از '
+                        '${toFaDigits('${_pages.length}')}',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: page.color,
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                    ),
                     TextButton(
                       onPressed: _isCompleting ? null : _finish,
                       child: const Text('رد کردن'),

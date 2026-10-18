@@ -471,9 +471,13 @@ class _SearchLanding extends StatelessWidget {
                 color: AppColors.coral,
               ),
               const SizedBox(width: 5),
-              Text(
-                'از دسته‌ها شروع کن',
-                style: Theme.of(context).textTheme.titleMedium,
+              Expanded(
+                child: Text(
+                  'از دسته‌ها شروع کن',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
             ],
           ),
@@ -508,9 +512,13 @@ class _SearchLanding extends StatelessWidget {
                   color: AppColors.violet,
                 ),
                 const SizedBox(width: 5),
-                Text(
-                  'موضوع‌های پرطرفدار',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Expanded(
+                  child: Text(
+                    'موضوع‌های پرطرفدار',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ],
             ),
@@ -539,9 +547,13 @@ class _SearchLanding extends StatelessWidget {
                   color: AppColors.teal,
                 ),
                 const SizedBox(width: 5),
-                Text(
-                  'پیشنهادهای کارتونیا',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Expanded(
+                  child: Text(
+                    'پیشنهادهای کارتونیا',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ],
             ),
