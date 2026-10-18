@@ -5,25 +5,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartoniya/core/theme/app_motion.dart';
 import 'package:kartoniya/core/theme/app_theme.dart';
 import 'package:kartoniya/data/providers/cartoons_provider.dart';
-import 'package:kartoniya/presentation/pages/categories_page.dart';
 import 'package:kartoniya/presentation/pages/home_page.dart';
 import 'package:kartoniya/presentation/pages/search_page.dart';
+import 'package:kartoniya/presentation/widgets/kartoniya_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// نگهبان خوانایی برای کودکانی که در تنظیمات اندروید «اندازهٔ فونت» را
-/// بزرگ کرده‌اند: صفحه‌های اصلی روی کوچک‌ترین گوشی (۳۲۰×۵۶۸) و با متن
-/// ۱٫۳ برابر باید بدون سرریز بالا بیایند.
+/// بزرگ کرده‌اند: روی کوچک‌ترین گوشی (۳۲۰×۵۶۸) و با متن ۱٫۳ برابر، خانه و
+/// تب‌های دسته‌ها/جست‌وجو باید بدون سرریز بالا بیایند و اسکرول شوند.
 ///
 /// حرکت عمداً خاموش است تا چیدمان در هر فریم ثابت بماند و تست به زمان‌بندی
 /// انیمیشن‌ها وابسته نباشد.
 void main() {
   const phone = Size(320, 568);
 
-  Future<void> pumpPage(
-    WidgetTester tester,
-    Widget page, {
+  Future<void> pumpHome(
+    WidgetTester tester, {
     double textScale = 1.3,
   }) async {
+    tester.view.physicalSize = phone;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     SharedPreferences.setMockInitialValues({'onboarding_completed': true});
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
@@ -43,23 +46,35 @@ void main() {
             ),
           ),
           home: MediaQuery(
-            data: MediaQueryData(
+            data: const MediaQueryData(
               size: phone,
               devicePixelRatio: 1,
-              textScaler: TextScaler.linear(textScale),
+              textScaler: TextScaler.linear(1.3),
             ),
-            child: page,
+            child: const HomePage(),
           ),
         ),
       ),
     );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 600));
+    expect(find.byType(HomePage), findsOneWidget);
+  }
+
+  Future<void> openTab(WidgetTester tester, String label) async {
+    await tester.tap(
+      find.descendant(
+        of: find.byType(KartoniyaNavBar),
+        matching: find.text(label),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
   }
 
   testWidgets('خانه با متن ۱٫۳× روی ۳۲۰px بدون سرریز اسکرول می‌شود',
       (tester) async {
-    await pumpPage(tester, const HomePage());
+    await pumpHome(tester);
     expect(tester.takeException(), isNull, reason: 'چیدمان اول خانه');
 
     final scrollable = find.byType(Scrollable).first;
@@ -74,8 +89,9 @@ void main() {
     }
   });
 
-  testWidgets('دسته‌ها با متن ۱٫۳× سرریز نمی‌شوند', (tester) async {
-    await pumpPage(tester, const CategoriesPage());
+  testWidgets('تب دسته‌ها با متن ۱٫۳× سرریز نمی‌شود', (tester) async {
+    await pumpHome(tester);
+    await openTab(tester, 'دسته‌ها');
     for (var i = 0; i < 8; i++) {
       await tester.drag(find.byType(Scrollable).first, const Offset(0, -280));
       await tester.pump(const Duration(milliseconds: 180));
@@ -87,11 +103,18 @@ void main() {
     }
   });
 
-  testWidgets('جست‌وجو با متن ۱٫۳× سرریز نمی‌شود', (tester) async {
-    await pumpPage(tester, const SearchPage());
+  testWidgets('تب جست‌وجو با متن ۱٫۳× سرریز نمی‌شود', (tester) async {
+    await pumpHome(tester);
+    await openTab(tester, 'جست‌وجو');
+
+    final field = find.descendant(
+      of: find.byType(SearchPage),
+      matching: find.byType(TextField),
+    );
+    expect(field, findsOneWidget);
     expect(tester.takeException(), isNull, reason: 'صفحهٔ جست‌وجو');
 
-    await tester.enterText(find.byType(TextField).first, 'قصه');
+    await tester.enterText(field, 'قصه');
     for (var i = 0; i < 6; i++) {
       await tester.pump(const Duration(milliseconds: 180));
     }
