@@ -218,10 +218,12 @@ double cartoonTextScale(BuildContext context) =>
     MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.4).toDouble();
 
 /// ارتفاع ریل افقی کارت‌ها؛ با متن بزرگ هم‌راستا بزرگ می‌شود.
-double cartoonRailHeight(BuildContext context) => 198 * cartoonTextScale(context);
+double cartoonRailHeight(BuildContext context) =>
+    198 * cartoonTextScale(context);
 
 /// عرض کارت داخل ریل افقی؛ با متن بزرگ هم‌راستا بزرگ می‌شود.
-double cartoonRailWidth(BuildContext context) => 168 * cartoonTextScale(context);
+double cartoonRailWidth(BuildContext context) =>
+    168 * cartoonTextScale(context);
 
 /// نسبت ابعاد کارت در گریدهای ستونی.
 ///

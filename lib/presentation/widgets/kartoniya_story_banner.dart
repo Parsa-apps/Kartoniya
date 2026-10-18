@@ -278,126 +278,128 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                           child: MediaQuery.withClampedTextScaling(
                             maxScaleFactor: 1.15,
                             child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: widget.showMascot
-                                  ? math
-                                      .max(150.0, width - textEndInset - 20)
-                                      .toDouble()
-                                  : width - 40,
-                            ),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: compact ? 13 : 15,
-                                vertical: compact ? 8 : 11,
+                              constraints: BoxConstraints(
+                                maxWidth: widget.showMascot
+                                    ? math
+                                        .max(150.0, width - textEndInset - 20)
+                                        .toDouble()
+                                    : width - 40,
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(.84),
-                                borderRadius: BorderRadius.circular(
-                                  AppTheme.radiusLarge,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: compact ? 13 : 15,
+                                  vertical: compact ? 8 : 11,
                                 ),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(.78),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.skyDeep.withOpacity(.10),
-                                    blurRadius: 14,
-                                    offset: const Offset(0, 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(.84),
+                                  borderRadius: BorderRadius.circular(
+                                    AppTheme.radiusLarge,
                                   ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (widget.eyebrow != null) ...[
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          Icons.auto_awesome_rounded,
-                                          color: AppColors.coral,
-                                          size: 14,
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Flexible(
-                                          child: Text(
-                                            widget.eyebrow!,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium
-                                                ?.copyWith(
-                                                  color: AppColors.skyDeep,
-                                                  fontWeight: FontWeight.w800,
-                                                ),
-                                          ),
-                                        ),
-                                      ],
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(.78),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.skyDeep.withOpacity(.10),
+                                      blurRadius: 14,
+                                      offset: const Offset(0, 6),
                                     ),
-                                    const SizedBox(height: 3),
                                   ],
-                                  Text(
-                                    widget.title,
-                                    maxLines: tightTitle ? 1 : 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(
-                                          color: const Color(0xFF18324B),
-                                          height: 1.28,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    widget.subtitle,
-                                    maxLines:
-                                        widget.actionLabel == null ? 2 : 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                          color: const Color(0xFF425970),
-                                          height: 1.45,
-                                        ),
-                                  ),
-                                  if (widget.actionLabel != null &&
-                                      widget.onAction != null) ...[
-                                    SizedBox(height: compact ? 4 : 6),
-                                    SizedBox(
-                                      height: compact ? 32 : 36,
-                                      child: FilledButton.icon(
-                                        onPressed: widget.onAction,
-                                        style: FilledButton.styleFrom(
-                                          minimumSize:
-                                              Size(0, compact ? 32 : 36),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (widget.eyebrow != null) ...[
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.auto_awesome_rounded,
+                                            color: AppColors.coral,
+                                            size: 14,
                                           ),
-                                          backgroundColor: coralAction.fill,
-                                          foregroundColor:
-                                              coralAction.foreground,
-                                          visualDensity: VisualDensity.compact,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              AppTheme.radiusCircular,
+                                          const SizedBox(width: 5),
+                                          Flexible(
+                                            child: Text(
+                                              widget.eyebrow!,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelMedium
+                                                  ?.copyWith(
+                                                    color: AppColors.skyDeep,
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
                                             ),
                                           ),
-                                        ),
-                                        icon: const Icon(
-                                          Icons.arrow_back_rounded,
-                                          size: 17,
-                                        ),
-                                        label: Text(widget.actionLabel!),
+                                        ],
                                       ),
+                                      const SizedBox(height: 3),
+                                    ],
+                                    Text(
+                                      widget.title,
+                                      maxLines: tightTitle ? 1 : 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                            color: const Color(0xFF18324B),
+                                            height: 1.28,
+                                          ),
                                     ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      widget.subtitle,
+                                      maxLines:
+                                          widget.actionLabel == null ? 2 : 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: const Color(0xFF425970),
+                                            height: 1.45,
+                                          ),
+                                    ),
+                                    if (widget.actionLabel != null &&
+                                        widget.onAction != null) ...[
+                                      SizedBox(height: compact ? 4 : 6),
+                                      SizedBox(
+                                        height: compact ? 32 : 36,
+                                        child: FilledButton.icon(
+                                          onPressed: widget.onAction,
+                                          style: FilledButton.styleFrom(
+                                            minimumSize:
+                                                Size(0, compact ? 32 : 36),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                            ),
+                                            backgroundColor: coralAction.fill,
+                                            foregroundColor:
+                                                coralAction.foreground,
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                AppTheme.radiusCircular,
+                                              ),
+                                            ),
+                                          ),
+                                          icon: const Icon(
+                                            Icons.arrow_back_rounded,
+                                            size: 17,
+                                          ),
+                                          label: Text(widget.actionLabel!),
+                                        ),
+                                      ),
+                                    ],
                                   ],
-                                ],
+                                ),
                               ),
-                            ),
                             ),
                           ),
                         ),
