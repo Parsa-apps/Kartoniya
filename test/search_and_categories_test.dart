@@ -136,6 +136,9 @@ void main() {
       scrollable: homeScroll,
       maxScrolls: 30,
     );
+    // ScrollUntilVisible may leave the label just on the viewport edge; move
+    // it comfortably into view before tapping the actual banner button.
+    await tester.drag(homeScroll, const Offset(0, 100));
     await tester.pump(const Duration(milliseconds: 350));
     expect(find.text('قصه‌های شب'), findsOneWidget);
 

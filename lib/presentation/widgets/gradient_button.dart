@@ -39,10 +39,23 @@ class GradientButton extends StatefulWidget {
 }
 
 class _GradientButtonState extends State<GradientButton> {
+  late final FocusNode _focusNode;
   bool _pressed = false;
   bool _focused = false;
 
   bool get _enabled => widget.onPressed != null && !widget.loading;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(debugLabel: 'Kartoniya primary action');
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(covariant GradientButton oldWidget) {
@@ -118,6 +131,7 @@ class _GradientButtonState extends State<GradientButton> {
       liveRegion: widget.loading,
       excludeSemantics: true,
       child: FocusableActionDetector(
+        focusNode: _focusNode,
         enabled: enabled,
         mouseCursor: enabled
             ? SystemMouseCursors.click

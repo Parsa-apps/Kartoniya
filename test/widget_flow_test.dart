@@ -217,6 +217,8 @@ void main() {
       matching: find.byType(SwitchListTile),
     );
     expect(hapticsTile, findsOneWidget);
+    await tester.ensureVisible(hapticsTile);
+    await tester.pump(const Duration(milliseconds: 400));
     await tester.tap(hapticsTile);
     await tester.pump();
     await tester.pump();

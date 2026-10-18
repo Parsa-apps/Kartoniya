@@ -69,12 +69,13 @@ void main() {
     );
 
     final button = find.byType(GradientButton);
-    final focus = tester
-        .widgetList<Focus>(
-          find.descendant(of: button, matching: find.byType(Focus)),
-        )
-        .first;
-    focus.focusNode!.requestFocus();
+    final detector = tester.widget<FocusableActionDetector>(
+      find.descendant(
+        of: button,
+        matching: find.byType(FocusableActionDetector),
+      ),
+    );
+    detector.focusNode!.requestFocus();
     await tester.pump();
 
     final decoration = tester
