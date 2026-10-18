@@ -168,6 +168,10 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
     // در ارتفاع کم (مثل بنر خانه روی گوشی ۳۲۰px) متن باید یک‌خطی و جمع‌وجور
     // بماند تا کارت ثابت‌ارتفاع سرریز نکند.
     final compact = widget.height < 180;
+    // بنر یک کارت قهرمانِ تصویری است؛ متنش حداکثر ۱۵٪ بزرگ می‌شود و در
+    // اندازهٔ فونت بزرگ، عنوان یک‌خطی می‌ماند تا ارتفاع ثابت سرریز نشود.
+    final systemScale = MediaQuery.textScalerOf(context).scale(1);
+    final tightTitle = compact || systemScale > 1.05;
     final motion = context.motion;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -271,7 +275,9 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                         bottom: 12,
                         child: Align(
                           alignment: AlignmentDirectional.topStart,
-                          child: ConstrainedBox(
+                          child: MediaQuery.withClampedTextScaling(
+                            maxScaleFactor: 1.15,
+                            child: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: widget.showMascot
                                   ? math
@@ -334,7 +340,7 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   ],
                                   Text(
                                     widget.title,
-                                    maxLines: compact ? 1 : 2,
+                                    maxLines: tightTitle ? 1 : 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
@@ -391,6 +397,7 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   ],
                                 ],
                               ),
+                            ),
                             ),
                           ),
                         ),

@@ -810,7 +810,9 @@ class _RailSection extends StatelessWidget {
           accent: accent,
         ),
         SizedBox(
-          height: 198,
+          // با «اندازهٔ فونت» بزرگ‌تر، ریل هم بزرگ می‌شود تا ناحیهٔ اطلاعات
+          // کارت جا داشته باشد؛ در حالت عادی همان ۱۹۸/۱۶۸ قبلی است.
+          height: cartoonRailHeight(context),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -820,7 +822,7 @@ class _RailSection extends StatelessWidget {
             itemCount: visible.length,
             separatorBuilder: (_, __) => const SizedBox(width: 11),
             itemBuilder: (context, index) => SizedBox(
-              width: 168,
+              width: cartoonRailWidth(context),
               child: CartoonCard(
                 cartoon: visible[index],
                 compact: true,
@@ -844,11 +846,14 @@ class _RailLoading extends StatelessWidget {
     return Column(
       children: [
         SectionHeader(title: title),
-        const SizedBox(
-          height: 198,
+        SizedBox(
+          height: cartoonRailHeight(context),
           child: Padding(
-            padding: EdgeInsets.only(top: 4, bottom: 12),
-            child: ShimmerCompactRow(itemWidth: 168, itemCount: 3),
+            padding: const EdgeInsets.only(top: 4, bottom: 12),
+            child: ShimmerCompactRow(
+              itemWidth: cartoonRailWidth(context),
+              itemCount: 3,
+            ),
           ),
         ),
       ],

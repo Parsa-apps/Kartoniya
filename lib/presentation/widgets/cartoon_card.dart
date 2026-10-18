@@ -209,11 +209,26 @@ class CartoonCard extends ConsumerWidget {
   }
 }
 
+/// ضریب بزرگ‌نمایی متن سیستم، محدود به ۱ تا ۱٫۴.
+///
+/// با «اندازهٔ فونت» بزرگ‌تر، ناحیهٔ اطلاعات کارت هم بزرگ‌تر می‌شود تا متن
+/// عنوان/دسته سرریز نکند؛ در حالت عادی مقدارش دقیقاً ۱ است و چیدمان قبلی
+/// دست‌نخورده می‌ماند.
+double cartoonTextScale(BuildContext context) =>
+    MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.4).toDouble();
+
+/// ارتفاع ریل افقی کارت‌ها؛ با متن بزرگ هم‌راستا بزرگ می‌شود.
+double cartoonRailHeight(BuildContext context) => 198 * cartoonTextScale(context);
+
+/// عرض کارت داخل ریل افقی؛ با متن بزرگ هم‌راستا بزرگ می‌شود.
+double cartoonRailWidth(BuildContext context) => 168 * cartoonTextScale(context);
+
 /// نسبت ابعاد کارت در گریدهای ستونی.
 ///
-/// ارتفاع ناحیهٔ متن ثابت (≈۸۶px) نگه داشته می‌شود و عرض کاشی از خود گرید
-/// محاسبه می‌شود؛ بنابراین روی گوشی ۳۲۰px هم عنوان و ردیف دسته/امتیاز جا
-/// می‌شوند و روی گوشی بزرگ‌تر فضای خالی زیر کارت ایجاد نمی‌شود.
+/// ارتفاع ناحیهٔ متن (≈۸۶px در حالت عادی) با اندازهٔ متن سیستم بزرگ می‌شود
+/// و عرض کاشی از خود گرید محاسبه می‌شود؛ بنابراین روی گوشی ۳۲۰px هم عنوان
+/// و ردیف دسته/امتیاز جا می‌شوند و روی گوشی بزرگ‌تر فضای خالی زیر کارت
+/// ایجاد نمی‌شود.
 double cartoonGridAspectRatio(
   BuildContext context, {
   double maxCrossAxisExtent = 210,
@@ -228,7 +243,7 @@ double cartoonGridAspectRatio(
   );
   final tile = (available - spacing * (columns - 1)) / columns;
   if (tile <= 0) return .78;
-  return tile / (tile / imageRatio + footerHeight);
+  return tile / (tile / imageRatio + footerHeight * cartoonTextScale(context));
 }
 
 class _AgeBadge extends StatelessWidget {
