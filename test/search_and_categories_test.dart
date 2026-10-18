@@ -36,9 +36,11 @@ void main() {
     );
     await tester.pump();
     // Splash: ورود ۱۳۰۰ms + مکث ۱۷۰ms + خروج ۲۴۰ms + ترنزیشن مسیر.
+    // به‌جای اتکا به یک زمان دقیق، تا ظاهر شدن خانه پمپ می‌کنیم.
     await tester.pump(const Duration(milliseconds: 1400));
-    await tester.pump(const Duration(milliseconds: 500));
-    await tester.pump(const Duration(milliseconds: 500));
+    for (var i = 0; i < 20 && find.byType(HomePage).evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 150));
+    }
     expect(find.byType(HomePage), findsOneWidget);
   }
 

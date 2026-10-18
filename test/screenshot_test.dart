@@ -99,7 +99,9 @@ void main() {
 
       // ——— Home ———
       await tester.pump(const Duration(milliseconds: 700));
-      await tester.pump(const Duration(milliseconds: 500));
+      for (var i = 0; i < 20 && find.byType(HomePage).evaluate().isEmpty; i++) {
+        await tester.pump(const Duration(milliseconds: 150));
+      }
       expect(find.byType(HomePage), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 500));
       await capture('02_home_top');

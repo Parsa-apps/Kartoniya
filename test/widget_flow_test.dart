@@ -40,9 +40,12 @@ void main() {
 
     expect(find.text('دنیای شاد و امن کودکان'), findsOneWidget);
 
-    // اسپلش پس از ~۱٫۵ ثانیه جای خود را به آن‌بوردینگ می‌دهد.
-    await tester.pump(const Duration(milliseconds: 1700));
-    await tester.pump(const Duration(milliseconds: 500));
+    // اسپلش پس از ~۱٫۷ ثانیه جای خود را به آن‌بوردینگ می‌دهد؛ چند فریم
+    // کوچک پمپ می‌شود تا ورود، مکث و خروج در زمان‌بندی واقعی کامل شوند.
+    await tester.pump(const Duration(milliseconds: 1400));
+    for (var i = 0; i < 16 && find.text('رد کردن').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 150));
+    }
     expect(find.text('رد کردن'), findsOneWidget);
 
     await tester.tap(find.text('رد کردن'));
