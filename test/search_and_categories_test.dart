@@ -227,8 +227,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 350));
 
     expect(
-      FocusManager.instance.primaryFocus?.context?.widget,
-      isA<EditableText>(),
+      tester.widget<TextField>(searchField()).focusNode?.hasFocus,
+      isTrue,
       reason: 'پس از لمس فندوقی، فیلد جست‌وجو باید فوکوس بگیرد.',
     );
     expect(tester.takeException(), isNull);
