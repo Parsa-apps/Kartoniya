@@ -347,7 +347,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
               ),
             ),
           ),
-          // ——— دعوت برندی بلوطی ———
+          // ——— دعوت برندی فندوقی ———
           SliverToBoxAdapter(
             child: StaggeredReveal(
               index: 4,
@@ -360,19 +360,19 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   2,
                 ),
                 child: KartoniyaStoryBanner(
-                  // صحنهٔ رنگیِ بدون شخصیت؛ خود بلوطیِ زنده سمت راست
+                  // صحنهٔ رنگیِ بدون شخصیت؛ خود فندوقیِ زنده سمت راست
                   // می‌نشیند تا شخصیت دوتایی نشود.
                   scene: KartoniyaScene.fandaqNight,
                   height: 172,
                   showMascot: true,
-                  eyebrow: 'همراه بلوطی',
+                  eyebrow: 'همراه فندوقی',
                   title: childProfile.hasName
                       ? '${childProfile.name}، امروز کجا بریم؟'
                       : 'امروز کجا بریم؟',
                   subtitle: 'یک قصهٔ تازه همیشه منتظر توست.',
                   actionLabel: 'دیدن دسته‌ها',
                   onAction: widget.onOpenCategories,
-                  semanticLabel: 'بلوطی در جزیرهٔ ابری کارتونیا',
+                  semanticLabel: 'فندوقی در جزیرهٔ ابری کارتونیا',
                 ),
               ),
             ),
@@ -415,10 +415,10 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   showMascot: true,
                   eyebrow: 'وقت خواب',
                   title: 'قصه‌های آرام شب',
-                  subtitle: 'بلوطی قصه‌های خیلی آرام را پیشنهاد می‌دهد.',
+                  subtitle: 'فندوقی قصه‌های خیلی آرام را پیشنهاد می‌دهد.',
                   actionLabel: 'قصه‌های شب',
                   onAction: widget.onOpenCategories,
-                  semanticLabel: 'بلوطی خوابیده روی ابرها',
+                  semanticLabel: 'فندوقی خوابیده روی ابرها',
                 ),
               ),
             ),

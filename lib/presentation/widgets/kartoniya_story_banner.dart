@@ -30,7 +30,7 @@ extension KartoniyaSceneAssets on KartoniyaScene {
       };
 }
 
-/// تصویر «بلوطی» با اندازهٔ دلخواه.
+/// تصویر «فندوقی» با اندازهٔ دلخواه.
 ///
 /// به‌جای یک PNG ثابت، همان شخصیت لایه‌ای و متحرک نمایش داده می‌شود؛ فقط
 /// بدون لمس و شناوری تا در بنرها/آواتارها آرام بماند. تصویر کامل
@@ -41,7 +41,7 @@ class PreRenderedFlak extends StatelessWidget {
     this.width,
     this.height,
     this.alignment = Alignment.center,
-    this.semanticLabel = 'بلوطی، شخصیت کارتونی کارتونیا',
+    this.semanticLabel = 'فندوقی، شخصیت کارتونی کارتونیا',
     this.animate = true,
     this.mood = MascotMood.happy,
     this.greet = false,
@@ -247,7 +247,7 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   width: mascotWidth,
                                   height: widget.height * .99,
                                   semanticLabel:
-                                      'بلوطی، شخصیت کارتونی کارتونیا',
+                                      'فندوقی، شخصیت کارتونی کارتونیا',
                                 ),
                               ),
                             ),
