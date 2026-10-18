@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartoniya/data/models/cartoon_model.dart';
 import 'package:kartoniya/data/providers/cartoons_provider.dart';
+import 'package:kartoniya/data/repositories/local_cartoon_repository.dart';
 import 'package:kartoniya/main.dart';
 import 'package:kartoniya/presentation/pages/cartoon_detail_page.dart';
 import 'package:kartoniya/presentation/pages/categories_page.dart';
@@ -201,5 +203,30 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump(const Duration(milliseconds: 200));
     expect(tester.takeException(), isNull);
+  });
+
+  test('هر دستهٔ محلی یک آیکون برداری یکتا دارد', () async {
+    final categories = await LocalCartoonRepository().fetchCategories();
+    expect(categories, isNotEmpty);
+
+    final icons = categories.map(categoryIcon).toList(growable: false);
+    expect(
+      icons.toSet(),
+      hasLength(categories.length),
+      reason: 'نشان دسته‌ها باید از هم قابل تشخیص باشد.',
+    );
+
+    // شناسهٔ ناشناخته نباید مربع خالی یا استثنا بسازد.
+    expect(
+      categoryIcon(
+        const CategoryModel(
+          id: 'unknown',
+          name: 'ناشناخته',
+          emoji: '✨',
+          colorValue: 0xFF000000,
+        ),
+      ),
+      Icons.category_rounded,
+    );
   });
 }
