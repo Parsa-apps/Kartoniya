@@ -284,7 +284,7 @@ class PosterScenePainter extends CustomPainter {
         ..lineTo(dx + size.width * .14, 0)
         ..lineTo(size.width * .2 + dx * .6, size.height)
         ..lineTo(size.width * .04 + dx * .6, size.height)
-        ..closePath();
+        ..close();
       canvas.save();
       canvas.clipRect(Offset.zero & size);
       canvas.drawPath(path, rays);

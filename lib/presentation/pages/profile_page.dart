@@ -441,9 +441,8 @@ class _ChildEditorSheetState extends ConsumerState<_ChildEditorSheet> {
     final notifier = ref.read(childProfileProvider.notifier);
     await notifier.rename(_nameController.text);
     await notifier.setAvatar(_avatarIndex);
-    if (context.mounted) {
-      Navigator.of(context).pop();
-    }
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   @override

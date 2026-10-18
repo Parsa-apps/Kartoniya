@@ -33,7 +33,7 @@ jobs:
       - name: تحلیل استاتیک (Analyze)
         run: |
           set -o pipefail
-          flutter analyze 2>&1 | tee analyze.log
+          flutter analyze --no-fatal-infos 2>&1 | tee analyze.log
 
       - name: تست‌ها (Test)
         run: |

@@ -600,13 +600,13 @@ class _SeekBurstOverlay extends StatelessWidget {
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        Icon(
+                        const Icon(
                           Icons.forward_10_rounded,
                           color: Colors.white,
                           size: 30,
                         ),
                       ] else ...[
-                        Icon(
+                        const Icon(
                           Icons.replay_10_rounded,
                           color: Colors.white,
                           size: 30,
