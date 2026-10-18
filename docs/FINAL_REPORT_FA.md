@@ -10,11 +10,28 @@
 |---|---|
 | شاخه | `arena/f29eaa28-kartoniya` |
 | commit شروع | `b572e32` (merge فاز ۶ پیش از کار شخصیت) |
-| آخرین commit کد/تست | `59e843b` — «refactor(search): drop the now-unused chip icon parameter» |
-| commitهای بعدی | `2eb66f0` (تصاویر CI) و `docs:` همین گزارش |
+| آخرین commit کد/تست | `11c0961` — «fix(motion): keep released surfaces on the identity matrix» |
+| commitهای بعدی | `a8dae3a` (قالب‌بندی ربات)، `7a0fd92` (تأیید CI) و `docs:` این گزارش |
 | تعداد commitها در این بازه | بیش از ۶۰ |
 
-## ۰) این دور (فاز ۶ — بازبینی حرفه‌ای)
+## ۰) این دورها
+
+### ۰٫۱) سیستم عمق و لمس سه‌بعدی‌نما (`11c0961`)
+
+- **یک منبع نور مشترک:** سایهٔ کارت‌ها از یک لایه به دو لایه تغییر کرد؛ یک
+  سایهٔ تماس نزدیک (سطح را روی صفحه می‌نشاند) و یک سایهٔ محیطی نرم (عمق
+  می‌دهد). `mediumShadow` هم همین ساختار را گرفت.
+- **جلای لبهٔ بالا:** روی تصویر کارت‌ها یک گرادیان سفید ۴۲ پیکسلی اضافه شد
+  که لبهٔ بالایی را روشن می‌کند و همان جهت نور سایه‌ها را ادامه می‌دهد.
+- **فشردن فیزیکی:** `PressableScale` حالا علاوه بر مقیاس، یک کج‌شدن
+  پرسپکتیوی ~۳ درجه با `Matrix4` اعمال می‌کند. چون این ویجت در کارت‌ها،
+  دسته‌ها، جست‌وجو و دکمه‌ها استفاده می‌شود، همهٔ سطوح یک رفتار لمسی
+  یکدست دارند. در حالت رها ماتریس دقیقاً «همانی» است و با «کاهش حرکت»
+  هیچ تبدیلی اعمال نمی‌شود؛ تعداد Tickerها هم نسبت به قبل زیاد نشد.
+- **تست:** `test/press_depth_test.dart` (۲ تست) عمق هنگام فشردن و خاموشی
+  کامل آن با کاهش حرکت را بررسی می‌کند. مجموع تست‌ها ۷۲ شد.
+
+### ۰٫۲) فاز ۶ — بازبینی حرفه‌ای
 
 بیشتر بندهای این فاز در دورهای قبل پیاده و آزمایش شده‌اند (اسپلش مرحله‌ای،
 خانهٔ بازطراحی‌شده، ریگ و چهار حالت چهره، جست‌وجوی فارسی، محافظ‌های ۳۲۰px و
@@ -143,18 +160,19 @@
   ذخیره‌سازی محلی تغییر نکرده‌اند؛ تغییرات صفحهٔ پخش فقط ظاهری/متنی است.
 - هیچ dependency جدیدی اضافه نشده است.
 
-## ۶) نتیجهٔ واقعی CI (commit `59e843b`)
+## ۶) نتیجهٔ واقعی CI (commit `7a0fd92`)
 
 | بررسی | نتیجه |
 |---|---|
-| `dart format lib test` | «Formatted 63 files (0 changed)» |
-| `flutter analyze` | `No issues found! (ran in 9.6s)` |
-| `flutter test` | `00:14 +70 ~1: All tests passed!` (۷۰ موفق، ۱ skip اختیاری اسکرین‌شات) |
+| `dart format lib test` | «Formatted 64 files (0 changed) in 0.89 seconds» |
+| `flutter analyze` | `No issues found! (ran in 13.9s)` |
+| `flutter test` | `00:22 +72 ~1: All tests passed!` (۷۲ موفق، ۱ skip اختیاری اسکرین‌شات) |
 | Build Android APK | موفق |
-| UI Snapshots | موفق — run [`39171354673`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39171354673) |
+| UI Snapshots | موفق — run [`39172906912`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39172906912) |
 
-- Artifact APK: `kartoniya-release-apks` (۶۵٬۸۵۴٬۵۸۷ بایت) در run
-  [`39171354654`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39171354654).
+- Artifact APK: `kartoniya-release-apks` (۶۵٬۸۶۲٬۶۶۹ بایت) در run
+  [`39173492787`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39173492787).
+- Artifact اسکرین‌شات‌ها: `kartoniya-ui-screenshots` (۸٬۳۴۱٬۹۸۱ بایت).
 - ویدئوی بازبینی انیمیشن (رندر همان لایه‌ها با همان منحنی‌ها):
   `docs/mascot_animation_demo.gif` و تصویر پنج حالت:
   `docs/screenshots/13_mascot_faces.png`.
