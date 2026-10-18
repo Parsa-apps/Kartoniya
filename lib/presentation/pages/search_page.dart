@@ -13,7 +13,6 @@ import '../../data/providers/cartoons_provider.dart';
 import '../widgets/cartoon_card.dart';
 import '../widgets/category_tile.dart';
 import '../widgets/kartoniya_mascot.dart';
-import '../widgets/kartoniya_story_banner.dart';
 import '../widgets/page_intro.dart';
 import '../widgets/shimmer_loader.dart';
 import '../widgets/state_views.dart';
