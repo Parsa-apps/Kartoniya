@@ -57,12 +57,16 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           # همان خطوط را به‌صورت annotation قابل‌خواندن از API منتشر کن
           if [ -f analyze.log ]; then
-            grep -E "^\s+(error|warning|info)" analyze.log | head -n 100 | sed 's/^ *//' | while IFS= read -r line; do
-              echo "::error::ANALYZE $line"
+            sed -n '1,90p' analyze.log | while IFS= read -r line; do
+              clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r')"
+              [ -n "$clean" ] && echo "::error::A| $clean"
             done
+          else
+            echo "::error::A| analyze.log missing (command failed before output?)"
           fi
           if [ -f test.log ]; then
-            grep -E "(FAILED|Expected|Actual|which:|test\.dart)" test.log | head -n 80 | sed 's/^ *//' | while IFS= read -r line; do
-              echo "::error::TEST $line"
+            sed -n '1,90p' test.log | while IFS= read -r line; do
+              clean="$(printf '%s' "$line" | sed 's/^[[:space:]]*//' | tr -d '\r')"
+              [ -n "$clean" ] && echo "::error::T| $clean"
             done
           fi
