@@ -387,15 +387,19 @@ class _SpotlightCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  'جزئیات و قسمت‌ها',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelMedium
-                                      ?.copyWith(
-                                        color: Colors.white.withOpacity(.9),
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                Flexible(
+                                  child: Text(
+                                    'جزئیات و قسمت‌ها',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          color: Colors.white.withOpacity(.9),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
                                 ),
                                 const SizedBox(width: 2),
                                 Icon(

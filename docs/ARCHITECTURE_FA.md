@@ -45,7 +45,7 @@ Core (AppPreferences, theme, utilities)
 ### عدم ورود و عدم پرداخت در نسخهٔ فعلی
 برای مخاطب کودک، جمع‌آوری حساب و داده باید حداقلی باشد. تا زمانی که نیاز تجاری تأیید نشده، ورود، analytics و SDK پرداخت اضافه نشده‌اند. اگر پرداخت اضافه شد، باید در یک feature جدا، با Parental Gate و تست چرخه‌های خطا پیاده‌سازی شود.
 
-## Design System (v1.2)
+## Design System (v1.3)
 
 - **Primary:** `#2E9BEB` (آبی آسمانی) — پایهٔ برند
 - **Secondary:** `#17BFA8` (فیروزه‌ای) — حس اعتماد و تازگی
@@ -53,9 +53,12 @@ Core (AppPreferences, theme, utilities)
 - **Typography:** Vazirmatn 33.003 (OFL) با ۴ وزن به‌صورت **asset باندل‌شده**؛ `google_fonts` حذف شد تا اولین اجرا بدون شبکه باشد و render قطعی بماند. ارقام نمایشی با `toFaDigits()` فارسی می‌شوند
 - **Radius:** 12 / 18 / 24 / 32 / 42 — **Spacing:** 4 / 8 / 16 / 24 / 32، حاشیهٔ صفحه `AppTheme.pageMargin`
 - **Shadow:** soft/medium بر پایهٔ brightness + `AppTheme.glow(color)` برای دکمه‌های CTA
-- **Motion:** `AppMotion` تنها منبع duration/curve است (micro ۱۵۰ms تا entrance ۵۲۰ms، curve امضای `Cubic(.22,1,.36,1)`). `MotionScope` + `context.motion` با «کاهش حرکت» (flag سیستم یا تنظیم والدین) همهٔ انیمیشن‌ها را به صفر می‌رساند؛ بنرها پارالاکس دارند، کارت‌ها مقیاس لمسی، و ترنزیشن صفحات از `app_routes` می‌آید
-- **تصویرسازی:** پوسترهای کاتالوگ با `PosterScenePainter` به‌صورت برداریِ قطعی (seed از شناسهٔ کارتون) رسم می‌شوند؛ بدون blur گران و سازگار با هر تراکم. فِلَکِ برداریِ قبلی برای حالت‌های احساسی حفظ شده است.
-- **دارایی‌های برند در فاز ۵:** دو تصویر از فِلَک (یکی در حال کتاب‌خواندن) و سه محیط کارتونی به‌صورت WebP محلی و بهینه‌شده استفاده می‌شوند؛ هر پنج مورد **تصویر سه‌بعدی از پیش‌رندرشده** هستند. فایل GLB/GLTF، ریگ، رندر سه‌بعدی بلادرنگ یا موتور سه‌بعدی اضافه نشده است؛ پارالاکس فقط لایه‌های تصویر را جابه‌جا می‌کند و با Reduce Motion خاموش می‌شود.
+- **Motion:** `AppMotion` تنها منبع duration/curve است (micro ۱۵۰ms تا entrance ۵۲۰ms، curve امضای `Cubic(.22,1,.36,1)`). `MotionScope` + `context.motion` با «کاهش حرکت» (flag سیستم یا تنظیم والدین) همهٔ انیمیشن‌ها را به صفر می‌رساند؛ داخل `initState` فقط `context.motionEnabledAtInit` (snapshot ایستا) خوانده می‌شود و `didChangeDependencies` آن را به‌روز می‌کند. بنرها پارالاکس دارند، کارت‌ها مقیاس لمسی، ورودی‌ها `StaggeredReveal`، و ترنزیشن صفحات از `app_routes` می‌آید.
+- **وضعیت‌های داده:** هر برگه از `AsyncValue.when` استفاده می‌کند؛ loading با skeleton/Shimmer، empty با `EmptyStateView` + بنر فِلَک، error با `ErrorStateView` و retry که provider کاتالوگ/دسته را invalidate می‌کند. جست‌وجو با debounce ۲۶۰ms روی `searchResultsProvider` می‌نشیند و فیلتر دسته حالت محلی صفحه است؛ قرارداد providerها تغییر نکرده است.
+- **تصویرسازی:** از فاز ۶ هر کارتون یک پوستر ۴:۳ محلی از طریق `CartoonModel.artworkAsset` دارد و `CartoonArtwork` آن را با `cacheWidth` محدودشده به اندازهٔ منطقی × DPR رندر می‌کند؛ در نبود تصویر یا خطای decode، `PosterScenePainter` برداریِ قطعی (seed از شناسهٔ کارتون) جایگزین می‌شود. `KartoniyaMascot` برداری برای حالت‌های احساسی حفظ شده است.
+- **کامپوننت‌های مشترک فاز ۶:** `PageIntro` (سربرگ برگه‌ها با مدالیون/تصویر)، `SectionHeader` + `MiniSectionLabel`، `CategoryPill`/`CategoryPillRow` و `CategoryTile`، `CartoonCard` یکپارچه برای گرید/ریل/نتایج، `KartoniyaLogoMark` برداری و `KartoniyaStoryBanner` با صحنهٔ از پیش‌رندرشده. خانه، دسته‌ها، جست‌وجو و علاقه‌مندی‌ها همین اجزا را به‌کار می‌برند تا رفتار و فاصله‌ها یکدست بماند.
+- **اسپلش:** `SplashPage` با `cloud_night_splash.webp`، ورود مرحله‌ای کنترل‌شده (۱۳۰۰ms)، انتظار کاتالوگ با timeout مستقل، مکث ۱۷۰ms، خروج ۲۴۰ms و `pushReplacement`؛ هیچ تأخیر مصنوعی برای نمایش طولانی‌تر ندارد. با Reduce Motion، ورود/خروج صفر می‌شود و محتوای نهایی بی‌درنگ می‌آید.
+- **دارایی‌های برند:** دو تصویر از فِلَک (یکی در حال کتاب‌خواندن)، سه محیط کارتونی، پس‌زمینهٔ اسپلش و هشت پوستر کاتالوگ به‌صورت WebP محلی و بهینه‌شده استفاده می‌شوند؛ همه **تصویر سه‌بعدی از پیش‌رندرشده** هستند. فایل GLB/GLTF، ریگ، رندر سه‌بعدی بلادرنگ یا موتور سه‌بعدی اضافه نشده است؛ پارالاکس فقط لایه‌های تصویر را جابه‌جا می‌کند و با Reduce Motion خاموش می‌شود. بودجهٔ حجم گروه‌ها در `test/brand_visual_assets_test.dart` بررسی می‌شود.
 - **Dark mode:** از `ThemeMode` و ColorScheme واقعی؛ سطح‌ها navy نرم با حاشیهٔ ۷٪ سفید روی کارت/دیالوگ تا عمق حفظ شود
 
 ## مرز آماده‌سازی درآمدزایی (بدون فعال‌سازی پرداخت)
@@ -73,11 +76,16 @@ Core (AppPreferences, theme, utilities)
 4. URLهای ویدئو باید HTTPS باشند. هنگام اتصال API، token فقط در secure storage نگه‌داری شود، نه SharedPreferences.
 5. پیام خطای player جزئیات فنی یا URL را به کاربر نمایش نمی‌دهد.
 
-## مرزهای فعلی نسخهٔ ۱.۲.۱
+## مرزهای فعلی نسخهٔ ۱.۳.۰
 
 - URL نمونهٔ Flutter فقط برای اعتبارسنجی فنی player است و محتوای نهایی محصول نیست.
 - backend، دانلود آفلاین، notification، پرداخت و analytics هنوز در Scope تأییدشده نیستند.
-- build/analyze باید در محیط دارای Flutter انجام شود؛ در محیط agent فعلی Flutter SDK نصب نبود.
+- build/analyze باید در محیط دارای Flutter انجام شود؛ در محیط agent فعلی Flutter SDK نصب نبود و نتایج واقعی از GitHub Actions (Flutter 3.19.6) گزارش می‌شوند.
+- اسکرین‌شات‌های تولیدشده در CI با `RenderRepaintBoundary.toImage` رندر ویجتی‌اند، نه capture از دستگاه؛ آزمون لمس/اسکرول/پخش روی گوشی واقعی همچنان لازم است.
+
+## فاز ۶ — بازطراحی UI
+
+خانه، اسپلش، دسته‌ها، جست‌وجو و علاقه‌مندی‌ها با دادهٔ واقعی repository و بدون تغییر قرارداد API بازطراحی شدند. الگوی اصلی: صفحه‌ها فقط provider می‌خوانند؛ اجزای بصری مشترک در `presentation/widgets` می‌مانند؛ تصویر محتوا metadata مدل است (`artworkAsset`) و در ویجت hard-code نمی‌شود. برای جست‌وجو یک `searchFocusRequestProvider` (شمارندهٔ سراسری) اضافه شد تا لمس نوار جست‌وجوی خانه، تب جست‌وجو را باز و فیلد را فوکوس کند؛ این تنها provider جدید است و رفتار `searchQueryProvider`/`searchResultsProvider` را تغییر نمی‌دهد.
 
 ## قابلیت بعدی پیشنهادی
 

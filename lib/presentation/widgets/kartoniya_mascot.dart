@@ -77,10 +77,13 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
     _bobAnimation = Tween<double>(begin: 0, end: -widget.size * .04).animate(
       CurvedAnimation(parent: _bob, curve: Curves.easeInOut),
     );
-    if (context.motionEnabledAtInit && widget.float) {
+    // در initState دسترسی به MediaQuery مجاز نیست؛ فقط snapshot ایستای
+    // کاهش حرکت خوانده می‌شود و didChangeDependencies آن را به‌روز می‌کند.
+    _motionEnabled = context.motionEnabledAtInit;
+    if (_motionEnabled && widget.float) {
       _bob.repeat(reverse: true);
     }
-    if (context.motionEnabledAtInit) _scheduleBlink();
+    if (_motionEnabled) _scheduleBlink();
   }
 
   @override
@@ -96,7 +99,8 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
   }
 
   void _syncMotion() {
-    if (context.motion.enabled) {
+    _motionEnabled = context.motion.enabled;
+    if (_motionEnabled) {
       if (widget.float && !_bob.isAnimating) _bob.repeat(reverse: true);
       if (_blinkTimer == null) _scheduleBlink();
       return;
@@ -111,7 +115,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
   }
 
   void _reactToTap() {
-    if (context.motion.enabled) _reaction.forward(from: 0);
+    if (_motionEnabled) _reaction.forward(from: 0);
     HapticFeedback.selectionClick();
     widget.onTap?.call();
   }
@@ -119,14 +123,15 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
   final _blinkRandom = math.Random();
 
   Timer? _blinkTimer;
+  bool _motionEnabled = true;
 
   void _scheduleBlink() {
     _blinkTimer?.cancel();
-    if (!mounted || !context.motion.enabled) return;
+    if (!mounted || !_motionEnabled) return;
     _blinkTimer = Timer(
       Duration(milliseconds: 1600 + _blinkRandom.nextInt(2600)),
       () async {
-        if (!mounted || !context.motion.enabled) return;
+        if (!mounted || !_motionEnabled) return;
         try {
           await _blink.forward().orCancel;
           await _blink.reverse().orCancel;
@@ -257,6 +262,22 @@ class _MascotPainter extends CustomPainter {
           ],
           stops: const [.55, 1],
         ).createShader(auraRect),
+    );
+
+    // هالهٔ رنگ برند پشت شخصیت؛ accent را به سطح صفحه وصل می‌کند.
+    final aura = Rect.fromCenter(
+      center: Offset(s * .5, s * .56),
+      width: s * 1.02,
+      height: s * 1.02,
+    );
+    canvas.drawCircle(
+      aura.center,
+      aura.width / 2,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [accent.withOpacity(.16), accent.withOpacity(0)],
+          stops: const [.5, 1],
+        ).createShader(aura),
     );
 
     // ——— سایهٔ زمین (بسیار نرم، بدون blur سنگین) ———

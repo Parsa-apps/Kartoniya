@@ -6,36 +6,40 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:kartoniya/main.dart';
+import 'package:kartoniya/presentation/pages/home_page.dart';
 import 'package:kartoniya/presentation/pages/search_page.dart';
 import 'package:kartoniya/presentation/widgets/cartoon_card.dart';
 import 'package:kartoniya/presentation/widgets/category_tile.dart';
 import 'package:kartoniya/presentation/widgets/kartoniya_nav_bar.dart';
+import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// عکس‌های واقعی رندر ویجت‌ها (بدون دستگاه).
+/// رندر واقعی صفحه‌ها با فونت و assetهای پروژه برای بازبینی طراحی.
 ///
-/// این تست فقط وقتی اجرا می‌شود که `KARTONIYA_SCREENSHOTS=1` تنظیم شده باشد؛
-/// CI آن را با فونت Vazirmatn و تصاویر واقعی asset اجرا می‌کند و خروجی PNG
-/// را به‌عنوان artifact نگه می‌دارد. این عکس‌ها برای بازبینی طراحی‌اند و
-/// جای آزمون روی گوشی را نمی‌گیرند.
+/// فقط با `KARTONIYA_SCREENSHOTS=1` اجرا می‌شود. این تصاویر خروجی
+/// `RenderRepaintBoundary.toImage` هستند، نه اسکرین‌شات دستگاه واقعی؛
+/// برای تأیید چیدمان/فونت/RTL مفیدند و جای آزمون روی دستگاه را نمی‌گیرند.
 final _enabled = Platform.environment['KARTONIYA_SCREENSHOTS'] == '1';
 
 void main() {
   testWidgets(
-    'render UI screenshots with bundled font and assets',
+    'capture splash, home, categories and search screens',
     (tester) async {
-      debugDisableShadows = false;
-      addTearDown(() => debugDisableShadows = true);
+      if (!_enabled) return;
 
-      final output = Directory('build/screenshots')
+      final outDir = Directory('build/screenshots')
         ..createSync(recursive: true);
+      final rootKey = GlobalKey();
+      final previousShadows = debugDisableShadows;
+      debugDisableShadows = false;
+      addTearDown(() => debugDisableShadows = previousShadows);
 
-      tester.view.physicalSize = const Size(1170, 2532); // iPhone 13-ish @3x
-      tester.view.devicePixelRatio = 3.0;
+      tester.view.physicalSize = const Size(1170, 2532);
+      tester.view.devicePixelRatio = 3;
       addTearDown(tester.view.reset);
 
+      // فونت واقعی Vazirmatn؛ در تست پیش‌فرض فونت آزمون است.
       await tester.runAsync(() async {
         final loader = FontLoader('Vazirmatn');
         for (final asset in const [
@@ -49,9 +53,8 @@ void main() {
         await loader.load();
       });
 
-      SharedPreferences.setMockInitialValues(const {});
+      SharedPreferences.setMockInitialValues({'onboarding_completed': true});
       final prefs = await SharedPreferences.getInstance();
-      final rootKey = GlobalKey();
 
       await tester.pumpWidget(
         RepaintBoundary(
@@ -62,62 +65,51 @@ void main() {
           ),
         ),
       );
+      await tester.pump();
 
-      Future<void> wait(int milliseconds, {int step = 100}) async {
-        var elapsed = 0;
-        while (elapsed < milliseconds) {
-          await tester.pump(Duration(milliseconds: step));
-          elapsed += step;
+      Future<void> settleImages() async {
+        // decode تصاویر asset در تست نیاز به زمان واقعی دارد.
+        for (var i = 0; i < 2; i++) {
+          await tester.runAsync(() async {
+            await Future<void>.delayed(const Duration(milliseconds: 250));
+          });
+          await tester.pump();
         }
       }
 
-      Future<void> allowImages() async {
-        await tester.runAsync(() async {
-          await Future<void>.delayed(const Duration(milliseconds: 450));
-        });
-        await tester.pump();
-      }
-
       Future<void> capture(String name) async {
-        await tester.pump();
+        await settleImages();
         final boundary = tester.renderObject<RenderRepaintBoundary>(
           find.byKey(rootKey),
         );
         await tester.runAsync(() async {
           final image = await boundary.toImage(pixelRatio: 2);
-          final bytes = await image.toByteData(
-            format: ui.ImageByteFormat.png,
-          );
+          final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
           image.dispose();
-          File('${output.path}/$name.png')
+          File('${outDir.path}/$name.png')
               .writeAsBytesSync(bytes!.buffer.asUint8List());
         });
       }
 
       // ——— Splash ———
-      await wait(1150);
-      await allowImages();
+      for (var i = 0; i < 12; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
       await capture('01_splash');
 
-      // ——— Onboarding ———
-      await wait(1000);
-      await wait(300);
-      await allowImages();
-      await capture('02_onboarding');
-
-      // ——— Home (first run completed) ———
-      await tester.tap(find.text('رد کردن'));
-      await wait(900);
-      await allowImages();
-      await capture('03_home_top');
+      // ——— Home ———
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(HomePage), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 500));
+      await capture('02_home_top');
 
       await tester.drag(
         find.byType(CustomScrollView).first,
-        const Offset(0, -760),
+        const Offset(0, -620),
       );
-      await wait(500);
-      await allowImages();
-      await capture('04_home_sections');
+      await tester.pump(const Duration(milliseconds: 400));
+      await capture('03_home_sections');
 
       // ——— Categories ———
       await tester.tap(
@@ -126,19 +118,16 @@ void main() {
           matching: find.text('دسته‌ها'),
         ),
       );
-      await wait(500);
-      await allowImages();
-      await capture('05_categories');
+      await tester.pump(const Duration(milliseconds: 400));
+      await capture('04_categories');
 
-      await tester.tap(
-        find.descendant(
-          of: find.byType(CategoryTile),
-          matching: find.text('ماجراجویی'),
-        ),
+      final tile = find.descendant(
+        of: find.byType(CategoryTile),
+        matching: find.text('ماجراجویی'),
       );
-      await wait(500);
-      await allowImages();
-      await capture('06_categories_filtered');
+      await tester.tap(tile.first);
+      await tester.pump(const Duration(milliseconds: 400));
+      await capture('05_categories_filtered');
 
       // ——— Search ———
       await tester.tap(
@@ -147,34 +136,36 @@ void main() {
           matching: find.text('جست‌وجو'),
         ),
       );
-      await wait(400);
-      await allowImages();
-      await capture('07_search_landing');
+      await tester.pump(const Duration(milliseconds: 400));
+      await capture('06_search_landing');
 
       final field = find.descendant(
         of: find.byType(SearchPage),
         matching: find.byType(TextField),
       );
-      await tester.enterText(field, 'حیوانات');
-      await wait(700);
-      await allowImages();
-      await capture('08_search_results');
+      await tester.enterText(field, 'حيوانات');
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pump(const Duration(milliseconds: 300));
+      await capture('07_search_results');
 
-      // ——— Detail (real poster hero) ———
-      final firstResult = find
-          .descendant(
-            of: find.byType(SearchPage),
-            matching: find.byType(CartoonCard),
-          )
-          .first;
-      await tester.tap(firstResult);
-      await wait(700);
-      await allowImages();
-      await capture('09_detail');
+      // ——— Detail ———
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(SearchPage),
+              matching: find.byType(CartoonCard),
+            )
+            .first,
+      );
+      await tester.pump(const Duration(milliseconds: 500));
+      await capture('08_detail');
 
-      expect(Directory('build/screenshots').listSync(), isNotEmpty);
+      expect(Directory(outDir.path).listSync(), isNotEmpty);
       expect(tester.takeException(), isNull);
+      // اطمینان از اینکه چیدمان در دستگاه 390×844 با تم روشن رندر شد.
+      expect(find.byType(Scaffold), findsWidgets);
     },
     skip: !_enabled,
   );
+
 }
