@@ -19,7 +19,8 @@ void showKartoniyaFeedback(
         duration: const Duration(milliseconds: 2300),
         content: Row(
           children: [
-            Icon(icon, color: isDark ? iconColor : AppColors.goldLight, size: 22),
+            Icon(icon,
+                color: isDark ? iconColor : AppColors.goldLight, size: 22),
             const SizedBox(width: 10),
             Expanded(child: Text(message)),
           ],
@@ -40,9 +41,7 @@ Future<bool> confirmParentAction(
     context: context,
     builder: (dialogContext) => AlertDialog(
       icon: Icon(
-        destructive
-            ? Icons.warning_amber_rounded
-            : Icons.info_outline_rounded,
+        destructive ? Icons.warning_amber_rounded : Icons.info_outline_rounded,
         color: destructive ? AppColors.warning : AppColors.sky,
         size: 34,
       ),

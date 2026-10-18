@@ -1,7 +1,7 @@
 name: kartoniya
 description: کارتونیا؛ فضای امن و شاد تماشای انیمیشن برای کودکان و والدین.
 publish_to: 'none'
-version: 1.2.1+4
+version: 1.3.0+5
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -31,11 +31,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - asset/images/flak_3d.webp
-    - asset/images/flak_reading_scene.webp
-    - asset/images/cloudworld_hero.webp
-    - asset/images/storybook_garden.webp
-    - asset/images/twilight_library.webp
+    - asset/images/
+    - asset/images/posters/
+    # فندوقی: لایه‌های ریگ‌شدهٔ شخصیت (بدن، دست‌ها، پاها، برگ و حالت چشم/دهان)
+    - asset/images/fandaq/
   # Vazirmatn (OFL 1.1, see asset/fonts/LICENSE-Vazirmatn.txt) is bundled so the
   # first run works fully offline, cold start avoids a font fetch from the
   # network and the rendering never falls back to a non-Persian fallback font.

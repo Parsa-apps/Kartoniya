@@ -92,7 +92,8 @@ class _AboutUsPageState extends State<AboutUsPage>
                       eyebrow: 'آشنایی با کارتونیا',
                       title: 'قصه‌های خوب، تماشای امن',
                       subtitle: 'ساختهٔ گروه برنامه‌نویسی Parsa Apps',
-                      semanticLabel: 'فِلَک در باغ داستان کارتونیا؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                      semanticLabel:
+                          'فندوقی در باغ داستان کارتونیا؛ تصویر از پیش‌رندرشده',
                     ),
                   ),
                   const SizedBox(height: 26),
@@ -112,17 +113,22 @@ class _AboutUsPageState extends State<AboutUsPage>
                                 ),
                                 child: Text(
                                   'فرشاد پارسا',
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                            color: AppColors.goldDark,
-                                          ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        color: AppColors.goldDark,
+                                      ),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'مدیریت، طراحی و توسعهٔ کارتونیا',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     color: context.secondaryTextColor,
                                   ),
                             ),
@@ -163,15 +169,19 @@ class _AboutUsPageState extends State<AboutUsPage>
                                   children: [
                                     Text(
                                       'پشتیبانی تلگرام',
-                                      style: Theme.of(context).textTheme.titleMedium,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       '@Parsaappsadmin',
-                                      style:
-                                          Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: context.secondaryTextColor,
-                                              ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: context.secondaryTextColor,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -228,7 +238,10 @@ class _AboutUsPageState extends State<AboutUsPage>
                               'و تماشای محتوای کودک است. تنظیمات و فهرست علاقه‌مندی‌ها '
                               'به‌صورت محلی روی دستگاه نگه‌داری می‌شوند.',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     color: context.secondaryTextColor,
                                   ),
                             ),
@@ -275,9 +288,10 @@ class _AboutUsPageState extends State<AboutUsPage>
                         const SizedBox(height: 4),
                         Text(
                           '© Parsa Apps — ساخته‌شده با ❤️ برای کودکان ایران',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: context.secondaryTextColor,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
                         ),
                       ],
                     ),

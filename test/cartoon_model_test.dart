@@ -2,7 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartoniya/data/models/cartoon_model.dart';
 
 void main() {
-  EpisodeModel episode(int number, int minutes, {int seconds = 0}) => EpisodeModel(
+  EpisodeModel episode(int number, int minutes, {int seconds = 0}) =>
+      EpisodeModel(
         id: 'x-$number',
         title: 'قسمت $number',
         durationSeconds: minutes * 60 + seconds,
@@ -42,12 +43,25 @@ void main() {
     test('رنگ artwork از مقدار عددی ساخته می‌شود', () {
       expect(cartoon().artworkColor.value, 0xFF123456);
     });
+
+    test('نشانی تصویر پوستر اختیاری است و در copyWith حفظ می‌شود', () {
+      expect(cartoon().artworkAsset, isNull);
+      final withArt = cartoon().copyWith(
+        artworkAsset: 'asset/images/posters/oscar.webp',
+      );
+      expect(withArt.artworkAsset, 'asset/images/posters/oscar.webp');
+      expect(withArt.copyWith(title: 'دیگر').artworkAsset,
+          'asset/images/posters/oscar.webp');
+    });
   });
 
   group('Aparat sources', () {
     EpisodeModel source(String url) => EpisodeModel(
-      id: 'source', title: 'منبع', durationSeconds: 60, videoUrl: url,
-    );
+          id: 'source',
+          title: 'منبع',
+          durationSeconds: 60,
+          videoUrl: url,
+        );
 
     test('watch page becomes the official embed URL, preserving hash case', () {
       final value = source('https://www.aparat.com/v/SfomR');

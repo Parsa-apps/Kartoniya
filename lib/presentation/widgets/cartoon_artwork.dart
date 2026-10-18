@@ -7,11 +7,12 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/cartoon_model.dart';
 
-/// پوستر برداری زایا برای کاتالوگ.
+/// پوستر محتوای کاتالوگ.
 ///
-/// این راهکار از دریافت تصویر تصادفی و نامناسب برای کودک جلوگیری می‌کند،
-/// با هر اندازهٔ نمایش مقیاس می‌گیرد، صفر بایت asset شبکه دارد و صحنهٔ
-/// تزئینی آن بر اساس شناسهٔ کارتون به‌صورت قطعی (deterministic) تولید می‌شود.
+/// اگر مدل کارتون `artworkAsset` داشته باشد، تصویر WebP محلی با اندازهٔ
+/// رمزگشاییِ مهارشده نمایش داده می‌شود (بدون واکشی شبکه و بدون decode بی‌رویهٔ
+/// ۱۰۸۰px برای کارت کوچک). برای محتوای بدون تصویر، نقاش برداری قطعیِ قبلی
+/// به‌عنوان fallback حفظ شده است تا هیچ سطح برندی خالی نماند.
 class CartoonArtwork extends StatelessWidget {
   const CartoonArtwork({
     super.key,
@@ -35,12 +36,14 @@ class CartoonArtwork extends StatelessWidget {
   final bool emphasis;
 
   /// تگ Hero مشترک بین کارت انتخاب‌شده و صفحهٔ جزئیات.
-  static String heroTagFor(CartoonModel cartoon) => AppMotion.heroTag(cartoon.id);
+  static String heroTagFor(CartoonModel cartoon) =>
+      AppMotion.heroTag(cartoon.id);
 
   @override
   Widget build(BuildContext context) {
     final baseColor = cartoon.artworkColor;
     final isDark = context.isDarkMode;
+    final asset = cartoon.artworkAsset;
 
     return Semantics(
       image: true,
@@ -50,49 +53,75 @@ class CartoonArtwork extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            CustomPaint(
-              painter: PosterScenePainter(
-                baseColor: baseColor,
-                seed: cartoon.id.hashCode.abs(),
-                isDark: isDark,
+            if (asset != null)
+              _ArtworkImage(asset: asset, accent: baseColor)
+            else
+              CustomPaint(
+                painter: PosterScenePainter(
+                  baseColor: baseColor,
+                  seed: cartoon.id.hashCode.abs(),
+                  isDark: isDark,
+                ),
               ),
-            ),
-            // مدالیون شخصیت با هالهٔ نرم.
-            Center(
-              child: Transform.rotate(
-                angle: cartoon.id.hashCode.isEven ? -.05 : .05,
-                child: Container(
-                  width: emphasis ? 128 : 96,
-                  height: emphasis ? 128 : 96,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      colors: [
-                        Colors.white.withOpacity(.34),
-                        Colors.white.withOpacity(.14),
-                      ],
-                      stops: const [.55, 1],
-                    ),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(.38), width: 1.6),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(.16),
-                        blurRadius: emphasis ? 26 : 18,
-                        offset: const Offset(0, 8),
+            if (asset == null)
+              Center(
+                child: Transform.rotate(
+                  angle: cartoon.id.hashCode.isEven ? -.05 : .05,
+                  child: Container(
+                    width: emphasis ? 128 : 96,
+                    height: emphasis ? 128 : 96,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        colors: [
+                          Colors.white.withOpacity(.34),
+                          Colors.white.withOpacity(.14),
+                        ],
+                        stops: const [.55, 1],
                       ),
-                    ],
-                  ),
-                  child: Text(
-                    cartoon.artworkEmoji,
-                    style: TextStyle(
-                      fontSize: emphasis ? 66 : 52,
-                      height: 1,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(.38),
+                        width: 1.6,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(.16),
+                          blurRadius: emphasis ? 26 : 18,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      cartoon.artworkEmoji,
+                      style: TextStyle(
+                        fontSize: emphasis ? 66 : 52,
+                        height: 1,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+            // لایهٔ نرم پایین پوستر برای خوانایی برچسب‌های روی تصویر.
+            if (asset != null && (showAgeBadge || showPlayAffordance))
+              const Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        stops: [0, .28, .55],
+                        colors: [
+                          Color(0x42000000),
+                          Color(0x14000000),
+                          Color(0x00000000),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             if (cartoon.isNew)
               PositionedDirectional(
                 top: 12,
@@ -164,11 +193,11 @@ class CartoonArtwork extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.white,
-                                  shadows: const [
-                                    Shadow(color: Colors.black38, blurRadius: 5),
-                                  ],
-                                ),
+                          color: Colors.white,
+                          shadows: const [
+                            Shadow(color: Colors.black38, blurRadius: 5),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -177,6 +206,57 @@ class CartoonArtwork extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// تصویر محلی پوستر با بودجهٔ decode متناسب با فضای واقعی ویجت.
+///
+/// [cacheWidth] از اندازهٔ منطقی × pixelRatio محاسبه و به بازهٔ ۳۲۰..۱۰۸۰
+/// محدود می‌شود؛ بنابراین کارت‌های کوچک حافظهٔ یک تصویر بزرگ را اشغال نمی‌کنند.
+/// اولین ظاهر شدن با یک fade کوتاه همراه است و با «کاهش حرکت» بلافاصله دیده
+/// می‌شود. اگر asset خوانده نشود، نقاش برداری جای آن را می‌گیرد.
+class _ArtworkImage extends StatelessWidget {
+  const _ArtworkImage({required this.asset, required this.accent});
+
+  final String asset;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final dpr = MediaQuery.maybeOf(context)?.devicePixelRatio ?? 2;
+    final motion = context.motion;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final logicalWidth =
+            constraints.maxWidth.isFinite ? constraints.maxWidth : 360.0;
+        final cacheWidth = (logicalWidth * dpr).clamp(320, 1080).round();
+        return Image.asset(
+          asset,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+          filterQuality: FilterQuality.medium,
+          cacheWidth: cacheWidth,
+          excludeFromSemantics: true,
+          gaplessPlayback: true,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded || !motion.enabled) return child;
+            return AnimatedOpacity(
+              opacity: frame == null ? 0 : 1,
+              duration: AppMotion.quick,
+              curve: AppMotion.curveStandard,
+              child: child,
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => CustomPaint(
+            painter: PosterScenePainter(
+              baseColor: accent,
+              seed: asset.hashCode.abs(),
+              isDark: context.isDarkMode,
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -292,8 +372,7 @@ class PosterScenePainter extends CustomPainter {
     }
 
     // تپه‌های نرم پایین.
-    final hillPaint = Paint()
-      ..color = Colors.white.withOpacity(.13);
+    final hillPaint = Paint()..color = Colors.white.withOpacity(.13);
     final hillPath = Path()
       ..moveTo(0, size.height)
       ..quadraticBezierTo(
@@ -321,7 +400,8 @@ class PosterScenePainter extends CustomPainter {
         size.width * .58,
         size.height * .92,
       )
-      ..quadraticBezierTo(size.width * .8, size.height, size.width, size.height * .9)
+      ..quadraticBezierTo(
+          size.width * .8, size.height, size.width, size.height * .9)
       ..lineTo(size.width, size.height)
       ..close();
     canvas.drawPath(hillPath2, hillPaint2);

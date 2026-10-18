@@ -5,8 +5,10 @@ import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/fa_digits.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
+import '../widgets/kartoniya_logo.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import 'home_page.dart';
 
@@ -108,24 +110,50 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         child: SafeArea(
           child: Column(
             children: [
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppTheme.pageMargin - 10,
-                    vertical: 6,
-                  ),
-                  child: TextButton(
-                    onPressed: _isCompleting ? null : _finish,
-                    child: const Text('رد کردن'),
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.pageMargin - 8,
+                  vertical: 4,
+                ),
+                child: Row(
+                  children: [
+                    const KartoniyaLogoMark(size: 34),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'کارتونیا',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 8),
+                      child: Text(
+                        '${toFaDigits('${_currentPage + 1}')} از '
+                        '${toFaDigits('${_pages.length}')}',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: page.color,
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _isCompleting ? null : _finish,
+                      child: const Text('رد کردن'),
+                    ),
+                  ],
                 ),
               ),
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: _pages.length,
-                  onPageChanged: (value) => setState(() => _currentPage = value),
+                  onPageChanged: (value) =>
+                      setState(() => _currentPage = value),
                   itemBuilder: (context, index) {
                     final item = _pages[index];
                     return AnimatedBuilder(
@@ -135,7 +163,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         if (_pageController.hasClients &&
                             _pageController.position.hasContentDimensions &&
                             context.motion.enabled) {
-                          final pageValue = _pageController.page ?? index.toDouble();
+                          final pageValue =
+                              _pageController.page ?? index.toDouble();
                           delta = (pageValue - index).clamp(-1.0, 1.0);
                         }
                         return Opacity(
@@ -162,7 +191,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                             Text(
                               item.description,
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
                                     color: context.secondaryTextColor,
                                   ),
                             ),
@@ -187,9 +219,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           width: selected ? 26 : 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: selected
-                                ? page.color
-                                : context.softBorderColor,
+                            color:
+                                selected ? page.color : context.softBorderColor,
                             borderRadius: BorderRadius.circular(8),
                           ),
                         );
@@ -286,7 +317,7 @@ class _OnboardingHero extends StatelessWidget {
                   child: PreRenderedFlak(
                     width: 176,
                     height: 242,
-                    semanticLabel: 'فِلَک، راهنمای سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
+                    semanticLabel: 'فندوقی، راهنمای کارتونیا',
                   ),
                 ),
               PositionedDirectional(

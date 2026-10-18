@@ -37,6 +37,7 @@ abstract final class AppTheme {
       seedColor: AppColors.sky,
       brightness: brightness,
     );
+    final filledColors = AppColors.fillAndText(AppColors.sky);
     final scheme = baseScheme.copyWith(
       primary: AppColors.sky,
       onPrimary: Colors.white,
@@ -45,7 +46,8 @@ abstract final class AppTheme {
       secondary: AppColors.teal,
       onSecondary: Colors.white,
       secondaryContainer: isDark ? const Color(0xFF0C3F39) : AppColors.tealSoft,
-      onSecondaryContainer: isDark ? const Color(0xFFB5F2E6) : AppColors.tealDeep,
+      onSecondaryContainer:
+          isDark ? const Color(0xFFB5F2E6) : AppColors.tealDeep,
       tertiary: AppColors.violet,
       surface: isDark ? AppColors.darkSurface : AppColors.lightSurface,
       onSurface: isDark ? AppColors.darkInk : AppColors.lightInk,
@@ -60,77 +62,80 @@ abstract final class AppTheme {
 
     final rawTextTheme =
         ThemeData(brightness: brightness, useMaterial3: true).textTheme;
-    final textTheme =
-        rawTextTheme.apply(
+    // family/رنگ اول اعمال می‌شود تا copyWithهای زیر آن را از دست ندهند؛
+    // در غیر این صورت عنوان‌ها با fontFamily خالی (Roboto/فال‌بک سیستم)
+    // رندر می‌شدند و Vazirmatn فقط روی بدنه می‌ماند.
+    final baseTextTheme = rawTextTheme.apply(
       bodyColor: scheme.onSurface,
       displayColor: scheme.onSurface,
       fontFamily: fontFamily,
-    ).copyWith(
-      displayLarge: rawTextTheme.displayLarge?.copyWith(
+    );
+    final textTheme = baseTextTheme.copyWith(
+      displayLarge: baseTextTheme.displayLarge?.copyWith(
         fontSize: 38,
         fontWeight: FontWeight.w900,
         height: 1.25,
       ),
-      displayMedium: rawTextTheme.displayMedium?.copyWith(
+      displayMedium: baseTextTheme.displayMedium?.copyWith(
         fontSize: 30,
         fontWeight: FontWeight.w900,
         height: 1.3,
       ),
-      displaySmall: rawTextTheme.displaySmall?.copyWith(
+      displaySmall: baseTextTheme.displaySmall?.copyWith(
         fontSize: 26,
         fontWeight: FontWeight.w900,
         height: 1.3,
       ),
-      headlineMedium: rawTextTheme.headlineMedium?.copyWith(
+      headlineMedium: baseTextTheme.headlineMedium?.copyWith(
         fontSize: 23,
         fontWeight: FontWeight.w800,
         height: 1.4,
       ),
-      headlineSmall: rawTextTheme.headlineSmall?.copyWith(
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
         fontSize: 20,
         fontWeight: FontWeight.w800,
         height: 1.42,
       ),
-      titleLarge: rawTextTheme.titleLarge?.copyWith(
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
         fontSize: 17.5,
         fontWeight: FontWeight.w800,
         height: 1.5,
       ),
-      titleMedium: rawTextTheme.titleMedium?.copyWith(
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
         fontSize: 15.5,
         fontWeight: FontWeight.w700,
         height: 1.5,
       ),
-      titleSmall: rawTextTheme.titleSmall?.copyWith(
+      titleSmall: baseTextTheme.titleSmall?.copyWith(
         fontSize: 13.5,
         fontWeight: FontWeight.w700,
         height: 1.45,
       ),
-      bodyLarge: rawTextTheme.bodyLarge?.copyWith(
+      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         height: 1.75,
       ),
-      bodyMedium: rawTextTheme.bodyMedium?.copyWith(
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
         fontSize: 13.5,
         fontWeight: FontWeight.w400,
         height: 1.7,
       ),
-      bodySmall: rawTextTheme.bodySmall?.copyWith(
+      bodySmall: baseTextTheme.bodySmall?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         height: 1.55,
       ),
-      labelLarge: rawTextTheme.labelLarge?.copyWith(
+      labelLarge: baseTextTheme.labelLarge?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w700,
         height: 1.4,
       ),
-      labelMedium: rawTextTheme.labelMedium?.copyWith(
+      labelMedium: baseTextTheme.labelMedium?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
-      labelSmall: rawTextTheme.labelSmall?.copyWith(
+      labelSmall: baseTextTheme.labelSmall?.copyWith(
         fontSize: 10.5,
         fontWeight: FontWeight.w600,
       ),
@@ -158,9 +163,8 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         centerTitle: false,
         titleTextStyle: textTheme.titleLarge,
-        systemOverlayStyle: isDark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+        systemOverlayStyle:
+            isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       ),
       cardTheme: CardTheme(
         color: scheme.surface,
@@ -174,6 +178,10 @@ abstract final class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          // همان قاعدهٔ دکمه‌های گرادیانی: پرکننده و متن با هم انتخاب
+          // می‌شوند تا کنتراست همیشه ≥۴٫۵:۱ باشد و رنگ برند شاد بماند.
+          backgroundColor: filledColors.fill,
+          foregroundColor: filledColors.foreground,
           minimumSize: const Size(0, 52),
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
           textStyle: textTheme.labelLarge,
@@ -297,29 +305,45 @@ abstract final class AppTheme {
 
   // ——— سایه‌ها ———
 
-  static List<BoxShadow> softShadow(BuildContext context) => [
-        BoxShadow(
-          color: Colors.black.withOpacity(
-            Theme.of(context).brightness == Brightness.dark ? .22 : .06,
-          ),
-          blurRadius: 22,
-          offset: const Offset(0, 8),
-        ),
-      ];
+  /// سایهٔ دو‌لایه: یک سایهٔ تماسِ نزدیک که سطح را روی صفحه می‌نشاند و یک
+  /// سایهٔ محیطی نرم برای عمق. جهت نور همیشه از بالا است تا همهٔ کارت‌ها
+  /// یک منبع نور مشترک داشته باشند و حس سه‌بعدی یکدست بماند.
+  static List<BoxShadow> softShadow(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return [
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .30 : .085),
+        blurRadius: 5,
+        offset: const Offset(0, 2),
+      ),
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .20 : .05),
+        blurRadius: 24,
+        offset: const Offset(0, 12),
+      ),
+    ];
+  }
 
-  static List<BoxShadow> mediumShadow(BuildContext context) => [
-        BoxShadow(
-          color: Colors.black.withOpacity(
-            Theme.of(context).brightness == Brightness.dark ? .32 : .12,
-          ),
-          blurRadius: 30,
-          spreadRadius: -4,
-          offset: const Offset(0, 14),
-        ),
-      ];
+  static List<BoxShadow> mediumShadow(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return [
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .34 : .10),
+        blurRadius: 7,
+        offset: const Offset(0, 3),
+      ),
+      BoxShadow(
+        color: Colors.black.withOpacity(dark ? .26 : .09),
+        blurRadius: 34,
+        spreadRadius: -4,
+        offset: const Offset(0, 16),
+      ),
+    ];
+  }
 
   /// هالهٔ رنگی نرم برای دکمه‌ها و کارت‌های شاخص.
-  static List<BoxShadow> glow(Color color, {double opacity = .32, double lift = 10}) =>
+  static List<BoxShadow> glow(Color color,
+          {double opacity = .32, double lift = 10}) =>
       [
         BoxShadow(
           color: color.withOpacity(opacity),
@@ -336,10 +360,9 @@ extension KartoniyaThemeContext on BuildContext {
   Color get surfaceAltColor => Theme.of(this).colorScheme.surfaceVariant;
   Color get primaryTextColor => Theme.of(this).colorScheme.onSurface;
   Color get secondaryTextColor => Theme.of(this).colorScheme.onSurfaceVariant;
-  Color get softBorderColor =>
-      isDarkMode
-          ? Colors.white.withOpacity(.07)
-          : AppColors.skyDeep.withOpacity(.10);
+  Color get softBorderColor => isDarkMode
+      ? Colors.white.withOpacity(.07)
+      : AppColors.skyDeep.withOpacity(.10);
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
   ColorScheme get scheme => Theme.of(this).colorScheme;
   TextTheme get appText => Theme.of(this).textTheme;

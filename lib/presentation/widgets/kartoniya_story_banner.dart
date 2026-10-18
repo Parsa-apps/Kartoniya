@@ -9,7 +9,14 @@ import 'kartoniya_mascot.dart';
 
 /// Original Kartoniya scene illustrations. These are pre-rendered 3D stills;
 /// they are not a live scene or a 3D model viewer.
-enum KartoniyaScene { cloudworld, storybook, twilight, reading }
+enum KartoniyaScene {
+  cloudworld,
+  storybook,
+  twilight,
+  reading,
+  fandaqReading,
+  fandaqNight,
+}
 
 extension KartoniyaSceneAssets on KartoniyaScene {
   String get assetPath => switch (this) {
@@ -17,18 +24,28 @@ extension KartoniyaSceneAssets on KartoniyaScene {
         KartoniyaScene.storybook => 'asset/images/storybook_garden.webp',
         KartoniyaScene.twilight => 'asset/images/twilight_library.webp',
         KartoniyaScene.reading => 'asset/images/flak_reading_scene.webp',
+        KartoniyaScene.fandaqReading =>
+          'asset/images/fandaq_scene_reading.webp',
+        KartoniyaScene.fandaqNight => 'asset/images/fandaq_scene_night.webp',
       };
 }
 
-/// Fallback 2D vector version of Felak. The bundled image normally wins; the
-/// fallback keeps a missing asset from becoming a blank brand surface.
+/// تصویر «فندوقی» با اندازهٔ دلخواه.
+///
+/// به‌جای یک PNG ثابت، همان شخصیت لایه‌ای و متحرک نمایش داده می‌شود؛ بدون
+/// لمس و بدون شناوری عمودی تا در بنرها/آواتارها آرام بماند، ولی نفس و تاب
+/// برگ همچنان زنده است. تصویر کامل ([assetPath]) برای پیش‌بارگذاری و
+/// تست‌ها نگه داشته شده است.
 class PreRenderedFlak extends StatelessWidget {
   const PreRenderedFlak({
     super.key,
     this.width,
     this.height,
     this.alignment = Alignment.center,
-    this.semanticLabel = 'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+    this.semanticLabel = 'فندوقی، شخصیت کارتونی کارتونیا',
+    this.animate = true,
+    this.mood = MascotMood.happy,
+    this.greet = false,
   });
 
   final double? width;
@@ -36,24 +53,36 @@ class PreRenderedFlak extends StatelessWidget {
   final AlignmentGeometry alignment;
   final String semanticLabel;
 
-  static const assetPath = 'asset/images/flak_3d.webp';
+  /// حرکت آرام (پلک/تاب)؛ برای آواتارهای کوچک خاموش شود.
+  final bool animate;
+
+  /// چهرهٔ شخصیت؛ حالت‌های خالی/خطا چهرهٔ متفاوت می‌گیرند.
+  final MascotMood mood;
+
+  /// سلام کوتاه (تکان دست) پس از ورود.
+  final bool greet;
+
+  static const assetPath = FandaqAssets.still;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      image: true,
-      label: semanticLabel,
-      child: Image.asset(
-        assetPath,
-        width: width,
-        height: height,
-        alignment: alignment,
+    final w = width ?? 96;
+    final h = height ?? 96;
+    return SizedBox(
+      width: w,
+      height: h,
+      child: FittedBox(
         fit: BoxFit.contain,
-        filterQuality: FilterQuality.medium,
-        excludeFromSemantics: true,
-        errorBuilder: (context, error, stackTrace) => const KartoniyaMascot(
-          size: 96,
+        alignment: alignment,
+        child: KartoniyaMascot(
+          width: 240,
+          height: 240 * 651 / 599,
+          animate: animate,
+          mood: mood,
+          greet: greet,
           float: false,
+          interactive: false,
+          semanticLabel: semanticLabel,
         ),
       ),
     );
@@ -76,6 +105,8 @@ class KartoniyaStoryBanner extends StatefulWidget {
     this.onAction,
     this.showMascot = true,
     this.semanticLabel,
+    this.mood = MascotMood.happy,
+    this.greet = false,
   });
 
   final String title;
@@ -87,6 +118,12 @@ class KartoniyaStoryBanner extends StatefulWidget {
   final VoidCallback? onAction;
   final bool showMascot;
   final String? semanticLabel;
+
+  /// چهرهٔ فندوقی در بنر؛ بنر شب خواب‌آلود و بنر روز خندان است.
+  final MascotMood mood;
+
+  /// یک سلام کوتاه (تکان دست) وقتی بنر ساخته می‌شود.
+  final bool greet;
 
   @override
   State<KartoniyaStoryBanner> createState() => _KartoniyaStoryBannerState();
@@ -102,8 +139,10 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
   }
 
   void _move(PointerEvent event, Size size) {
-    if (!context.motion.enabled || !TickerMode.of(context) ||
-        size.width <= 0 || size.height <= 0) {
+    if (!context.motion.enabled ||
+        !TickerMode.of(context) ||
+        size.width <= 0 ||
+        size.height <= 0) {
       return;
     }
     final target = Offset(
@@ -125,6 +164,14 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final coralAction = AppColors.fillAndText(AppColors.coral);
+    // در ارتفاع کم (مثل بنر خانه روی گوشی ۳۲۰px) متن باید یک‌خطی و جمع‌وجور
+    // بماند تا کارت ثابت‌ارتفاع سرریز نکند.
+    final compact = widget.height < 180;
+    // بنر یک کارت قهرمانِ تصویری است؛ متنش حداکثر ۱۵٪ بزرگ می‌شود و در
+    // اندازهٔ فونت بزرگ، عنوان یک‌خطی می‌ماند تا ارتفاع ثابت سرریز نشود.
+    final systemScale = MediaQuery.textScalerOf(context).scale(1);
+    final tightTitle = compact || systemScale > 1.05;
     final motion = context.motion;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -196,7 +243,8 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                       if (widget.showMascot)
                         PositionedDirectional(
                           end: -8,
-                          bottom: -math.max(8.0, widget.height * .06).toDouble(),
+                          bottom:
+                              -math.max(8.0, widget.height * .06).toDouble(),
                           child: IgnorePointer(
                             child: AnimatedContainer(
                               duration: motion.dur(AppMotion.quick),
@@ -211,8 +259,10 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                 child: PreRenderedFlak(
                                   width: mascotWidth,
                                   height: widget.height * .99,
+                                  mood: widget.mood,
+                                  greet: widget.greet,
                                   semanticLabel:
-                                      'فِلَک، تصویر سه‌بعدی از پیش‌رندرشده',
+                                      'فندوقی، شخصیت کارتونی کارتونیا',
                                 ),
                               ),
                             ),
@@ -225,122 +275,130 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                         bottom: 12,
                         child: Align(
                           alignment: AlignmentDirectional.topStart,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: widget.showMascot
-                                  ? math
-                                      .max(150.0, width - textEndInset - 20)
-                                      .toDouble()
-                                  : width - 40,
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                                vertical: 11,
+                          child: MediaQuery.withClampedTextScaling(
+                            maxScaleFactor: 1.15,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: widget.showMascot
+                                    ? math
+                                        .max(150.0, width - textEndInset - 20)
+                                        .toDouble()
+                                    : width - 40,
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(.84),
-                                borderRadius: BorderRadius.circular(
-                                  AppTheme.radiusLarge,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: compact ? 13 : 15,
+                                  vertical: compact ? 8 : 11,
                                 ),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(.78),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.skyDeep.withOpacity(.10),
-                                    blurRadius: 14,
-                                    offset: const Offset(0, 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(.84),
+                                  borderRadius: BorderRadius.circular(
+                                    AppTheme.radiusLarge,
                                   ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (widget.eyebrow != null) ...[
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          Icons.auto_awesome_rounded,
-                                          color: AppColors.coral,
-                                          size: 14,
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Flexible(
-                                          child: Text(
-                                            widget.eyebrow!,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium
-                                                ?.copyWith(
-                                                  color: AppColors.skyDeep,
-                                                  fontWeight: FontWeight.w800,
-                                                ),
-                                          ),
-                                        ),
-                                      ],
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(.78),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.skyDeep.withOpacity(.10),
+                                      blurRadius: 14,
+                                      offset: const Offset(0, 6),
                                     ),
-                                    const SizedBox(height: 3),
                                   ],
-                                  Text(
-                                    widget.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(
-                                          color: const Color(0xFF18324B),
-                                          height: 1.28,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    widget.subtitle,
-                                    maxLines: widget.actionLabel == null ? 2 : 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                          color: const Color(0xFF425970),
-                                          height: 1.45,
-                                        ),
-                                  ),
-                                  if (widget.actionLabel != null &&
-                                      widget.onAction != null) ...[
-                                    const SizedBox(height: 6),
-                                    SizedBox(
-                                      height: 36,
-                                      child: FilledButton.icon(
-                                        onPressed: widget.onAction,
-                                        style: FilledButton.styleFrom(
-                                          minimumSize: const Size(0, 36),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (widget.eyebrow != null) ...[
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.auto_awesome_rounded,
+                                            color: AppColors.coral,
+                                            size: 14,
                                           ),
-                                          backgroundColor: AppColors.coral,
-                                          foregroundColor: Colors.white,
-                                          visualDensity: VisualDensity.compact,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              AppTheme.radiusCircular,
+                                          const SizedBox(width: 5),
+                                          Flexible(
+                                            child: Text(
+                                              widget.eyebrow!,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelMedium
+                                                  ?.copyWith(
+                                                    color: AppColors.skyDeep,
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
                                             ),
                                           ),
-                                        ),
-                                        icon: const Icon(
-                                          Icons.arrow_back_rounded,
-                                          size: 17,
-                                        ),
-                                        label: Text(widget.actionLabel!),
+                                        ],
                                       ),
+                                      const SizedBox(height: 3),
+                                    ],
+                                    Text(
+                                      widget.title,
+                                      maxLines: tightTitle ? 1 : 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                            color: const Color(0xFF18324B),
+                                            height: 1.28,
+                                          ),
                                     ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      widget.subtitle,
+                                      maxLines:
+                                          widget.actionLabel == null ? 2 : 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: const Color(0xFF425970),
+                                            height: 1.45,
+                                          ),
+                                    ),
+                                    if (widget.actionLabel != null &&
+                                        widget.onAction != null) ...[
+                                      SizedBox(height: compact ? 4 : 6),
+                                      SizedBox(
+                                        height: compact ? 32 : 36,
+                                        child: FilledButton.icon(
+                                          onPressed: widget.onAction,
+                                          style: FilledButton.styleFrom(
+                                            minimumSize:
+                                                Size(0, compact ? 32 : 36),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                            ),
+                                            backgroundColor: coralAction.fill,
+                                            foregroundColor:
+                                                coralAction.foreground,
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                AppTheme.radiusCircular,
+                                              ),
+                                            ),
+                                          ),
+                                          icon: const Icon(
+                                            Icons.arrow_back_rounded,
+                                            size: 17,
+                                          ),
+                                          label: Text(widget.actionLabel!),
+                                        ),
+                                      ),
+                                    ],
                                   ],
-                                ],
+                                ),
                               ),
                             ),
                           ),

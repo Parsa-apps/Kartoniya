@@ -1,0 +1,71 @@
+name: Format Dart
+
+# ابزار دستی برای اجرای واقعی `dart format` روی شاخهٔ جاری.
+# با هر تغییر در همین فایل هم اجرا می‌شود تا قالب‌بندی پس از تغییرات
+# دستی/خودکار دوباره یکدست شود (خروجی: یک commit خودکار).
+# workflow اصلی فقط قالب‌بندی را گزارش می‌کند؛ این job همان قالب‌بندی را
+# اعمال و در صورت تغییر، commit می‌کند تا بازبینی‌ها کوچک بمانند.
+on:
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: 'پیام commit قالب‌بندی'
+        required: false
+        default: 'style: dart format lib and test'
+  push:
+    paths:
+      - '.github/workflows/format.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: format-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: dart format
+    if: github.ref == 'refs/heads/arena/f29eaa28-kartoniya'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          channel: stable
+          cache: true
+      - name: Format
+        run: dart format lib test
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo 'Dart files are already formatted.'
+            exit 0
+          fi
+          git config user.name 'Kartoniya Formatter'
+          git config user.email 'actions@users.noreply.github.com'
+          git add lib test
+          git commit -m "${{ inputs.commit_message || 'style: dart format lib and test' }}"
+          git push
+
+# نکته: اگر dispatch از توکن ربات مجاز نباشد، ثبت یک تغییر در همین فایل
+# (همین شرط paths) اجرای قالب‌بندی و commit خودکار را راه می‌اندازد.
+
+# اجرای دوباره پس از افزودن چهره‌های تازه (فقط برای راه‌اندازی فرمت‌کننده).
+
+# اجرای دستی: تغییر همین فایل، job را روی شاخهٔ جاری فعال می‌کند.
+# نکته: commitهایی که این job با توکن خودِ Actions push می‌کند،
+# workflowهای دیگر را دوباره فعال نمی‌کنند؛ برای تأیید نهایی یک commit
+# کد از سمت توسعه‌دهنده لازم است.
+
+# اجرای دوبارهٔ قالب‌بندی پس از بزرگ‌شدن کارت‌ها با اندازهٔ فونت.
+
+# تأیید نهایی روی درختِ قالب‌بندی‌شده (بدون تغییر کد).
+
+# اجرای قالب‌بندی پس از افزودن تست عمق و لمس سه‌بعدی.
+
+# تأیید نهایی درختِ قالب‌بندی‌شده پس از تست‌های عمق.

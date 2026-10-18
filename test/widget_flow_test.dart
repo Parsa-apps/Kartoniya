@@ -40,9 +40,12 @@ void main() {
 
     expect(find.text('دنیای شاد و امن کودکان'), findsOneWidget);
 
-    // اسپلش پس از ~۱٫۵ ثانیه جای خود را به آن‌بوردینگ می‌دهد.
-    await tester.pump(const Duration(milliseconds: 1700));
-    await tester.pump(const Duration(milliseconds: 500));
+    // اسپلش پس از ~۱٫۷ ثانیه جای خود را به آن‌بوردینگ می‌دهد؛ چند فریم
+    // کوچک پمپ می‌شود تا ورود، مکث و خروج در زمان‌بندی واقعی کامل شوند.
+    await tester.pump(const Duration(milliseconds: 1400));
+    for (var i = 0; i < 16 && find.text('رد کردن').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 150));
+    }
     expect(find.text('رد کردن'), findsOneWidget);
 
     await tester.tap(find.text('رد کردن'));
@@ -93,7 +96,8 @@ void main() {
     expect(prefs.getStringList('favorite_cartoon_ids'), contains(cartoon.id));
   });
 
-  testWidgets('قفل والدین: پاسخ غلط دیالوگ را باز نگه می‌دارد و '
+  testWidgets(
+      'قفل والدین: پاسخ غلط دیالوگ را باز نگه می‌دارد و '
       'پاسخ درست اجازه ورود می‌دهد', (tester) async {
     usePhone(tester);
     final prefs = await initPrefs();
@@ -200,8 +204,8 @@ _Challenge _readChallenge(WidgetTester tester) {
   for (final element in find.textContaining('=').evaluate()) {
     final widget = element.widget;
     if (widget is Text && widget.data != null && widget.data!.contains('؟')) {
-      final match = RegExp(r'(\d+)\s*([+×−\-])\s*(\d+)')
-          .firstMatch(widget.data!);
+      final match =
+          RegExp(r'(\d+)\s*([+×−\-])\s*(\d+)').firstMatch(widget.data!);
       if (match == null) continue;
       final a = int.parse(match.group(1)!);
       final b = int.parse(match.group(3)!);

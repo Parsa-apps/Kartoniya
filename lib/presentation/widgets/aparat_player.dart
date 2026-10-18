@@ -84,8 +84,10 @@ class _AparatPlayerState extends State<AparatPlayer>
           // requests are not top-level navigations and are unaffected.
           if (!request.isMainFrame) return NavigationDecision.navigate;
           final target = Uri.tryParse(request.url);
-          return target?.scheme == 'https' && target?.host == uri.host &&
-                  target?.path == uri.path && target?.userInfo == '' &&
+          return target?.scheme == 'https' &&
+                  target?.host == uri.host &&
+                  target?.path == uri.path &&
+                  target?.userInfo == '' &&
                   !(target?.hasPort ?? true)
               ? NavigationDecision.navigate
               : NavigationDecision.prevent;
@@ -159,7 +161,8 @@ class _AparatPlayerState extends State<AparatPlayer>
                       decoration: BoxDecoration(
                         color: AppColors.coral.withOpacity(.18),
                         borderRadius: BorderRadius.circular(13),
-                        border: Border.all(color: AppColors.coral.withOpacity(.32)),
+                        border:
+                            Border.all(color: AppColors.coral.withOpacity(.32)),
                       ),
                       child: const Icon(
                         Icons.play_arrow_rounded,
@@ -176,15 +179,19 @@ class _AparatPlayerState extends State<AparatPlayer>
                             _episode.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
                                   color: Colors.white,
                                 ),
                           ),
                           Text(
                             'پخش رسمی در آپارات',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white60,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.white60,
+                                    ),
                           ),
                         ],
                       ),
@@ -200,14 +207,16 @@ class _AparatPlayerState extends State<AparatPlayer>
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 860),
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                          borderRadius:
+                              BorderRadius.circular(AppTheme.radiusLarge),
                           child: ColoredBox(
                             color: Colors.black,
                             child: Stack(
@@ -234,7 +243,8 @@ class _AparatPlayerState extends State<AparatPlayer>
                                           SizedBox(height: 14),
                                           Text(
                                             'در حال اتصال به آپارات…',
-                                            style: TextStyle(color: Colors.white70),
+                                            style: TextStyle(
+                                                color: Colors.white70),
                                           ),
                                         ],
                                       ),
@@ -268,9 +278,11 @@ class _AparatPlayerState extends State<AparatPlayer>
                                               onPressed: () =>
                                                   unawaited(_load(_episode)),
                                               style: FilledButton.styleFrom(
-                                                backgroundColor: AppColors.coral,
+                                                backgroundColor:
+                                                    AppColors.coral,
                                               ),
-                                              icon: const Icon(Icons.refresh_rounded),
+                                              icon: const Icon(
+                                                  Icons.refresh_rounded),
                                               label: const Text('تلاش دوباره'),
                                             ),
                                           ],
@@ -289,7 +301,8 @@ class _AparatPlayerState extends State<AparatPlayer>
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(.06),
                   borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -340,7 +353,8 @@ class _AparatPlayerState extends State<AparatPlayer>
                       ),
                       labelStyle: TextStyle(
                         color: selected ? Colors.white : Colors.white70,
-                        fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight:
+                            selected ? FontWeight.w700 : FontWeight.w500,
                       ),
                       onSelected: (_) => unawaited(_load(episode)),
                     );
