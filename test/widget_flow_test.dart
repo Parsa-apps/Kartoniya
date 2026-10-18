@@ -99,11 +99,11 @@ void main() {
     (tester) async {
       usePhone(tester);
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: MediaQuery(
-              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-              child: const OnboardingPage(),
+              data: MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: OnboardingPage(),
             ),
           ),
         ),

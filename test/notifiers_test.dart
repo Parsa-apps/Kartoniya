@@ -159,7 +159,7 @@ void main() {
     });
 
     test('continueWatching فقط پیشرفت URL مستقیم امن را نشان می‌دهد', () async {
-      final cartoon = CartoonModel(
+      const cartoon = CartoonModel(
         id: 'test',
         title: 'آزمون',
         description: '',

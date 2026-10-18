@@ -31,8 +31,8 @@ class PrivacyInformationPage extends StatelessWidget {
                 AppTheme.pageMargin,
                 36,
               ),
-              children: [
-                const _PrivacyNotice(
+              children: const [
+                _PrivacyNotice(
                   icon: Icons.phonelink_lock_rounded,
                   title: 'خلاصهٔ حریم خصوصی کارتونیا',
                   body:
@@ -41,8 +41,8 @@ class PrivacyInformationPage extends StatelessWidget {
                       'تجاری باید مالک محصول آن را بررسی و نسخهٔ عمومی سیاست را نهایی کند.',
                   color: AppColors.sky,
                 ),
-                const SizedBox(height: 12),
-                const _PrivacyNotice(
+                SizedBox(height: 12),
+                _PrivacyNotice(
                   icon: Icons.storage_rounded,
                   title: 'اطلاعات ذخیره‌شده روی دستگاه',
                   body:
@@ -55,8 +55,8 @@ class PrivacyInformationPage extends StatelessWidget {
                       'رکوردهای پیشرفت قدیمی نیز ممکن است تا پاک‌کردن دستی در تنظیمات بمانند.',
                   color: AppColors.teal,
                 ),
-                const SizedBox(height: 12),
-                const _PrivacyNotice(
+                SizedBox(height: 12),
+                _PrivacyNotice(
                   icon: Icons.cloud_off_rounded,
                   title: 'رفتار خود برنامه',
                   body: 'در وابستگی‌های فعلی، سرویس اختصاصیِ تحلیل‌گر یا شبکهٔ '
@@ -66,8 +66,8 @@ class PrivacyInformationPage extends StatelessWidget {
                       'دادهٔ برنامه از تنظیمات سیستم Android انجام می‌شود.',
                   color: AppColors.violet,
                 ),
-                const SizedBox(height: 12),
-                const _PrivacyNotice(
+                SizedBox(height: 12),
+                _PrivacyNotice(
                   icon: Icons.open_in_new_rounded,
                   title: 'پخش و پیوندهای بیرونی',
                   body:
@@ -79,8 +79,8 @@ class PrivacyInformationPage extends StatelessWidget {
                       'سرویس‌ها جداست؛ والدین پیش از پخش یا تماس بررسی کنند.',
                   color: AppColors.coral,
                 ),
-                const SizedBox(height: 12),
-                const _PrivacyNotice(
+                SizedBox(height: 12),
+                _PrivacyNotice(
                   icon: Icons.family_restroom_rounded,
                   title: 'همراهی والدین',
                   body:

@@ -42,7 +42,7 @@ void main() {
 
     test('کارت خلاصهٔ پیشرفت قسمت‌های embed را نادیده می‌گیرد', () {
       final value = cartoon().copyWith(
-        episodes: [
+        episodes: const [
           EpisodeModel(
             id: 'embedded',
             title: 'قسمت embed',

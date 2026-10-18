@@ -168,7 +168,7 @@ class _AparatPlayerState extends State<AparatPlayer>
           children: [
             Row(
               children: [
-                BackButton(color: Colors.white),
+                const BackButton(color: Colors.white),
                 Expanded(
                   child: Text(
                     _episode.title,

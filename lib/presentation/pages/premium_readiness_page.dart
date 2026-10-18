@@ -33,7 +33,7 @@ class PremiumReadinessPage extends StatelessWidget {
                 32,
               ),
               children: [
-                _StatusCard(),
+                const _StatusCard(),
                 const SizedBox(height: 20),
                 Text(
                   'پیش از فعال‌سازی خرید',
