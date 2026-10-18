@@ -57,6 +57,10 @@ extension MotionContext on BuildContext {
   }
 
   Duration motionDur(Duration duration) => motion.dur(duration);
+
+  /// برای تصمیم‌های initState؛ فقط flag ایستا را می‌خواند و به درخت وابسته
+  /// نیست. (rیشهٔ برنامه MotionScope.applyGlobal را هنگام build ست می‌کند.)
+  bool get motionEnabledAtInit => !MotionScope.reducedGlobally;
 }
 
 /// یک لایه در ریشهٔ برنامه؛ «کاهش حرکت» تنظیم‌شده در فضای والدین را به همهٔ
@@ -65,6 +69,19 @@ class MotionScope extends InheritedWidget {
   const MotionScope({required this.info, required super.child, super.key});
 
   final MotionInfo info;
+
+  static bool _globalReduced = false;
+
+  /// نسخهٔ ایستای وضعیت کاهش حرکت؛ برخلاف context داخل initState قابل‌خواندن
+  /// است (دسترسی به InheritedWidget در initState مجاز نیست).
+  static bool get reducedGlobally => _globalReduced;
+
+  static void applyGlobal({
+    required bool parentReduced,
+    required bool systemReduce,
+  }) {
+    _globalReduced = parentReduced || systemReduce;
+  }
 
   @override
   bool updateShouldNotify(MotionScope oldWidget) =>
@@ -101,7 +118,7 @@ class _StaggeredRevealState extends State<StaggeredReveal>
   @override
   void initState() {
     super.initState();
-    final reduced = !context.motion.enabled;
+    final reduced = !context.motionEnabledAtInit;
     // تأخیر پلکانی با Interval ساخته می‌شود؛ forward پارامتر delay ندارد.
     final step = AppMotion.staggerStep * widget.index.clamp(0, 8);
     final total = AppMotion.entrance + step;

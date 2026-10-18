@@ -30,7 +30,7 @@ class _AboutUsPageState extends State<AboutUsPage>
       vsync: this,
       duration: const Duration(milliseconds: 2400),
     );
-    if (context.motion.enabled) _glowController.repeat(reverse: true);
+    if (context.motionEnabledAtInit) _glowController.repeat(reverse: true);
   }
 
   @override

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_motion.dart';
 
 /// نشان برند کارتونیا؛ کاملاً برداری تا در اسپلش، هدر و دربارهٔ ما بدون
 /// asset و با هر تراکم پیکسلی تیز بماند.
@@ -162,7 +163,7 @@ class _LogoOrbitsState extends State<_LogoOrbits>
 }
 
 extension on BuildContext {
-  /// در اسپلش ممکن است MotionScope هنوز بالای درخت نباشد؛ fallback ساده.
-  bool get motionEnabledFallback =>
-      MediaQuery.maybeOf(this)?.disableAnimations != true;
+  /// در initState نمی‌توان از InheritedWidget خواند؛ flag ایستای MotionScope
+  /// توسط ریشهٔ برنامه نگه‌داشته می‌شود.
+  bool get motionEnabledFallback => !MotionScope.reducedGlobally;
 }

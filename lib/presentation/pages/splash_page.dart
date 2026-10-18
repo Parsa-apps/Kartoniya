@@ -35,7 +35,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
     _enter = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
       ..forward();
     _drift = AnimationController(vsync: this, duration: const Duration(seconds: 9));
-    if (context.motion.enabled) _drift.repeat();
+    if (context.motionEnabledAtInit) _drift.repeat();
     unawaited(_openNextPage());
   }
 
@@ -169,7 +169,7 @@ class _LoadingDotsState extends State<_LoadingDots>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    if (!widget.still && context.motion.enabled) _controller.repeat();
+    if (!widget.still && context.motionEnabledAtInit) _controller.repeat();
   }
 
   @override

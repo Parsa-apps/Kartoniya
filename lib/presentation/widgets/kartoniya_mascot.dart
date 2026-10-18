@@ -53,7 +53,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
     _bobAnimation = Tween<double>(begin: 0, end: -widget.size * .045).animate(
       CurvedAnimation(parent: _bob, curve: Curves.easeInOut),
     );
-    if (context.motion.enabled) {
+    if (context.motionEnabledAtInit) {
       _scheduleBlink();
       if (widget.float) _bob.repeat(reverse: true);
     }
@@ -74,7 +74,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
   final _blinkRandom = math.Random();
 
   Future<void> _scheduleBlink() async {
-    while (mounted && context.motion.enabled) {
+    while (mounted && context.motionEnabledAtInit) {
       await Future<void>.delayed(
         Duration(milliseconds: 1600 + _blinkRandom.nextInt(2600)),
       );

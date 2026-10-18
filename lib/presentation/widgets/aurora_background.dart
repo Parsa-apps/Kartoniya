@@ -36,7 +36,7 @@ class _AuroraBackgroundState extends State<AuroraBackground>
       vsync: this,
       duration: const Duration(seconds: 26),
     );
-    if (context.motion.enabled) _controller.repeat();
+    if (context.motionEnabledAtInit) _controller.repeat();
   }
 
   @override

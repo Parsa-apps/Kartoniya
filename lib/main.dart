@@ -71,6 +71,12 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
       home: const SplashPage(),
       builder: (context, child) {
         final brightness = Theme.of(context).brightness;
+        // نسخهٔ ایستای «کاهش حرکت» تا ویجت‌ها در initState هم بتوانند
+        // بدون وابستگی به درخت، تصمیم درست بگیرند.
+        MotionScope.applyGlobal(
+          parentReduced: reduceMotion,
+          systemReduce: MediaQuery.maybeOf(context)?.disableAnimations ?? false,
+        );
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: brightness == Brightness.dark
               ? SystemUiOverlayStyle.light
