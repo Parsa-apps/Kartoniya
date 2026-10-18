@@ -60,6 +60,7 @@ class CartoonModel {
     this.isNew = false,
     this.isFeatured = false,
     this.tags = const [],
+    this.artworkAsset,
   });
 
   final String id;
@@ -75,6 +76,13 @@ class CartoonModel {
   final bool isNew;
   final bool isFeatured;
   final List<String> tags;
+
+  /// Optional local illustration (for example `asset/images/posters/x.webp`).
+  ///
+  /// Artwork is content metadata, so it lives on the model and comes from the
+  /// repository instead of being hard-coded next to catalog ids in a widget.
+  /// When it is missing the UI keeps the deterministic vector poster.
+  final String? artworkAsset;
 
   Color get artworkColor => Color(artworkColorValue);
   int get episodeCount => episodes.length;
@@ -94,6 +102,7 @@ class CartoonModel {
     bool? isNew,
     bool? isFeatured,
     List<String>? tags,
+    String? artworkAsset,
   }) {
     return CartoonModel(
       id: id,
@@ -109,6 +118,7 @@ class CartoonModel {
       isNew: isNew ?? this.isNew,
       isFeatured: isFeatured ?? this.isFeatured,
       tags: tags ?? this.tags,
+      artworkAsset: artworkAsset ?? this.artworkAsset,
     );
   }
 }

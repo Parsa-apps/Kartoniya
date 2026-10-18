@@ -11,8 +11,12 @@ import 'animated_progress.dart';
 import 'cartoon_artwork.dart';
 import 'favorite_button.dart';
 
-/// کارت یکپارچهٔ کاتالوگ: پوستر، وضعیت علاقه‌مندی، درصد واقعی ادامهٔ تماشا
-/// و بازخورد لمسی نرم. برای شبکهٔ ستونی، ردیف‌های افقی و نتایج جست‌وجو.
+/// کارت یکپارچهٔ کاتالوگ: پوستر واقعی، وضعیت علاقه‌مندی، رده سنی، امتیاز و
+/// درصد واقعی ادامهٔ تماشا. برای شبکهٔ ستونی، ردیف‌های افقی و نتایج جست‌وجو.
+///
+/// ساختار بصری در همهٔ برگه‌ها یکی است تا کاربر بین خانه، دسته‌ها، جست‌وجو و
+/// علاقه‌مندی‌ها جابه‌جایی حس نکند. کارت هیچ انیمیشن دائمی ندارد؛ فقط فشردن
+/// (PressableScale) و نوار پیشرفت نرم‌اند.
 class CartoonCard extends ConsumerWidget {
   const CartoonCard({
     super.key,
@@ -41,109 +45,141 @@ class CartoonCard extends ConsumerWidget {
           '${toFaDigits(cartoon.rating.toStringAsFixed(1))}',
       child: PressableScale(
         onTap: onTap,
-        child: Card(
-          margin: EdgeInsets.zero,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: compact ? 1.55 : 1.42,
-                    child: CartoonArtwork(
-                      cartoon: cartoon,
-                      borderRadius: 0,
-                      showPlayAffordance: !compact,
-                      showAgeBadge: !compact,
+        pressedScale: .965,
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 2),
+            border: Border.all(color: context.softBorderColor),
+            boxShadow: AppTheme.softShadow(context),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: compact ? 1.5 : 1.36,
+                      child: CartoonArtwork(
+                        cartoon: cartoon,
+                        borderRadius: 0,
+                        showPlayAffordance: false,
+                        showAgeBadge: false,
+                      ),
                     ),
-                  ),
-                  PositionedDirectional(
-                    top: 8,
-                    start: 8,
-                    child: FavoriteButton(
-                      isFavorite: isFavorite,
-                      size: 32,
-                      iconSize: 17,
-                      onPressed: () =>
-                          ref.read(favoritesProvider.notifier).toggle(cartoon.id),
-                    ),
-                  ),
-                  if (progress > 0)
                     PositionedDirectional(
-                      bottom: 0,
-                      start: 0,
-                      end: 0,
-                      child: AnimatedProgressBar(
-                        value: progress,
-                        color: AppColors.gold,
-                        height: 5,
-                        background: Colors.black.withOpacity(.35),
+                      top: 8,
+                      start: 8,
+                      child: FavoriteButton(
+                        isFavorite: isFavorite,
+                        size: 32,
+                        iconSize: 17,
+                        tooltip: isFavorite
+                            ? 'حذف از علاقه‌مندی‌ها'
+                            : 'افزودن به علاقه‌مندی‌ها',
+                        onPressed: () => ref
+                            .read(favoritesProvider.notifier)
+                            .toggle(cartoon.id),
                       ),
                     ),
-                ],
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 9, 12, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        cartoon.title,
-                        maxLines: compact ? 1 : 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontSize: compact ? 13.5 : 15,
-                            ),
+                    if (cartoon.ageRange.trim().isNotEmpty)
+                      PositionedDirectional(
+                        top: 9,
+                        end: 9,
+                        child: _AgeBadge(ageRange: cartoon.ageRange),
                       ),
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: categoryColor.withOpacity(.13),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                cartoon.category,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge
-                                    ?.copyWith(
-                                      color: categoryColor,
-                                      fontSize: 10,
-                                    ),
+                    if (progress > 0)
+                      PositionedDirectional(
+                        bottom: 0,
+                        start: 0,
+                        end: 0,
+                        child: AnimatedProgressBar(
+                          value: progress,
+                          color: AppColors.gold,
+                          height: 5,
+                          background: Colors.black.withOpacity(.35),
+                        ),
+                      ),
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      11,
+                      compact ? 7 : 9,
+                      11,
+                      compact ? 8 : 10,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          cartoon.title,
+                          maxLines: compact ? 1 : 2,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontSize: compact ? 13 : 14.5,
+                                    height: 1.45,
+                                  ),
+                        ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: categoryColor.withOpacity(.13),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  cartoon.category,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                        color: categoryColor,
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
                               ),
                             ),
-                          ),
-                          const Spacer(),
-                          const Icon(
-                            Icons.star_rounded,
-                            color: AppColors.gold,
-                            size: 15,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            toFaDigits(cartoon.rating.toStringAsFixed(1)),
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge
-                                ?.copyWith(fontSize: 11),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const Spacer(),
+                            const Icon(
+                              Icons.star_rounded,
+                              color: AppColors.gold,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 1),
+                            Text(
+                              toFaDigits(
+                                cartoon.rating.toStringAsFixed(1),
+                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -157,6 +193,43 @@ class CartoonCard extends ConsumerWidget {
       if (value > max) max = value;
     }
     return max;
+  }
+}
+
+class _AgeBadge extends StatelessWidget {
+  const _AgeBadge({required this.ageRange});
+
+  final String ageRange;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(.42),
+        borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
+        border: Border.all(color: Colors.white.withOpacity(.22)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.child_care_rounded,
+            size: 11,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            toFaDigits(ageRange),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Colors.white,
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

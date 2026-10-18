@@ -62,6 +62,13 @@ final filteredCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async 
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
+/// شمارندهٔ درخواست فوکوس برای فیلد جست‌وجو.
+///
+/// برگهٔ جست‌وجو داخل IndexedStack همیشه mount است؛ با افزایش این مقدار،
+/// صفحهٔ جست‌وجو فیلد را فوکوس می‌کند تا لمس «جست‌وجو» در خانه کاربر را
+/// مستقیم به تایپ برساند (بدون autofocus ناخواسته هنگام شروع برنامه).
+final searchFocusRequestProvider = StateProvider<int>((ref) => 0);
+
 /// امتیاز مرتبط‌بودن برای مرتب‌سازی نتایج جست‌وجو.
 /// هرچه عدد کوچک‌تر، مرتبط‌تر.
 int searchRelevanceScore(CartoonModel cartoon, String normalizedQuery) {

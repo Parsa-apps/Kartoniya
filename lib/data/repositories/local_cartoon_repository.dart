@@ -36,6 +36,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۳ تا ۷',
       artworkEmoji: '☁️',
       artworkColorValue: 0xFFF06A70,
+      artworkAsset: 'asset/images/posters/oscar.webp',
       isNew: true,
       isFeatured: true,
       tags: const ['دوستی', 'آسمان', 'ماجراجویی'],
@@ -55,6 +56,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۴ تا ۶',
       artworkEmoji: 'آ',
       artworkColorValue: 0xFF4DB9EE,
+      artworkAsset: 'asset/images/posters/alphabet.webp',
       isFeatured: true,
       tags: const ['الفبا', 'فارسی', 'یادگیری'],
       episodes: [
@@ -73,6 +75,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۵ تا ۸',
       artworkEmoji: '🔢',
       artworkColorValue: 0xFF53B86A,
+      artworkAsset: 'asset/images/posters/counting.webp',
       isNew: true,
       tags: const ['اعداد', 'حل مسئله', 'ریاضی'],
       episodes: [
@@ -91,6 +94,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۲ تا ۶',
       artworkEmoji: '🌙',
       artworkColorValue: 0xFF9B7CEB,
+      artworkAsset: 'asset/images/posters/bedtime.webp',
       isFeatured: true,
       tags: const ['قصه', 'خواب', 'آرامش'],
       episodes: [
@@ -109,6 +113,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۵ تا ۹',
       artworkEmoji: '🍓',
       artworkColorValue: 0xFFFF8A50,
+      artworkAsset: 'asset/images/posters/cooking.webp',
       tags: const ['خلاقیت', 'غذا', 'مهارت زندگی'],
       episodes: [
         _episode('kitchen', 1, 'l0498kh', 'تهیهٔ کیک باب اسفنجی', 59, 'مرد عنکبوتی'),
@@ -126,6 +131,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۲ تا ۶',
       artworkEmoji: '🌈',
       artworkColorValue: 0xFFFFC83D,
+      artworkAsset: 'asset/images/posters/animals.webp',
       isFeatured: true,
       tags: const ['طبیعت', 'حیوانات', 'دوستی'],
       episodes: [
@@ -144,6 +150,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۶ تا ۱۰',
       artworkEmoji: '🔬',
       artworkColorValue: 0xFF53B86A,
+      artworkAsset: 'asset/images/posters/science.webp',
       isNew: true,
       tags: const ['علم', 'آزمایش', 'کنجکاوی'],
       episodes: [
@@ -162,6 +169,7 @@ class LocalCartoonRepository implements CartoonRepository {
       ageRange: '۲ تا ۵',
       artworkEmoji: '🎵',
       artworkColorValue: 0xFFFFC83D,
+      artworkAsset: 'asset/images/posters/music.webp',
       tags: const ['موسیقی', 'ریتم', 'جنگل'],
       episodes: [
         _episode('melody', 1, 'a15fnfv', 'حیوانات جنگل (انگلیسی)', 195, 'تفریح و سرگرمی'),

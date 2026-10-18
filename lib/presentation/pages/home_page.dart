@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/navigation/app_routes.dart';
@@ -13,7 +12,9 @@ import '../widgets/animated_progress.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/cartoon_artwork.dart';
 import '../widgets/cartoon_card.dart';
+import '../widgets/category_tile.dart';
 import '../widgets/featured_carousel.dart';
+import '../widgets/kartoniya_logo.dart';
 import '../widgets/kartoniya_nav_bar.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import '../widgets/section_header.dart';
@@ -57,7 +58,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               _DiscoverTab(
                 onOpenCategories: () => _selectTab(1),
                 onOpenProfile: () => _selectTab(4),
-                onOpenSearch: () => _selectTab(3),
+                onOpenSearch: () {
+                  ref.read(searchFocusRequestProvider.notifier).state++;
+                  _selectTab(3);
+                },
               ),
               const CategoriesPage(),
               FavoritesPage(onBrowse: () => _selectTab(0)),
@@ -129,6 +133,18 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
     );
   }
 
+  Future<void> _refresh() async {
+    ref.invalidate(cartoonsProvider);
+    ref.invalidate(categoriesProvider);
+    // خطای شبکه/منبع نباید RefreshIndicator را با exception رها کند؛
+    // همان خطا در ویجت‌ها با ErrorStateView نمایش داده می‌شود.
+    try {
+      await ref.read(cartoonsProvider.future);
+    } catch (_) {
+      // intentionally ignored
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartoons = ref.watch(cartoonsProvider);
@@ -140,70 +156,86 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
     final favorites = ref.watch(favoritesProvider);
     final childProfile = ref.watch(childProfileProvider);
 
+    final catalogue = cartoons.valueOrNull ?? const <CartoonModel>[];
+    final categoryCounts = <String, int>{
+      for (final category in categories.valueOrNull ?? const <CategoryModel>[])
+        category.name: category.id == 'all'
+            ? catalogue.length
+            : catalogue
+                .where((cartoon) => cartoon.category == category.name)
+                .length,
+    };
+
     return RefreshIndicator(
       color: AppColors.sky,
-      onRefresh: () async {
-        ref.invalidate(cartoonsProvider);
-        ref.invalidate(categoriesProvider);
-        await ref.read(cartoonsProvider.future);
-      },
+      backgroundColor: context.surfaceColor,
+      onRefresh: _refresh,
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
         slivers: [
+          // ——— سربرگ برند + خوشامد کودک ———
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppTheme.pageMargin,
-                14,
+                12,
                 AppTheme.pageMargin,
                 2,
               ),
               child: _HomeHeader(
-                childName: childProfile.hasName
-                    ? childProfile.name
-                    : null,
+                childName: childProfile.hasName ? childProfile.name : null,
+                avatarEmoji: childProfile.avatar.$1,
+                avatarColor: Color(childProfile.avatar.$2),
                 onProfileTap: widget.onOpenProfile,
-                onSearchTap: widget.onOpenSearch,
               ),
             ),
           ),
-          // صحنهٔ تصویری اختصاصی کارتونیا: تصویر سه‌بعدی از پیش‌رندرشده،
-          // فِلَکِ جداشده و پارالاکس لمسی؛ محتوای منتخب پایین‌تر پوستر واقعی دارد.
+          // ——— دسترسی سریع به جست‌وجو ———
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
-              child: KartoniyaStoryBanner(
-                scene: KartoniyaScene.cloudworld,
-                height: 190,
-                eyebrow: 'دنیای شاد و امن تماشا',
-                title: childProfile.hasName
-                    ? 'امروز کجا بریم، ${childProfile.name}؟'
-                    : 'امروز کجا بریم؟',
-                subtitle: 'یک قصهٔ تازه همیشه منتظر توست.',
-                actionLabel: 'کشف کن',
-                onAction: widget.onOpenCategories,
+              padding: const EdgeInsets.fromLTRB(
+                AppTheme.pageMargin,
+                10,
+                AppTheme.pageMargin,
+                2,
               ),
+              child: _SearchPrompt(onTap: widget.onOpenSearch),
             ),
           ),
-          // ——— بنر محتوای منتخب ———
+          // ——— منتخب این هفته ———
+          const SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'منتخب این هفته',
+              subtitle: 'انتخاب‌شده برای تماشای امروز',
+              icon: Icons.auto_awesome_rounded,
+              accent: AppColors.coral,
+            ),
+          ),
           SliverToBoxAdapter(
             child: StaggeredReveal(
               index: 0,
+              offsetY: 14,
               child: Padding(
-                padding: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.only(bottom: 2),
                 child: featured.when(
-                  data: (items) => FeaturedCarousel(
-                    cartoons: items,
-                    onOpen: _openDetail,
-                    onPlay: _play,
-                    isFavorite: (cartoon) => favorites.contains(cartoon.id),
-                    onToggleFavorite: (cartoon) => ref
-                        .read(favoritesProvider.notifier)
-                        .toggle(cartoon.id),
+                  data: (items) => items.isEmpty
+                      ? const SizedBox.shrink()
+                      : FeaturedCarousel(
+                          cartoons: items,
+                          onOpen: _openDetail,
+                          onPlay: _play,
+                          isFavorite: (cartoon) =>
+                              favorites.contains(cartoon.id),
+                          onToggleFavorite: (cartoon) => ref
+                              .read(favoritesProvider.notifier)
+                              .toggle(cartoon.id),
+                        ),
+                  loading: () => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4),
+                    child: ShimmerHeroBanner(height: 232),
                   ),
-                  loading: () => const ShimmerHeroBanner(height: 224),
                   error: (_, __) => ErrorStateView(
                     title: 'بنر منتخب باز نشد',
                     message: 'اتصال یا فهرست محتوا را بررسی کنید.',
@@ -216,22 +248,35 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
           ),
           // ——— دسته‌بندی‌ها ———
           SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'دسته‌ها',
+              subtitle: 'با یک لمس، دنیای دلخواهت را پیدا کن',
+              icon: Icons.grid_view_rounded,
+              accent: AppColors.violet,
+              actionLabel: 'همه',
+              onAction: widget.onOpenCategories,
+            ),
+          ),
+          SliverToBoxAdapter(
             child: StaggeredReveal(
               index: 1,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: categories.when(
-                  data: (items) => _CategoryChipRow(
-                    categories: items,
-                    onSelected: (category) {
+              offsetY: 12,
+              child: categories.when(
+                data: (items) => CategoryPillRow(
+                  categories: items,
+                  selectedName: null,
+                  includeAll: true,
+                  counts: categoryCounts,
+                  onSelected: (category) {
+                    if (category != null) {
                       ref.read(selectedCategoryProvider.notifier).state =
-                          category.id == 'all' ? null : category.name;
-                      widget.onOpenCategories();
-                    },
-                  ),
-                  loading: () => const _ChipsLoading(),
-                  error: (_, __) => const SizedBox.shrink(),
+                          category.name;
+                    }
+                    widget.onOpenCategories();
+                  },
                 ),
+                loading: () => const _ChipsLoading(),
+                error: (_, __) => const SizedBox.shrink(),
               ),
             ),
           ),
@@ -244,12 +289,15 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   children: [
                     const SectionHeader(
                       title: 'ادامهٔ تماشا',
-                      subtitle: 'از همان‌جا که ول کردی ادامه بده',
+                      subtitle: 'از همان‌جا که رها کردی ادامه بده',
+                      icon: Icons.play_circle_fill_rounded,
+                      accent: AppColors.teal,
                     ),
                     StaggeredReveal(
                       index: 2,
+                      offsetY: 12,
                       child: SizedBox(
-                        height: 118,
+                        height: 116,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
@@ -257,7 +305,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                             horizontal: AppTheme.pageMargin,
                           ),
                           itemCount: entries.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 12),
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 10),
                           itemBuilder: (context, index) => _ContinueCard(
                             entry: entries[index],
                             onPlay: () => pushAppPageFade<void>(
@@ -282,57 +331,121 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
           SliverToBoxAdapter(
             child: StaggeredReveal(
               index: 3,
+              offsetY: 12,
               child: newOnes.maybeWhen(
                 data: (items) => items.isEmpty
                     ? const SizedBox.shrink()
-                    : Column(
-                        children: [
-                          const SectionHeader(title: 'تازه‌ها'),
-                          _HorizontalCompactRow(
-                            cartoons: items,
-                            onTap: _openDetail,
-                          ),
-                        ],
+                    : _RailSection(
+                        title: 'تازه‌ها',
+                        subtitle: 'قصه‌های تازه‌رسیده',
+                        emoji: '✨',
+                        accent: AppColors.gold,
+                        cartoons: items,
+                        onTap: _openDetail,
+                        actionLabel: 'همه',
+                        onAction: widget.onOpenCategories,
                       ),
-                orElse: () => const _CompactRowLoading(),
+                orElse: () => const _RailLoading(title: 'تازه‌ها'),
+              ),
+            ),
+          ),
+          // ——— دعوت برندی فِلَک ———
+          SliverToBoxAdapter(
+            child: StaggeredReveal(
+              index: 4,
+              offsetY: 14,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.pageMargin,
+                  18,
+                  AppTheme.pageMargin,
+                  2,
+                ),
+                child: KartoniyaStoryBanner(
+                  scene: KartoniyaScene.cloudworld,
+                  height: 164,
+                  eyebrow: 'همراه فِلَک',
+                  title: childProfile.hasName
+                      ? '${childProfile.name}، امروز کجا بریم؟'
+                      : 'امروز کجا بریم؟',
+                  subtitle: 'یک قصهٔ تازه همیشه منتظر توست.',
+                  actionLabel: 'دیدن دسته‌ها',
+                  onAction: widget.onOpenCategories,
+                  semanticLabel: 'فِلَک در جزیرهٔ ابری کارتونیا',
+                ),
               ),
             ),
           ),
           // ——— محبوب‌ترین‌ها ———
           SliverToBoxAdapter(
             child: StaggeredReveal(
-              index: 4,
+              index: 5,
+              offsetY: 12,
               child: popular.maybeWhen(
-                data: (items) => Column(
-                  children: [
-                    const SectionHeader(title: 'محبوب‌ترین‌ها'),
-                    _HorizontalCompactRow(
-                      cartoons: items,
-                      onTap: _openDetail,
-                    ),
-                  ],
-                ),
-                orElse: () => const _CompactRowLoading(),
+                data: (items) => items.isEmpty
+                    ? const SizedBox.shrink()
+                    : _RailSection(
+                        title: 'محبوب‌ترین‌ها',
+                        subtitle: 'پیشنهاد بچه‌ها',
+                        emoji: '⭐',
+                        accent: AppColors.pink,
+                        cartoons: items,
+                        onTap: _openDetail,
+                        actionLabel: 'همه',
+                        onAction: widget.onOpenCategories,
+                      ),
+                orElse: () => const _RailLoading(title: 'محبوب‌ترین‌ها'),
               ),
             ),
           ),
           // ——— همهٔ کارتون‌ها ———
-          const SliverToBoxAdapter(
-            child: SectionHeader(title: 'همهٔ کارتون‌ها'),
+          SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'همهٔ کارتون‌ها',
+              subtitle: catalogue.isEmpty
+                  ? null
+                  : '${toFaDigits('${catalogue.length}')} کارتون آمادهٔ تماشا',
+              icon: Icons.movie_filter_rounded,
+              accent: AppColors.sky,
+            ),
           ),
           cartoons.when(
-            data: (items) => _CartoonGridSliver(
-              cartoons: items,
-              onTap: _openDetail,
-            ),
+            data: (items) => items.isEmpty
+                ? SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 40),
+                      child: EmptyStateView(
+                        title: 'هنوز کارتونی آماده نیست',
+                        message: 'کاتالوگ خالی است؛ با «تلاش دوباره» بررسی کن '
+                            'یا کمی بعد برگرد.',
+                        accent: AppColors.sky,
+                        action: OutlinedButton.icon(
+                          onPressed: () {
+                            ref.invalidate(cartoonsProvider);
+                            ref.invalidate(categoriesProvider);
+                          },
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('تلاش دوباره'),
+                        ),
+                      ),
+                    ),
+                  )
+                : _CartoonGridSliver(
+                    cartoons: items,
+                    onTap: _openDetail,
+                  ),
             loading: () => const _CartoonGridLoadingSliver(),
             error: (_, __) => SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 12, bottom: 40),
                 child: ErrorStateView(
                   title: 'کاتالوگ باز نشد',
-                  message: 'اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.',
-                  onRetry: () => ref.invalidate(cartoonsProvider),
+                  message: 'اتصال اینترنت را بررسی کن و دوباره تلاش کن.',
+                  onRetry: () {
+                    ref.invalidate(cartoonsProvider);
+                    ref.invalidate(featuredCartoonsProvider);
+                    ref.invalidate(categoriesProvider);
+                  },
                 ),
               ),
             ),
@@ -344,16 +457,19 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
   }
 }
 
+/// سربرگ خانه: نشان برند، خوشامد زمان‌محور و آواتار کودک.
 class _HomeHeader extends StatelessWidget {
   const _HomeHeader({
     required this.childName,
+    required this.avatarEmoji,
+    required this.avatarColor,
     required this.onProfileTap,
-    required this.onSearchTap,
   });
 
   final String? childName;
+  final String avatarEmoji;
+  final Color avatarColor;
   final VoidCallback onProfileTap;
-  final VoidCallback onSearchTap;
 
   static String _timeGreeting() {
     final hour = DateTime.now().hour;
@@ -366,124 +482,154 @@ class _HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = childName;
+    final greeting = name == null || name.isEmpty
+        ? '${_timeGreeting()}!'
+        : '${_timeGreeting()}، $name!';
     return Row(
       children: [
-        const PreRenderedFlak(
-          width: 56,
-          height: 56,
-          semanticLabel: 'فِلَک، شخصیت سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
-        ),
-        const SizedBox(width: 8),
+        const KartoniyaLogoMark(size: 42),
+        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'کارتونیا',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
+                greeting,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontSize: 19,
                     ),
               ),
               Text(
-                name == null || name.isEmpty
-                    ? _timeGreeting()
-                    : '${_timeGreeting()} $name!',
+                'امروز چه کارتونی ببینیم؟',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: context.secondaryTextColor,
                     ),
               ),
             ],
           ),
         ),
-        IconButton.filledTonal(
-          tooltip: 'جست‌وجوی کارتون',
-          onPressed: onSearchTap,
-          icon: const Icon(Icons.search_rounded, size: 22),
-        ),
-        const SizedBox(width: 6),
-        IconButton.filledTonal(
-          tooltip: 'فضای والدین',
-          onPressed: onProfileTap,
-          icon: const Icon(Icons.tune_rounded, size: 22),
+        const SizedBox(width: 8),
+        Semantics(
+          button: true,
+          label: 'پروفایل کودک و فضای والدین',
+          excludeSemantics: true,
+          child: PressableScale(
+            onTap: onProfileTap,
+            pressedScale: .92,
+            child: Container(
+              width: 48,
+              height: 48,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Color.lerp(avatarColor, Colors.white, .55)!,
+                    avatarColor,
+                  ],
+                ),
+                border: Border.all(
+                  color: Colors.white.withOpacity(.9),
+                  width: 2,
+                ),
+                boxShadow: AppTheme.glow(avatarColor, opacity: .3, lift: 5),
+              ),
+              child: Text(
+                avatarEmoji,
+                style: const TextStyle(fontSize: 22, height: 1),
+              ),
+            ),
+          ),
         ),
       ],
     );
   }
 }
 
-class _CategoryChipRow extends StatefulWidget {
-  const _CategoryChipRow({required this.categories, required this.onSelected});
+/// نوار جست‌وجوی فشرده در خانه؛ با لمس به برگهٔ جست‌وجو می‌رود.
+class _SearchPrompt extends StatelessWidget {
+  const _SearchPrompt({required this.onTap});
 
-  final List<CategoryModel> categories;
-  final ValueChanged<CategoryModel> onSelected;
-
-  @override
-  State<_CategoryChipRow> createState() => _CategoryChipRowState();
-}
-
-class _CategoryChipRowState extends State<_CategoryChipRow> {
-  int _tapped = -1;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 46,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: AppTheme.pageMargin),
-        itemCount: widget.categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final category = widget.categories[index];
-          final color = category.color;
-          return GestureDetector(
-            onTapDown: (_) {
-              if (context.motion.enabled) setState(() => _tapped = index);
-            },
-            onTapUp: (_) => setState(() => _tapped = -1),
-            onTapCancel: () => setState(() => _tapped = -1),
-            onTap: () {
-              HapticFeedback.selectionClick();
-              widget.onSelected(category);
-            },
-            child: AnimatedScale(
-              scale: _tapped == index ? .93 : 1,
-              duration: AppMotion.micro,
-              child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
+    return Semantics(
+      button: true,
+      label: 'جست‌وجوی کارتون',
+      excludeSemantics: true,
+      child: PressableScale(
+        onTap: onTap,
+        pressedScale: .985,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 52),
+          padding: const EdgeInsetsDirectional.only(
+            start: 9,
+            end: 16,
+            top: 8,
+            bottom: 8,
+          ),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
+            border: Border.all(color: context.softBorderColor),
+            boxShadow: AppTheme.softShadow(context),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
-                  color: context.surfaceColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
-                  border: Border.all(color: color.withOpacity(.28)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withOpacity(.14),
-                      blurRadius: 12,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: AppTheme.glow(AppColors.sky, opacity: .28, lift: 4),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(category.emoji, style: const TextStyle(fontSize: 16)),
-                    const SizedBox(width: 6),
-                    Text(
-                      category.name,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: context.primaryTextColor,
-                          ),
-                    ),
-                  ],
+                child: const Icon(
+                  Icons.search_rounded,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
-            ),
-          );
-        },
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'دنبال چه کارتونی می‌گردی؟',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: context.secondaryTextColor,
+                      ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.sky.withOpacity(.12),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
+                ),
+                child: Text(
+                  'جست‌وجو',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AppColors.skyDeep,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11.5,
+                      ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -507,23 +653,22 @@ class _ContinueCard extends StatelessWidget {
       child: PressableScale(
         onTap: onPlay,
         child: Container(
-          width: 264,
+          width: 272,
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+            borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 2),
             border: Border.all(color: context.softBorderColor),
             boxShadow: AppTheme.softShadow(context),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(9),
             child: Row(
               children: [
                 SizedBox(
-                  width: 92,
+                  width: 94,
                   height: 96,
                   child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.circular(AppTheme.radiusMedium),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     child: CartoonArtwork(
                       cartoon: entry.cartoon,
                       borderRadius: 0,
@@ -531,7 +676,7 @@ class _ContinueCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 11),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -541,20 +686,23 @@ class _ContinueCard extends StatelessWidget {
                         entry.cartoon.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontSize: 14,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 13.5,
+                                ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1),
                       Text(
                         entry.episode.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: context.secondaryTextColor,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: context.secondaryTextColor,
+                                  fontSize: 11,
+                                ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 9),
                       AnimatedProgressBar(value: entry.progress, color: color),
                       const SizedBox(height: 6),
                       Row(
@@ -562,14 +710,21 @@ class _ContinueCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               '${toFaDigits('$percent')}٪ تماشا شده',
-                              style:
-                                  Theme.of(context).textTheme.labelMedium?.copyWith(
-                                        color: color,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.copyWith(
+                                    color: color,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 10.5,
+                                  ),
                             ),
                           ),
-                          Icon(Icons.play_circle_fill_rounded, color: color, size: 22),
+                          Icon(
+                            Icons.play_circle_fill_rounded,
+                            color: color,
+                            size: 21,
+                          ),
                         ],
                       ),
                     ],
@@ -579,9 +734,9 @@ class _ContinueCard extends StatelessWidget {
                 ProgressRing(
                   value: entry.progress,
                   color: color,
-                  size: 34,
-                  strokeWidth: 3.6,
-                  child: const Icon(Icons.play_arrow_rounded, size: 18),
+                  size: 32,
+                  strokeWidth: 3.4,
+                  child: const Icon(Icons.play_arrow_rounded, size: 17),
                 ),
               ],
             ),
@@ -592,45 +747,86 @@ class _ContinueCard extends StatelessWidget {
   }
 }
 
-class _HorizontalCompactRow extends StatelessWidget {
-  const _HorizontalCompactRow({
+/// یک ردیف افقی کامل با سرتیتر یکپارچه.
+class _RailSection extends StatelessWidget {
+  const _RailSection({
+    required this.title,
+    required this.subtitle,
+    required this.accent,
     required this.cartoons,
     required this.onTap,
+    this.emoji,
+    this.actionLabel,
+    this.onAction,
   });
 
+  final String title;
+  final String subtitle;
+  final Color accent;
   final List<CartoonModel> cartoons;
   final ValueChanged<CartoonModel> onTap;
+  final String? emoji;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
     if (cartoons.isEmpty) return const SizedBox.shrink();
-    return SizedBox(
-      height: 196,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: AppTheme.pageMargin),
-        itemCount: cartoons.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => SizedBox(
-          width: 176,
-          child: CartoonCard(
-            cartoon: cartoons[index],
-            compact: true,
-            onTap: () => onTap(cartoons[index]),
+    final visible = cartoons.take(10).toList(growable: false);
+    return Column(
+      children: [
+        SectionHeader(
+          title: title,
+          subtitle: subtitle,
+          emoji: emoji,
+          accent: accent,
+          actionLabel: actionLabel,
+          onAction: onAction,
+        ),
+        SizedBox(
+          height: 198,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.pageMargin,
+            ),
+            itemCount: visible.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 11),
+            itemBuilder: (context, index) => SizedBox(
+              width: 168,
+              child: CartoonCard(
+                cartoon: visible[index],
+                compact: true,
+                onTap: () => onTap(visible[index]),
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
 
-class _CompactRowLoading extends StatelessWidget {
-  const _CompactRowLoading();
+class _RailLoading extends StatelessWidget {
+  const _RailLoading({required this.title});
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(height: 212, child: ShimmerCompactRow(itemWidth: 176));
+    return Column(
+      children: [
+        SectionHeader(title: title),
+        const SizedBox(
+          height: 198,
+          child: Padding(
+            padding: EdgeInsets.only(top: 4, bottom: 12),
+            child: ShimmerCompactRow(itemWidth: 168, itemCount: 3),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -648,7 +844,7 @@ class _ChipsLoading extends StatelessWidget {
         itemCount: 4,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (_, __) => Container(
-          width: 96,
+          width: 92,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceVariant,
             borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
@@ -679,7 +875,7 @@ class _CartoonGridSliver extends StatelessWidget {
           maxCrossAxisExtent: 210,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: .74,
+          childAspectRatio: .72,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => CartoonCard(
@@ -710,7 +906,7 @@ class _CartoonGridLoadingSliver extends StatelessWidget {
           maxCrossAxisExtent: 210,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: .74,
+          childAspectRatio: .72,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => const ShimmerCard(),
