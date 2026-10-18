@@ -49,7 +49,7 @@ download, or live 3D camera. All "3D" imagery above is pre-rendered; the vector
 imitates the same character design. A transparent matte is used only for the
 isolated mascot; all scene, splash and poster images are opaque.
 
-## فندوقی — شخصیت اصلی (فاز ۶)
+## بلوطی (فایل‌های fandaq) — شخصیت اصلی (فاز ۶)
 
 - **تصویر مرجع:** توسط مالک پروژه (Parsa Apps) ارائه شده است؛ پس‌زمینه در
   همان پروژه حذف و لبهٔ آلفا تمیز شده است.

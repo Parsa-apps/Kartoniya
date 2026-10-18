@@ -42,7 +42,7 @@ void main() {
 
     expect(totalBytes, lessThan(300 * 1024));
 
-    // ——— شخصیت لایه‌ای فندوقی ———
+    // ——— شخصیت لایه‌ای بلوطی ———
     // همهٔ لایه‌ها (بدن، دست‌ها، پاها، برگ و حالت چشم/دهان) باید در APK
     // باشند، رمزگشایی شوند و با هم زیر بودجهٔ حافظه بمانند.
     var rigBytes = 0;
@@ -147,7 +147,7 @@ void main() {
     // Eight 1080x810 WebP posters stay below 600 KiB in the APK.
     expect(totalBytes, lessThan(600 * 1024));
 
-    // پس‌زمینهٔ اسپلش نسخهٔ شبانهٔ بدون شخصیت است تا فندوقی زندهٔ
+    // پس‌زمینهٔ اسپلش نسخهٔ شبانهٔ بدون شخصیت است تا بلوطی زندهٔ
     // لایه‌ای روی آن بنشیند.
     final splashData = await rootBundle.load(
       'asset/images/fandaq_splash_night.webp',

@@ -673,7 +673,7 @@ class _PlayerError extends StatelessWidget {
                   width: 92,
                   height: 106,
                   semanticLabel:
-                      'فندوقی در وضعیت خطای پخش',
+                      'بلوطی در وضعیت خطای پخش',
                 ),
                 const SizedBox(height: 13),
                 const Text(

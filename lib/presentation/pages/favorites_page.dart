@@ -50,7 +50,7 @@ class FavoritesPage extends ConsumerWidget {
               width: 42,
               height: 42,
               animate: false,
-              semanticLabel: 'فندوقی، شخصیت کارتونی کارتونیا',
+              semanticLabel: 'بلوطی، شخصیت کارتونی کارتونیا',
             ),
           ),
           trailing: favorites.isEmpty

@@ -349,7 +349,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
               ),
             ),
           ),
-          // ——— دعوت برندی فندوقی ———
+          // ——— دعوت برندی بلوطی ———
           SliverToBoxAdapter(
             child: StaggeredReveal(
               index: 4,
@@ -362,16 +362,19 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   2,
                 ),
                 child: KartoniyaStoryBanner(
-                  scene: KartoniyaScene.fandaqReading,
+                  // صحنهٔ رنگیِ بدون شخصیت؛ خود بلوطیِ زنده سمت راست
+                  // می‌نشیند تا شخصیت دوتایی نشود.
+                  scene: KartoniyaScene.fandaqNight,
                   height: 172,
-                  eyebrow: 'همراه فندوقی',
+                  showMascot: true,
+                  eyebrow: 'همراه بلوطی',
                   title: childProfile.hasName
                       ? '${childProfile.name}، امروز کجا بریم؟'
                       : 'امروز کجا بریم؟',
                   subtitle: 'یک قصهٔ تازه همیشه منتظر توست.',
                   actionLabel: 'دیدن دسته‌ها',
                   onAction: widget.onOpenCategories,
-                  semanticLabel: 'فندوقی در جزیرهٔ ابری کارتونیا',
+                  semanticLabel: 'بلوطی در جزیرهٔ ابری کارتونیا',
                 ),
               ),
             ),
@@ -411,14 +414,15 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   2,
                 ),
                 child: KartoniyaStoryBanner(
-                  scene: KartoniyaScene.fandaqNight,
+                  scene: KartoniyaScene.cloudworld,
                   height: 158,
+                  showMascot: true,
                   eyebrow: 'وقت خواب',
                   title: 'قصه‌های آرام شب',
-                  subtitle: 'فندوقی قصه‌های خیلی آرام را پیشنهاد می‌دهد.',
+                  subtitle: 'بلوطی قصه‌های خیلی آرام را پیشنهاد می‌دهد.',
                   actionLabel: 'قصه‌های شب',
                   onAction: widget.onOpenCategories,
-                  semanticLabel: 'فندوقی خوابیده روی ابرها',
+                  semanticLabel: 'بلوطی خوابیده روی ابرها',
                 ),
               ),
             ),

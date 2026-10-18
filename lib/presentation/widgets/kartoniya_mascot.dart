@@ -6,10 +6,10 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 
-/// حالت‌های احساسی شخصیت «فندوقی».
+/// حالت‌های احساسی شخصیت «بلوطی».
 enum MascotMood { happy, sleepy, confused, cheering }
 
-/// دارایی‌های ریگ‌شدهٔ «فندوقی»، شخصیت اصلی کارتونیا.
+/// دارایی‌های ریگ‌شدهٔ «بلوطی»، شخصیت اصلی کارتونیا.
 ///
 /// تصویر اصلی توسط مالک پروژه ارائه شده و پس‌زمینه‌اش حذف شده است. بدن،
 /// دست‌ها، پاها و برگ به‌صورت لایه‌های جدا برش خورده‌اند تا در Flutter
@@ -131,7 +131,7 @@ abstract final class _Rig {
   );
 }
 
-/// «فندوقی» — شخصیت اصلی و راهنمای کارتونیا.
+/// «بلوطی» — شخصیت اصلی و راهنمای کارتونیا.
 ///
 /// رفتارها:
 /// * تنفس و شناوری آرام، تاب خوردن برگ و دست‌ها، پلک‌زدن نامنظم.
@@ -153,7 +153,7 @@ class KartoniyaMascot extends StatefulWidget {
     this.accent = AppColors.sky,
     this.float = true,
     this.onTap,
-    this.semanticLabel = 'فندوقی، شخصیت کارتونی کارتونیا',
+    this.semanticLabel = 'بلوطی، شخصیت کارتونی کارتونیا',
     this.interactive = true,
     this.entrance = false,
     this.greet = false,

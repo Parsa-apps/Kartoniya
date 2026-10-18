@@ -36,7 +36,7 @@ class PrivacyPage extends StatelessWidget {
                   title: 'اطلاعات خانواده مهم است',
                   subtitle: 'تنظیمات کارتونیا روی دستگاه شما می‌ماند.',
                   semanticLabel:
-                      'فندوقی در کتابخانهٔ مهتابی',
+                      'بلوطی در کتابخانهٔ مهتابی',
                 ),
                 const SizedBox(height: 18),
                 Text(

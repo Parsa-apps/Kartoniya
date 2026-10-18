@@ -53,7 +53,7 @@ class SettingsPage extends ConsumerWidget {
                     title: 'تماشا به سبک خانهٔ شما',
                     subtitle: 'همه‌چیز از همین دستگاه و در اختیار والدین',
                     semanticLabel:
-                        'فندوقی در دنیای ابری',
+                        'بلوطی در دنیای ابری',
                   ),
                 ),
                 const SizedBox(height: 18),

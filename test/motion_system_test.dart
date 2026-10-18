@@ -63,7 +63,7 @@ void main() {
       tester.getSemantics(mascot),
       containsSemantics(
         isButton: true,
-        label: 'فندوقی، شخصیت کارتونی کارتونیا',
+        label: 'بلوطی، شخصیت کارتونی کارتونیا',
       ),
     );
     // Dispose inside the test body: flutter_test fails a test whose semantics

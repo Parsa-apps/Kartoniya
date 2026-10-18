@@ -318,7 +318,7 @@ class _OnboardingHero extends StatelessWidget {
                     width: 176,
                     height: 242,
                     semanticLabel:
-                        'فندوقی، راهنمای کارتونیا',
+                        'بلوطی، راهنمای کارتونیا',
                   ),
                 ),
               PositionedDirectional(

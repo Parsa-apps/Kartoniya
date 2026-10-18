@@ -38,7 +38,7 @@ class EmptyStateView extends StatelessWidget {
                   ? const PreRenderedFlak(
                       width: 124,
                       height: 132,
-                      semanticLabel: 'فندوقی در حالت انتظار',
+                      semanticLabel: 'بلوطی در حالت انتظار',
                     )
                   : KartoniyaMascot(mood: mascot, size: 118, accent: color),
             ),
@@ -97,7 +97,7 @@ class ErrorStateView extends StatelessWidget {
           const PreRenderedFlak(
             width: 104,
             height: 114,
-            semanticLabel: 'فندوقی برای وضعیت خطا',
+            semanticLabel: 'بلوطی برای وضعیت خطا',
           ),
         if (!compact) const SizedBox(height: 16),
         Text(

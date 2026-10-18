@@ -93,7 +93,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                       title: 'قصه‌های خوب، تماشای امن',
                       subtitle: 'ساختهٔ گروه برنامه‌نویسی Parsa Apps',
                       semanticLabel:
-                          'فندوقی در باغ داستان کارتونیا؛ تصویر از پیش‌رندرشده',
+                          'بلوطی در باغ داستان کارتونیا؛ تصویر از پیش‌رندرشده',
                     ),
                   ),
                   const SizedBox(height: 26),
