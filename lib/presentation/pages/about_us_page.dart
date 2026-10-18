@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/navigation/app_routes.dart';
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
@@ -143,7 +143,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                     child: Card(
                       child: InkWell(
                         onTap: () {
-                          HapticFeedback.lightImpact();
+                          AppHaptics.light();
                           _openTelegram();
                         },
                         child: Padding(

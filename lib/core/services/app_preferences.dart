@@ -17,6 +17,7 @@ class AppPreferences {
   static const _parentNameKey = 'parent_display_name';
   static const _watchProgressKey = 'watch_progress';
   static const _reduceMotionKey = 'reduce_motion_enabled';
+  static const _hapticsKey = 'haptics_enabled';
   static const _childProfileKey = 'child_profile';
 
   bool get onboardingCompleted => _storage.getBool(_onboardingKey) ?? false;
@@ -52,6 +53,12 @@ class AppPreferences {
   bool get reduceMotionEnabled => _storage.getBool(_reduceMotionKey) ?? false;
   Future<bool> saveReduceMotionEnabled(bool value) =>
       _storage.setBool(_reduceMotionKey, value);
+
+  /// اختیاری‌بودن بازخورد لمسی؛ خاموش‌کردن آن همهٔ بازخوردهای رابط را
+  /// غیرفعال می‌کند، درحالی‌که تنظیم هپتیک سیستم‌عامل همچنان مرجع نهایی است.
+  bool get hapticsEnabled => _storage.getBool(_hapticsKey) ?? true;
+  Future<bool> saveHapticsEnabled(bool value) =>
+      _storage.setBool(_hapticsKey, value);
 
   String get parentName => _storage.getString(_parentNameKey) ?? 'والد مهربان';
   Future<bool> saveParentName(String value) => _storage.setString(

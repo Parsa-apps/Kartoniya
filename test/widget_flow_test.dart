@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartoniya/core/services/app_haptics.dart';
 import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:kartoniya/data/repositories/local_cartoon_repository.dart';
 import 'package:kartoniya/main.dart';
@@ -191,6 +192,38 @@ void main() {
     // without waiting on an unadvanced Timer.
     await tester.pump();
     expect(prefs.getBool('reduce_motion_enabled'), isTrue);
+  });
+
+  testWidgets('بازخورد لمسی از تنظیمات والدین قابل خاموش‌کردن است',
+      (tester) async {
+    usePhone(tester);
+    addTearDown(() => AppHaptics.setEnabled(true));
+    final prefs = await initPrefs();
+    final container = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: SettingsPage()),
+      ),
+    );
+    await tester.pump();
+
+    final hapticsTile = find.ancestor(
+      of: find.text('بازخورد لمسی'),
+      matching: find.byType(SwitchListTile),
+    );
+    expect(hapticsTile, findsOneWidget);
+    await tester.tap(hapticsTile);
+    await tester.pump();
+    await tester.pump();
+
+    expect(container.read(hapticsProvider), isFalse);
+    expect(AppHaptics.enabled, isFalse);
+    expect(prefs.getBool('haptics_enabled'), isFalse);
   });
 }
 

@@ -120,6 +120,36 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('بنر قصه‌های شب جست‌وجوی واقعی محتوای خواب را باز می‌کند',
+      (tester) async {
+    await pumpHome(tester, await preferences());
+
+    final homeScroll = find
+        .descendant(
+          of: find.byType(HomePage),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    await tester.scrollUntilVisible(
+      find.text('قصه‌های شب'),
+      260,
+      scrollable: homeScroll,
+      maxScrolls: 30,
+    );
+    await tester.pump(const Duration(milliseconds: 350));
+    expect(find.text('قصه‌های شب'), findsOneWidget);
+
+    await tester.tap(find.text('قصه‌های شب'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pump(const Duration(milliseconds: 200));
+
+    final results = tester.widgetList<CartoonCard>(searchCards()).toList();
+    expect(results, hasLength(1));
+    expect(results.single.cartoon.id, 'bedtime');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('دسته‌ها: فیلتر واقعی و پاک کردن فیلتر', (tester) async {
     await pumpHome(tester, await preferences());
     await openTab(tester, 'دسته‌ها');

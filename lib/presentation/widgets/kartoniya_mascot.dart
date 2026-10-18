@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 
@@ -210,7 +210,7 @@ abstract final class _Rig {
 ///
 /// رفتارها:
 /// * تنفس و شناوری آرام، تاب خوردن برگ و دست‌ها، پلک‌زدن نامنظم.
-/// * لمس: پرش کوتاه، تکان دست و چهرهٔ خندان؛ با HapticFeedback سبک.
+/// * لمس: پرش کوتاه، تکان دست و چهرهٔ خندان؛ با بازخورد لمسیِ قابل‌خاموش‌کردن.
 /// * حالت‌ها: شاد، خواب‌آلود (پلک سنگین + خمیازه)، کنجکاو (ابروی بالا +
 ///   دهان گرد)، هیجان‌زده (چشم بستهٔ خندان + دهان باز) و غمگین/همدل
 ///   (ابروی افتاده + لب پایین). هر چهره از تصویر اصلی برش خورده است.
@@ -369,7 +369,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
 
   void _react() {
     if (_motion) {
-      HapticFeedback.selectionClick();
+      AppHaptics.selection();
       _reaction.forward(from: 0);
     }
     widget.onTap?.call();

@@ -20,7 +20,7 @@ void main() {
       expect(service.favoriteIds, isEmpty);
     });
 
-    test('تم، پخش خودکار و کاهش حرکت پایدارند', () async {
+    test('تم، پخش خودکار، کاهش حرکت و بازخورد لمسی پایدارند', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final service = AppPreferences(prefs);
@@ -36,6 +36,10 @@ void main() {
       expect(service.reduceMotionEnabled, isFalse);
       await service.saveReduceMotionEnabled(true);
       expect(service.reduceMotionEnabled, isTrue);
+
+      expect(service.hapticsEnabled, isTrue);
+      await service.saveHapticsEnabled(false);
+      expect(service.hapticsEnabled, isFalse);
     });
 
     test('پیشرفت تماشا خارج از بازهٔ ۰ تا ۱ کلمپ می‌شود', () async {

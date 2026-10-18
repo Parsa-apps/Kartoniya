@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
@@ -86,7 +86,7 @@ class KartoniyaNavBar extends StatelessWidget {
                             duration: duration,
                             onTap: () {
                               if (i == selectedIndex) return;
-                              HapticFeedback.lightImpact();
+                              AppHaptics.light();
                               onSelected(i);
                             },
                           ),
