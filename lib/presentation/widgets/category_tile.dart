@@ -50,15 +50,7 @@ class CategoryPill extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             gradient: selected
-                ? LinearGradient(
-                    colors: [
-                      Color.lerp(color, Colors.white, .18)!,
-                      color,
-                      Color.lerp(color, const Color(0xFF12203A), .18)!,
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                  )
+                ? AppColors.accessibleGradient(color)
                 : null,
             color: selected ? null : context.surfaceColor,
             borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
@@ -143,7 +135,6 @@ class CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = category.color;
-    final deep = Color.lerp(color, const Color(0xFF10203A), .34)!;
     return Semantics(
       button: true,
       selected: selected,
@@ -157,16 +148,10 @@ class CategoryTile extends StatelessWidget {
           curve: AppMotion.curveStandard,
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Color.lerp(color, Colors.white, .24)!,
-                color,
-                deep,
-              ],
-              stops: const [0, .58, 1],
-            ),
+            // متن سفید روی رنگ‌های شاد برند کنتراست کافی ندارد؛ گرادیان
+            // تیره‌شده با همان رنگ دسته استفاده می‌شود (‏>۴٫۵ : ۱) و
+            // زنده‌بودن رنگ با هالهٔ روشن گوشه حفظ می‌شود.
+            gradient: AppColors.accessibleGradient(color),
             borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
             border: Border.all(
               color: selected ? Colors.white : Colors.white.withOpacity(.28),
@@ -174,7 +159,7 @@ class CategoryTile extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(selected ? .42 : .22),
+                color: color.withOpacity(selected ? .40 : .22),
                 blurRadius: selected ? 24 : 16,
                 spreadRadius: selected ? 1 : -2,
                 offset: const Offset(0, 8),
@@ -192,7 +177,7 @@ class CategoryTile extends StatelessWidget {
                   height: 74,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(.13),
+                    color: color.withOpacity(.35),
                   ),
                 ),
               ),

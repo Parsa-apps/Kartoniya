@@ -439,6 +439,9 @@ class _PlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolved = AppColors.fillAndText(accent);
+    final foreground = resolved.foreground;
+    final readable = resolved.fill;
     return Semantics(
       button: true,
       label: 'پخش',
@@ -451,10 +454,7 @@ class _PlayButton extends StatelessWidget {
           padding: const EdgeInsetsDirectional.only(start: 12, end: 16),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color.lerp(accent, Colors.white, .18)!,
-                accent,
-              ],
+              colors: [readable, Color.lerp(readable, AppColors.deepInk, .12)!],
             ),
             borderRadius: BorderRadius.circular(AppTheme.radiusCircular),
             boxShadow: AppTheme.glow(accent, opacity: .42, lift: 6),
@@ -462,16 +462,16 @@ class _PlayButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.play_arrow_rounded,
-                color: Colors.white,
+                color: foreground,
                 size: 21,
               ),
               const SizedBox(width: 3),
               Text(
                 'تماشا',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Colors.white,
+                      color: foreground,
                       fontSize: 13,
                       fontWeight: FontWeight.w900,
                     ),

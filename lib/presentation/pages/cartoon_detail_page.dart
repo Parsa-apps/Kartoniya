@@ -293,7 +293,10 @@ class CartoonDetailPage extends ConsumerWidget {
                                     .textTheme
                                     .labelMedium
                                     ?.copyWith(
-                                      color: categoryColor,
+                                      color: AppColors.readableOn(
+                                        context.surfaceColor,
+                                        categoryColor,
+                                      ),
                                     ),
                               ),
                             ),
@@ -468,7 +471,10 @@ class _NextEpisodeCard extends StatelessWidget {
                 Text(
                   'قسمت بعدی',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: color,
+                        color: AppColors.readableOn(
+                          context.surfaceColor,
+                          color,
+                        ),
                       ),
                 ),
                 Text(
@@ -550,7 +556,10 @@ class _EpisodeTile extends StatelessWidget {
                                   .textTheme
                                   .labelLarge
                                   ?.copyWith(
-                                    color: color,
+                                    color: AppColors.readableOn(
+                                      context.surfaceColor,
+                                      color,
+                                    ),
                                     fontSize: 11,
                                   ),
                             ),

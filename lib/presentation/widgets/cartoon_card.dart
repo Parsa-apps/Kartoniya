@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -127,6 +129,9 @@ class CartoonCard extends ConsumerWidget {
                         ),
                         Row(
                           children: [
+                            // Flexible تمام عرض باقی‌مانده را می‌گیرد (بدون
+                            // Spacer که با آن در تقسیم flex شریک می‌شد و
+                            // نام دسته را به «ماجراجو…» کوتاه می‌کرد).
                             Flexible(
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
@@ -145,14 +150,23 @@ class CartoonCard extends ConsumerWidget {
                                       .textTheme
                                       .labelLarge
                                       ?.copyWith(
-                                        color: categoryColor,
+                                        // طلایی/فیروزه‌ای خام روی کارت روشن
+                                        // کنتراست ۱٫۶ می‌داد؛ نسخهٔ خوانا
+                                        // همان هویت رنگی را نگه می‌دارد.
+                                        color: AppColors.readableOn(
+                                          Theme.of(context).cardTheme.color ??
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
+                                          categoryColor,
+                                        ),
                                         fontSize: 9.5,
                                         fontWeight: FontWeight.w700,
                                       ),
                                 ),
                               ),
                             ),
-                            const Spacer(),
+                            const SizedBox(width: 7),
                             const Icon(
                               Icons.star_rounded,
                               color: AppColors.gold,
@@ -193,6 +207,28 @@ class CartoonCard extends ConsumerWidget {
     }
     return max;
   }
+}
+
+/// نسبت ابعاد کارت در گریدهای ستونی.
+///
+/// ارتفاع ناحیهٔ متن ثابت (≈۸۶px) نگه داشته می‌شود و عرض کاشی از خود گرید
+/// محاسبه می‌شود؛ بنابراین روی گوشی ۳۲۰px هم عنوان و ردیف دسته/امتیاز جا
+/// می‌شوند و روی گوشی بزرگ‌تر فضای خالی زیر کارت ایجاد نمی‌شود.
+double cartoonGridAspectRatio(
+  BuildContext context, {
+  double maxCrossAxisExtent = 210,
+  double spacing = 14,
+  double footerHeight = 86,
+  double imageRatio = 1.36,
+}) {
+  final available = MediaQuery.sizeOf(context).width - AppTheme.pageMargin * 2;
+  final columns = math.max(
+    2,
+    (available / maxCrossAxisExtent).ceil(),
+  );
+  final tile = (available - spacing * (columns - 1)) / columns;
+  if (tile <= 0) return .78;
+  return tile / (tile / imageRatio + footerHeight);
 }
 
 class _AgeBadge extends StatelessWidget {

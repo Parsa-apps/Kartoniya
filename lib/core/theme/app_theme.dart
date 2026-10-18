@@ -177,6 +177,10 @@ abstract final class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          // همان قاعدهٔ دکمه‌های گرادیانی: پرکننده و متن با هم انتخاب
+          // می‌شوند تا کنتراست همیشه ≥۴٫۵:۱ باشد و رنگ برند شاد بماند.
+          backgroundColor: AppColors.fillAndText(scheme.primary).fill,
+          foregroundColor: AppColors.fillAndText(scheme.primary).foreground,
           minimumSize: const Size(0, 52),
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
           textStyle: textTheme.labelLarge,

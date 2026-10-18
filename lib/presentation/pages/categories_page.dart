@@ -199,11 +199,11 @@ class CategoriesPage extends ConsumerWidget {
                   AppTheme.pageMargin,
                   100,
                 ),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 210,
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
-                  childAspectRatio: .72,
+                  childAspectRatio: cartoonGridAspectRatio(context),
                 ),
                 itemCount: filtered.length,
                 itemBuilder: (context, index) => StaggeredReveal(
@@ -301,11 +301,11 @@ class _CategoryGridLoading extends StatelessWidget {
         AppTheme.pageMargin,
         20,
       ),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 210,
         crossAxisSpacing: 14,
         mainAxisSpacing: 14,
-        childAspectRatio: .72,
+        childAspectRatio: cartoonGridAspectRatio(context),
       ),
       itemCount: 4,
       itemBuilder: (_, __) => const ShimmerCard(),

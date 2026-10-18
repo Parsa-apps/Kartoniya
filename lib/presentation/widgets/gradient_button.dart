@@ -39,7 +39,19 @@ class _GradientButtonState extends State<GradientButton> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onPressed != null;
-    final gradient = widget.gradient ?? AppColors.primaryGradient;
+    final requested = widget.gradient ?? AppColors.primaryGradient;
+    // رنگ پرکننده و متن با هم انتخاب می‌شوند: روی طلایی/مرجانی متن سرمه‌ای
+    // (کنتراست >۷) و روی آبی برند متن سفید با پرکنندهٔ کمی تیره‌تر.
+    final LinearGradient gradient;
+    final Color foreground;
+    if (requested is LinearGradient) {
+      final resolved = AppColors.gradientAndText(requested);
+      gradient = resolved.gradient;
+      foreground = resolved.foreground;
+    } else {
+      gradient = requested;
+      foreground = Colors.white;
+    }
     final glow = widget.glowColor ?? AppColors.sky;
 
     Widget content = Row(
@@ -48,7 +60,7 @@ class _GradientButtonState extends State<GradientButton> {
       children: [
         if (widget.icon != null) ...[
           Icon(widget.icon,
-              color: Colors.white, size: widget.compact ? 20 : 24),
+              color: foreground, size: widget.compact ? 20 : 24),
           const SizedBox(width: 8),
         ],
         Flexible(
@@ -57,7 +69,7 @@ class _GradientButtonState extends State<GradientButton> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Colors.white,
+                  color: foreground,
                   fontSize: widget.compact ? 13 : 15,
                   fontWeight: FontWeight.w800,
                 ),
@@ -107,32 +119,34 @@ class _GradientButtonState extends State<GradientButton> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // هایلایت شیشه‌ای فوقانی برای عمق.
-                  PositionedDirectional(
-                    top: 0,
-                    start: 0,
-                    end: 0,
-                    height: widget.height * .5,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(
-                            widget.compact
-                                ? AppTheme.radiusMedium
-                                : AppTheme.radiusLarge,
+                  // هایلایت شیشه‌ای فقط وقتی متن سرمه‌ای است؛ سفیدِ روی
+                  // پرکنندهٔ تیره کنتراست متن سفید را زیر ۴٫۵ می‌آورد.
+                  if (foreground != Colors.white)
+                    PositionedDirectional(
+                      top: 0,
+                      start: 0,
+                      end: 0,
+                      height: widget.height * .5,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(
+                              widget.compact
+                                  ? AppTheme.radiusMedium
+                                  : AppTheme.radiusLarge,
+                            ),
                           ),
-                        ),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white.withOpacity(.22),
-                            Colors.white.withOpacity(.0),
-                          ],
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withOpacity(.16),
+                              Colors.white.withOpacity(.0),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   content,
                 ],
               ),

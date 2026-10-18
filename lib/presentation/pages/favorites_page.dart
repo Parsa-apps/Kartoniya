@@ -78,7 +78,9 @@ class FavoritesPage extends ConsumerWidget {
                           icon: const Icon(Icons.explore_rounded),
                           label: const Text('گشتن در کارتون‌ها'),
                           style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.pink,
+                            backgroundColor: AppColors.fillAndText(AppColors.pink).fill,
+                            foregroundColor:
+                                AppColors.fillAndText(AppColors.pink).foreground,
                           ),
                         ),
                 );
@@ -91,11 +93,11 @@ class FavoritesPage extends ConsumerWidget {
                   AppTheme.pageMargin,
                   100,
                 ),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 220,
                   mainAxisSpacing: 14,
                   crossAxisSpacing: 14,
-                  childAspectRatio: .72,
+                  childAspectRatio: cartoonGridAspectRatio(context),
                 ),
                 itemCount: selected.length,
                 itemBuilder: (context, index) => CartoonCard(
@@ -148,11 +150,11 @@ class _FavoritesLoading extends StatelessWidget {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(
           AppTheme.pageMargin, 18, AppTheme.pageMargin, 20),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 220,
         mainAxisSpacing: 14,
         crossAxisSpacing: 14,
-        childAspectRatio: .72,
+        childAspectRatio: cartoonGridAspectRatio(context),
       ),
       itemCount: 4,
       itemBuilder: (_, __) => const ShimmerCard(),

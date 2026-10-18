@@ -35,6 +35,9 @@ class KartoniyaNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     final duration = context.motion.dur(AppMotion.soft);
+    // گرادیان برند آبی روشن است؛ یا متن سرمه‌ای روی همان آبی شاد می‌نشیند
+    // یا آبی کمی تیره می‌شود و متن سفید می‌ماند. هر دو مسیر >۴٫۵:۱.
+    final marker = AppColors.gradientAndText(AppColors.primaryGradient);
 
     return SafeArea(
       top: false,
@@ -64,7 +67,7 @@ class KartoniyaNavBar extends StatelessWidget {
                     width: itemWidth - 4,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
+                        gradient: marker.gradient,
                         borderRadius:
                             BorderRadius.circular(AppTheme.radiusLarge),
                         boxShadow: AppTheme.glow(AppColors.sky, opacity: .38),
@@ -79,6 +82,7 @@ class KartoniyaNavBar extends StatelessWidget {
                           child: _NavButton(
                             item: items[i],
                             selected: i == selectedIndex,
+                            activeColor: marker.foreground,
                             duration: duration,
                             onTap: () {
                               if (i == selectedIndex) return;
@@ -103,18 +107,19 @@ class _NavButton extends StatelessWidget {
   const _NavButton({
     required this.item,
     required this.selected,
+    required this.activeColor,
     required this.duration,
     required this.onTap,
   });
 
   final KartoniyaNavItem item;
   final bool selected;
+  final Color activeColor;
   final Duration duration;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Colors.white;
     final idleColor = context.secondaryTextColor;
     return Semantics(
       button: true,

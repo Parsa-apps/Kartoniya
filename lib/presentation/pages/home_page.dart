@@ -714,7 +714,10 @@ class _ContinueCard extends StatelessWidget {
                                   .textTheme
                                   .labelMedium
                                   ?.copyWith(
-                                    color: color,
+                                    color: AppColors.readableOn(
+                                      context.surfaceColor,
+                                      color,
+                                    ),
                                     fontWeight: FontWeight.w700,
                                     fontSize: 10.5,
                                   ),
@@ -871,11 +874,11 @@ class _CartoonGridSliver extends StatelessWidget {
         AppTheme.spacingLg,
       ),
       sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 210,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: .72,
+          childAspectRatio: cartoonGridAspectRatio(context),
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => CartoonCard(
@@ -902,11 +905,11 @@ class _CartoonGridLoadingSliver extends StatelessWidget {
         AppTheme.spacingLg,
       ),
       sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 210,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: .72,
+          childAspectRatio: cartoonGridAspectRatio(context),
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => const ShimmerCard(),

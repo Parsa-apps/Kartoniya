@@ -1087,7 +1087,10 @@ class _NextEpisodeOverlay extends StatelessWidget {
                 FilledButton(
                   onPressed: onPlayNow,
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.sky,
+                    backgroundColor:
+                        AppColors.fillAndText(AppColors.sky).fill,
+                    foregroundColor:
+                        AppColors.fillAndText(AppColors.sky).foreground,
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                     minimumSize: const Size(0, 38),
                   ),

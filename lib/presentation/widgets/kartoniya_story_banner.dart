@@ -327,8 +327,12 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 12,
                                           ),
-                                          backgroundColor: AppColors.coral,
-                                          foregroundColor: Colors.white,
+                                          backgroundColor: AppColors
+                                              .fillAndText(AppColors.coral)
+                                              .fill,
+                                          foregroundColor: AppColors
+                                              .fillAndText(AppColors.coral)
+                                              .foreground,
                                           visualDensity: VisualDensity.compact,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(

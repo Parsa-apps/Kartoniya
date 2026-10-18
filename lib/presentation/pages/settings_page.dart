@@ -279,7 +279,10 @@ class _ThemeSegmentsState extends State<_ThemeSegments> {
                   width: width,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
+                      // متن/آیکون انتخاب‌شده سفید است؛ گرادیان باید خوانا باشد.
+                      gradient: AppColors.readableGradient(
+                        AppColors.primaryGradient,
+                      ),
                       borderRadius:
                           BorderRadius.circular(AppTheme.radiusMedium),
                       boxShadow: AppTheme.glow(AppColors.sky, opacity: .3),

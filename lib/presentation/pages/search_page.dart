@@ -761,11 +761,11 @@ class _SearchResultGrid extends StatelessWidget {
         100,
       ),
       physics: const BouncingScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 210,
         mainAxisSpacing: 14,
         crossAxisSpacing: 14,
-        childAspectRatio: .72,
+        childAspectRatio: cartoonGridAspectRatio(context),
       ),
       itemCount: cartoons.length,
       itemBuilder: (context, index) => StaggeredReveal(
@@ -793,11 +793,11 @@ class _SearchGridLoading extends StatelessWidget {
         20,
       ),
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 210,
         mainAxisSpacing: 14,
         crossAxisSpacing: 14,
-        childAspectRatio: .72,
+        childAspectRatio: cartoonGridAspectRatio(context),
       ),
       itemCount: 4,
       itemBuilder: (_, __) => const ShimmerCard(),
