@@ -9,7 +9,6 @@ import '../../core/utils/fa_digits.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/app_feedback.dart';
 import '../widgets/cartoon_card.dart';
-import '../widgets/kartoniya_mascot.dart';
 import '../widgets/shimmer_loader.dart';
 import '../widgets/state_views.dart';
 import 'cartoon_detail_page.dart';

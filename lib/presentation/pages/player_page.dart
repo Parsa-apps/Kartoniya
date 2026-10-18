@@ -438,14 +438,14 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
             if (ready)
               Center(
                 child: AspectRatio(
-                  aspectRatio: controller!.value.aspectRatio <= 0
+                  aspectRatio: controller.value.aspectRatio <= 0
                       ? 16 / 9
-                      : controller!.value.aspectRatio,
-                  child: VideoPlayer(controller!),
+                      : controller.value.aspectRatio,
+                  child: VideoPlayer(controller),
                 ),
               ),
             if (_isLoading) const _PlayerLoading(),
-            if (ready && controller!.value.isBuffering && !_isLoading)
+            if (ready && controller.value.isBuffering && !_isLoading)
               const _BufferingBadge(),
             if (_errorMessage != null)
               _PlayerError(
@@ -465,8 +465,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                 orientationLocked: _landscapeLock,
               ),
               _PlayerCenterControl(
-                isPlaying: controller!.value.isPlaying,
-                visible: _showControls || !controller!.value.isPlaying,
+                isPlaying: controller.value.isPlaying,
+                visible: _showControls || !controller.value.isPlaying,
                 onPressed: () => unawaited(_togglePlay()),
               ),
               _PlayerBottomControls(
