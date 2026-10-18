@@ -1,0 +1,91 @@
+name: UI Snapshots
+
+# رندر صفحه‌های اصلی با فونت Vazirmatn و assetهای واقعی پروژه و ذخیرهٔ
+# تصاویر کوچک‌شده در docs/screenshots برای بازبینی طراحی.
+#
+# مهم: این تصاویر با RenderRepaintBoundary در Flutter test رندر می‌شوند،
+# نه capture از گوشی/شبیه‌ساز. برای بازبینی چیدمان، فونت و RTL مفیدند، اما
+# جای آزمون دستگاه واقعی را نمی‌گیرند.
+#
+# اجرای دستی: پس از merge به شاخهٔ پیش‌فرض، از تب Actions یا
+#   gh workflow run ui-snapshot.yml --ref <branch>
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/ui-snapshot.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-snapshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshots:
+    name: رندر و ثبت اسکرین‌شات‌ها
+    if: github.ref == 'refs/heads/arena/f29eaa28-kartoniya'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          channel: stable
+          cache: true
+      - name: pub get
+        run: flutter pub get
+      - name: رندر صفحه‌ها
+        continue-on-error: true
+        env:
+          KARTONIYA_SCREENSHOTS: '1'
+        run: flutter test test/screenshot_test.dart --reporter expanded
+      - name: انتشار artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kartoniya-ui-screenshots
+          path: build/screenshots
+          if-no-files-found: warn
+          retention-days: 14
+      - name: کوچک‌کردن تصاویر
+        if: always()
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick
+          mkdir -p docs/screenshots
+          shopt -s nullglob
+          for file in build/screenshots/*.png; do
+            convert "$file" -resize 640x -strip -quality 90 \
+              "docs/screenshots/$(basename "$file")"
+          done
+          if [ -f build/screenshots/errors.txt ]; then
+            cp build/screenshots/errors.txt docs/screenshots/render-notes.txt
+          fi
+      - name: توضیح منبع تصاویر
+        run: |
+          cat > docs/screenshots/README.md <<'EOF'
+          # اسکرین‌شات‌های رندر‌شده در CI
+
+          این تصاویر با `flutter test test/screenshot_test.dart`، فونت
+          Vazirmatn باندل‌شده و assetهای واقعی پروژه در GitHub Actions
+          رندر شده‌اند. برای بازبینی طراحی، چیدمان و RTL مفیدند، اما
+          **اسکرین‌شات گوشی واقعی نیستند** و آزمون لمس/پخش روی دستگاه را
+          جایگزین نمی‌کنند. ترتیب فایل‌ها جریان
+          Splash → Home → Categories → Search → Detail است.
+          EOF
+      - name: ثبت تغییرات تصویری
+        run: |
+          if [ -z "$(git status --porcelain docs/screenshots)" ]; then
+            echo 'No screenshot changes.'
+            exit 0
+          fi
+          git config user.name 'Kartoniya UI Snapshots'
+          git config user.email 'actions@users.noreply.github.com'
+          git add docs/screenshots
+          git commit -m 'docs: refresh CI-rendered UI screenshots'
+          git push
