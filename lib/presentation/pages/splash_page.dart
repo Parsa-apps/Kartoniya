@@ -32,11 +32,33 @@ class _SplashPageState extends ConsumerState<SplashPage>
   @override
   void initState() {
     super.initState();
-    _enter = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
-      ..forward();
-    _drift = AnimationController(vsync: this, duration: const Duration(seconds: 9));
-    if (context.motionEnabledAtInit) _drift.repeat();
+    _enter = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _drift = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 9),
+    );
+    if (context.motionEnabledAtInit) {
+      _enter.forward();
+      _drift.repeat();
+    } else {
+      _enter.value = 1;
+    }
     unawaited(_openNextPage());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (context.motion.enabled) {
+      if (_enter.value < 1 && !_enter.isAnimating) _enter.forward();
+      if (!_drift.isAnimating) _drift.repeat();
+    } else {
+      _enter.value = 1;
+      _drift.stop(canceled: false);
+    }
   }
 
   @override
@@ -170,6 +192,27 @@ class _LoadingDotsState extends State<_LoadingDots>
       duration: const Duration(milliseconds: 900),
     );
     if (!widget.still && context.motionEnabledAtInit) _controller.repeat();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncMotion();
+  }
+
+  @override
+  void didUpdateWidget(covariant _LoadingDots oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.still != widget.still) _syncMotion();
+  }
+
+  void _syncMotion() {
+    if (!widget.still && context.motion.enabled) {
+      if (!_controller.isAnimating) _controller.repeat();
+    } else {
+      _controller.stop(canceled: false);
+      _controller.value = 0;
+    }
   }
 
   @override

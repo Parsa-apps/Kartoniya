@@ -72,6 +72,8 @@ class MotionScope extends InheritedWidget {
 
   static bool _globalReduced = false;
 
+  /// Snapshot for controllers created in initState, where inherited values
+  /// cannot be read; descendants still listen to [MotionScope] for live updates.
   /// نسخهٔ ایستای وضعیت کاهش حرکت؛ برخلاف context داخل initState قابل‌خواندن
   /// است (دسترسی به InheritedWidget در initState مجاز نیست).
   static bool get reducedGlobally => _globalReduced;
@@ -86,6 +88,47 @@ class MotionScope extends InheritedWidget {
   @override
   bool updateShouldNotify(MotionScope oldWidget) =>
       oldWidget.info.reduced != info.reduced;
+}
+
+/// Mutes every ticker while the application is not in the foreground.
+/// AnimationControllers keep their current value and resume naturally when
+/// Android returns to the app; no per-screen lifecycle observers are needed.
+class AppLifecycleTickerMode extends StatefulWidget {
+  const AppLifecycleTickerMode({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  State<AppLifecycleTickerMode> createState() => _AppLifecycleTickerModeState();
+}
+
+class _AppLifecycleTickerModeState extends State<AppLifecycleTickerMode>
+    with WidgetsBindingObserver {
+  bool _foreground = WidgetsBinding.instance.lifecycleState == null ||
+      WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final foreground = state == AppLifecycleState.resumed;
+    if (_foreground == foreground) return;
+    setState(() => _foreground = foreground);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      TickerMode(enabled: _foreground, child: widget.child);
 }
 
 /// Wrapper یک‌بار‌مصرف برای ظاهر شدن پلکانی اجزا هنگام ورود صفحه.
@@ -131,6 +174,16 @@ class _StaggeredRevealState extends State<StaggeredReveal>
       _controller.value = 1;
     } else {
       _controller.forward();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // If the parent enables reduced motion while this reveal is in flight,
+    // finish immediately rather than leaving content partially transparent.
+    if (!context.motion.enabled && _controller.value < 1) {
+      _controller.value = 1;
     }
   }
 
@@ -212,7 +265,9 @@ class _PressableScaleState extends State<PressableScale> {
       onLongPress: widget.onLongPress,
       child: AnimatedScale(
         scale: scale,
-        duration: _pressed ? AppMotion.micro : AppMotion.quick,
+        duration: context.motion.dur(
+          _pressed ? AppMotion.micro : AppMotion.quick,
+        ),
         curve: _pressed ? Curves.easeOut : AppMotion.curvePop,
         child: widget.child,
       ),

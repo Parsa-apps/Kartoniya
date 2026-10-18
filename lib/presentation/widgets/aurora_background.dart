@@ -40,6 +40,20 @@ class _AuroraBackgroundState extends State<AuroraBackground>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncMotion();
+  }
+
+  void _syncMotion() {
+    if (context.motion.enabled) {
+      if (!_controller.isAnimating) _controller.repeat();
+    } else {
+      _controller.stop(canceled: false);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

@@ -83,9 +83,11 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
               : SystemUiOverlayStyle.dark,
           child: Directionality(
             textDirection: TextDirection.rtl,
-            child: MotionScope(
-              info: MotionInfo(reduced: reduceMotion),
-              child: child ?? const SizedBox.shrink(),
+            child: AppLifecycleTickerMode(
+              child: MotionScope(
+                info: MotionInfo(reduced: reduceMotion),
+                child: child ?? const SizedBox.shrink(),
+              ),
             ),
           ),
         );
