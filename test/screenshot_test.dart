@@ -39,6 +39,23 @@ void main() {
       tester.view.devicePixelRatio = 3;
       addTearDown(tester.view.reset);
 
+      // آیکون‌های Material در محیط تست بارگذاری نمی‌شوند و به‌صورت مربع
+      // خالی رندر می‌شدند. فونت آیکون از SDK خوانده می‌شود (فقط برای
+      // اسکرین‌شات؛ اپ در دستگاه واقعی فونت را از asset خود Flutter دارد).
+      await tester.runAsync(() async {
+        final flutterRoot = Platform.environment['FLUTTER_ROOT'];
+        if (flutterRoot == null) return;
+        final file = File(
+          '$flutterRoot/bin/cache/artifacts/material_fonts/'
+          'MaterialIcons-Regular.otf',
+        );
+        if (!file.existsSync()) return;
+        final bytes = file.readAsBytesSync();
+        final loader = FontLoader('MaterialIcons')
+          ..addFont(Future.value(ByteData.view(bytes.buffer)));
+        await loader.load();
+      });
+
       // فونت واقعی Vazirmatn؛ در تست پیش‌فرض فونت آزمون است.
       await tester.runAsync(() async {
         final loader = FontLoader('Vazirmatn');
