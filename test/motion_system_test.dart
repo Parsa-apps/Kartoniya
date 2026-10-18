@@ -39,6 +39,9 @@ void main() {
   testWidgets('mascot responds to touch and exposes an accessible action',
       (tester) async {
     var taps = 0;
+    final semanticsHandle = tester.ensureSemantics();
+    addTearDown(semanticsHandle.dispose);
+
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -52,18 +55,22 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
+    // Read the live semantics tree instead of widget fields: Semantics only
+    // keeps its flags in SemanticsProperties, while the tree shows what a
+    // screen reader would actually receive.
+    final mascot = find.bySemanticsLabel('شخصیت کارتونی فِلَک');
+    expect(mascot, findsOneWidget);
     expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is Semantics &&
-            widget.button &&
-            widget.label == 'شخصیت کارتونی فِلَک',
+      tester.getSemantics(mascot),
+      containsSemantics(
+        isButton: true,
+        label: 'شخصیت کارتونی فِلَک',
       ),
-      findsOneWidget,
     );
 
-    await tester.tap(find.byType(KartoniyaMascot));
+    await tester.tap(mascot);
     await tester.pump(const Duration(milliseconds: 180));
     expect(taps, 1);
     expect(tester.takeException(), isNull);
