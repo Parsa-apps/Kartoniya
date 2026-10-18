@@ -10,7 +10,7 @@
 |---|---|
 | شاخه | `arena/f29eaa28-kartoniya` |
 | commit شروع | `b572e32` (merge فاز ۶ پیش از کار شخصیت) |
-| آخرین commit کد/تست | `ae26ef4` — «fix(mascot): keep the sleepy z's clear of the leaf» |
+| آخرین commit کد/تست | `d9eea56` — «chore(ci): document why a bot format commit needs a follow-up code push» |
 | commitهای بعدی | فقط `docs:` (این گزارش) |
 | تعداد commitها در این بازه | بیش از ۶۰ |
 
@@ -46,6 +46,12 @@
     (`scaleX 1.036 / scaleY 0.94` در اوج)، HapticFeedback و `onTap`.
   - جزئیات حالتی بدون فایل تازه: سه «z» شناور برای خواب‌آلود، دو جرقهٔ
     چهارپر برای هیجان، و کشش عمودی ۰٫۶٪ در چرخهٔ نفس.
+  - «شخصیت راهنما» فقط تزئینی نیست: در کارت «از فندوقی بپرس» لمس خودِ
+    فندوقی همان اکشن کارت را اجرا می‌کند (فوکوس فیلد جست‌وجو + هپتیک) و
+    برای screen reader دکمه اعلام می‌شود؛ بنر روز خانه هنگام ساخت یک
+    «سلام» کوتاه دست‌تکان دارد.
+  - تست‌ها: ساخت هر پنج حالت، نبود استثنا با کلیک/بلینک، و خاموش‌شدن
+    افکت‌های «z»/جرقه با «کاهش حرکت».
   - چهره‌ها و حالت‌ها: `happy` (چهرهٔ پایه)، `cheering` (چشم بستهٔ خندان +
     دهان باز)، `sleepy` (پلک سنگین + خمیازه)، `confused` (ابروی بالا +
     دهان گرد) و `sad` (ابروی افتاده + لب پایین).
@@ -106,18 +112,18 @@
   ذخیره‌سازی محلی تغییر نکرده‌اند؛ تغییرات صفحهٔ پخش فقط ظاهری/متنی است.
 - هیچ dependency جدیدی اضافه نشده است.
 
-## ۶) نتیجهٔ واقعی CI (commit `3056849`)
+## ۶) نتیجهٔ واقعی CI (commit `d9eea56`)
 
 | بررسی | نتیجه |
 |---|---|
-| `dart format lib test` | «Formatted 60 files (1 changed)» — خودکار در commit بعدی اصلاح شد |
-| `flutter analyze` | `No issues found! (ran in 10.3s)` |
-| `flutter test` | `00:12 +60 ~1: All tests passed!` (۶۰ موفق، ۱ skip اختیاری اسکرین‌شات) |
+| `dart format lib test` | «Formatted 60 files (0 changed)» |
+| `flutter analyze` | `No issues found! (ran in 13.3s)` |
+| `flutter test` | `00:15 +62 ~1: All tests passed!` (۶۲ موفق، ۱ skip اختیاری اسکرین‌شات) |
 | Build Android APK | موفق |
-| UI Snapshots | موفق |
+| UI Snapshots | موفق (run قبلی، کد یکسان) |
 
-- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۶۲٬۲۶۹ بایت) در run
-  [`39164046400`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39164046400).
+- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۶۳٬۰۷۲ بایت) در run
+  [`39166786457`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39166786457).
 - ویدئوی بازبینی انیمیشن (رندر همان لایه‌ها با همان منحنی‌ها):
   `docs/mascot_animation_demo.gif` و تصویر پنج حالت:
   `docs/screenshots/13_mascot_faces.png`.
