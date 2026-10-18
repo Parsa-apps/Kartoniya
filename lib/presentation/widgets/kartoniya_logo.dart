@@ -151,7 +151,8 @@ class _LogoPainter extends CustomPainter {
       ..lineTo(center.dx - w * .068, center.dy - w * .105)
       ..lineTo(center.dx - w * .068, center.dy + w * .105)
       ..close();
-    canvas.drawShadow(play, AppColors.coralDeep.withOpacity(.45), w * .025, true);
+    canvas.drawShadow(
+        play, AppColors.coralDeep.withOpacity(.45), w * .025, true);
     canvas.drawPath(
       play,
       Paint()
@@ -354,7 +355,8 @@ class _LogoOrbitsState extends State<_LogoOrbits>
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              dot(0, widget.size * .62, AppColors.goldLight, widget.size * .075),
+              dot(0, widget.size * .62, AppColors.goldLight,
+                  widget.size * .075),
               dot(.5, widget.size * .66, Colors.white, widget.size * .06),
             ],
           ),

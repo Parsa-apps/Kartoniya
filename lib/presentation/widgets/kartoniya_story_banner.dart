@@ -102,8 +102,10 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
   }
 
   void _move(PointerEvent event, Size size) {
-    if (!context.motion.enabled || !TickerMode.of(context) ||
-        size.width <= 0 || size.height <= 0) {
+    if (!context.motion.enabled ||
+        !TickerMode.of(context) ||
+        size.width <= 0 ||
+        size.height <= 0) {
       return;
     }
     final target = Offset(
@@ -196,7 +198,8 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                       if (widget.showMascot)
                         PositionedDirectional(
                           end: -8,
-                          bottom: -math.max(8.0, widget.height * .06).toDouble(),
+                          bottom:
+                              -math.max(8.0, widget.height * .06).toDouble(),
                           child: IgnorePointer(
                             child: AnimatedContainer(
                               duration: motion.dur(AppMotion.quick),
@@ -301,7 +304,8 @@ class _KartoniyaStoryBannerState extends State<KartoniyaStoryBanner> {
                                   const SizedBox(height: 3),
                                   Text(
                                     widget.subtitle,
-                                    maxLines: widget.actionLabel == null ? 2 : 1,
+                                    maxLines:
+                                        widget.actionLabel == null ? 2 : 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme

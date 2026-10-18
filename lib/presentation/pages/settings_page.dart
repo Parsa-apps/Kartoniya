@@ -52,7 +52,8 @@ class SettingsPage extends ConsumerWidget {
                     eyebrow: 'تنظیمات خانواده',
                     title: 'تماشا به سبک خانهٔ شما',
                     subtitle: 'همه‌چیز از همین دستگاه و در اختیار والدین',
-                    semanticLabel: 'فِلَک در دنیای ابری؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                    semanticLabel:
+                        'فِلَک در دنیای ابری؛ تصویر سه‌بعدی از پیش‌رندرشده',
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -88,7 +89,8 @@ class SettingsPage extends ConsumerWidget {
                           onChanged: (value) => ref
                               .read(reduceMotionProvider.notifier)
                               .setEnabled(value),
-                          secondary: const Icon(Icons.motion_photos_on_outlined),
+                          secondary:
+                              const Icon(Icons.motion_photos_on_outlined),
                           title: const Text('کاهش حرکت'),
                           subtitle: const Text(
                             'انیمیشن‌های تزئینی خاموش یا خیلی کوتاه می‌شوند؛ '
@@ -111,9 +113,11 @@ class SettingsPage extends ConsumerWidget {
                       children: [
                         SwitchListTile.adaptive(
                           value: autoplay,
-                          onChanged: (value) =>
-                              ref.read(autoplayProvider.notifier).setEnabled(value),
-                          secondary: const Icon(Icons.play_circle_outline_rounded),
+                          onChanged: (value) => ref
+                              .read(autoplayProvider.notifier)
+                              .setEnabled(value),
+                          secondary:
+                              const Icon(Icons.play_circle_outline_rounded),
                           title: const Text('پخش خودکار'),
                           subtitle: const Text(
                             'شروع خودکار ویدئو و رفتن به قسمت بعد پس از پایان',
@@ -136,7 +140,8 @@ class SettingsPage extends ConsumerWidget {
                         ListTile(
                           leading: const Icon(Icons.history_toggle_off_rounded),
                           title: const Text('پاک کردن ادامهٔ تماشا'),
-                          subtitle: const Text('موقعیت قسمت‌های نیمه‌تمام پاک می‌شود'),
+                          subtitle: const Text(
+                              'موقعیت قسمت‌های نیمه‌تمام پاک می‌شود'),
                           trailing: const Icon(Icons.delete_outline_rounded),
                           onTap: () => _clearHistory(context, ref),
                         ),
@@ -163,7 +168,8 @@ class SettingsPage extends ConsumerWidget {
                       color: AppColors.teal.withOpacity(
                         context.isDarkMode ? .10 : .08,
                       ),
-                      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.radiusMedium),
                       border: Border.all(
                         color: AppColors.teal.withOpacity(.25),
                       ),
@@ -180,7 +186,10 @@ class SettingsPage extends ConsumerWidget {
                           child: Text(
                             'تغییرات بلافاصله و فقط به‌صورت محلی ذخیره می‌شوند. '
                             'این نسخه دادهٔ کودک را به سرور ارسال نمی‌کند.',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
                                   color: context.secondaryTextColor,
                                 ),
                           ),
@@ -271,7 +280,8 @@ class _ThemeSegmentsState extends State<_ThemeSegments> {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.radiusMedium),
                       boxShadow: AppTheme.glow(AppColors.sky, opacity: .3),
                     ),
                   ),
@@ -286,7 +296,8 @@ class _ThemeSegmentsState extends State<_ThemeSegments> {
                           label: option.$2,
                           excludeSemantics: true,
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                            borderRadius:
+                                BorderRadius.circular(AppTheme.radiusMedium),
                             onTap: () {
                               HapticFeedback.selectionClick();
                               widget.onChanged(option.$1);
@@ -305,13 +316,15 @@ class _ThemeSegmentsState extends State<_ThemeSegments> {
                                   const SizedBox(height: 4),
                                   Text(
                                     option.$2,
-                                    style:
-                                        Theme.of(context).textTheme.labelMedium?.copyWith(
-                                              color: option.$1 == widget.current
-                                                  ? Colors.white
-                                                  : context.secondaryTextColor,
-                                              fontWeight: FontWeight.w700,
-                                            ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          color: option.$1 == widget.current
+                                              ? Colors.white
+                                              : context.secondaryTextColor,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                   ),
                                 ],
                               ),

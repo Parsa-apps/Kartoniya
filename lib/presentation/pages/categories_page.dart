@@ -94,8 +94,9 @@ class CategoriesPage extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final category = items[index];
                 final isAll = category.id == 'all';
-                final selected =
-                    isAll ? selectedCategory == null : selectedCategory == category.name;
+                final selected = isAll
+                    ? selectedCategory == null
+                    : selectedCategory == category.name;
                 return SizedBox(
                   width: 148,
                   child: StaggeredReveal(
@@ -182,8 +183,9 @@ class CategoriesPage extends ConsumerWidget {
                   mascot: MascotMood.confused,
                   accent: AppColors.coral,
                   action: OutlinedButton.icon(
-                    onPressed: () =>
-                        ref.read(selectedCategoryProvider.notifier).state = null,
+                    onPressed: () => ref
+                        .read(selectedCategoryProvider.notifier)
+                        .state = null,
                     icon: const Icon(Icons.filter_alt_off_rounded),
                     label: const Text('نمایش همهٔ کارتون‌ها'),
                   ),
@@ -197,8 +199,7 @@ class CategoriesPage extends ConsumerWidget {
                   AppTheme.pageMargin,
                   100,
                 ),
-                gridDelegate:
-                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 210,
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,

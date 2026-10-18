@@ -34,9 +34,9 @@ class ChildProfileModel {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'avatar': avatarIndex,
-  };
+        'name': name,
+        'avatar': avatarIndex,
+      };
 
   static ChildProfileModel fromJson(Map<String, dynamic> json) {
     final rawName = json['name'];

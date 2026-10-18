@@ -302,7 +302,10 @@ class _MascotPainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.transparent, const Color(0xFFCBB08B).withOpacity(.26)],
+          colors: [
+            Colors.transparent,
+            const Color(0xFFCBB08B).withOpacity(.26)
+          ],
         ).createShader(lower),
     );
     final gloss = Rect.fromLTWH(s * .18, s * .16, s * .48, s * .3);
@@ -387,9 +390,12 @@ class _MascotPainter extends CustomPainter {
     // ——— ستاره‌های تشویق ———
     if (mood == MascotMood.cheering) {
       final energy = .65 + math.sin(reaction * math.pi) * .35;
-      _drawStar(canvas, Offset(s * .13, s * .16), s * .055 * energy, AppColors.gold);
-      _drawStar(canvas, Offset(s * .88, s * .12), s * .038 * energy, Colors.white);
-      _drawStar(canvas, Offset(s * .9, s * .34), s * .028 * energy, AppColors.coralLight);
+      _drawStar(
+          canvas, Offset(s * .13, s * .16), s * .055 * energy, AppColors.gold);
+      _drawStar(
+          canvas, Offset(s * .88, s * .12), s * .038 * energy, Colors.white);
+      _drawStar(canvas, Offset(s * .9, s * .34), s * .028 * energy,
+          AppColors.coralLight);
     }
 
     canvas.restore();
@@ -508,7 +514,8 @@ class _MascotPainter extends CustomPainter {
         ..color = _scarfDeep.withOpacity(.45),
     );
     _drawStar(canvas, Offset(s * .30, s * .765), s * .045, AppColors.gold);
-    _drawStar(canvas, Offset(s * .295, s * .758), s * .022, AppColors.goldLight);
+    _drawStar(
+        canvas, Offset(s * .295, s * .758), s * .022, AppColors.goldLight);
   }
 
   void _drawHair(Canvas canvas, double s) {
@@ -707,7 +714,8 @@ class _MascotPainter extends CustomPainter {
       case MascotMood.cheering:
         final mouth = Path()
           ..moveTo(s * .45, mouthY - s * .012)
-          ..quadraticBezierTo(s * .52, mouthY + s * .065, s * .59, mouthY - s * .012)
+          ..quadraticBezierTo(
+              s * .52, mouthY + s * .065, s * .59, mouthY - s * .012)
           ..close();
         canvas.drawPath(mouth, ink);
         canvas.drawOval(

@@ -36,7 +36,8 @@ class CartoonArtwork extends StatelessWidget {
   final bool emphasis;
 
   /// تگ Hero مشترک بین کارت انتخاب‌شده و صفحهٔ جزئیات.
-  static String heroTagFor(CartoonModel cartoon) => AppMotion.heroTag(cartoon.id);
+  static String heroTagFor(CartoonModel cartoon) =>
+      AppMotion.heroTag(cartoon.id);
 
   @override
   Widget build(BuildContext context) {
@@ -192,11 +193,11 @@ class CartoonArtwork extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.white,
-                                  shadows: const [
-                                    Shadow(color: Colors.black38, blurRadius: 5),
-                                  ],
-                                ),
+                          color: Colors.white,
+                          shadows: const [
+                            Shadow(color: Colors.black38, blurRadius: 5),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -227,9 +228,8 @@ class _ArtworkImage extends StatelessWidget {
     final motion = context.motion;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final logicalWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : 360.0;
+        final logicalWidth =
+            constraints.maxWidth.isFinite ? constraints.maxWidth : 360.0;
         final cacheWidth = (logicalWidth * dpr).clamp(320, 1080).round();
         return Image.asset(
           asset,
@@ -372,8 +372,7 @@ class PosterScenePainter extends CustomPainter {
     }
 
     // تپه‌های نرم پایین.
-    final hillPaint = Paint()
-      ..color = Colors.white.withOpacity(.13);
+    final hillPaint = Paint()..color = Colors.white.withOpacity(.13);
     final hillPath = Path()
       ..moveTo(0, size.height)
       ..quadraticBezierTo(
@@ -401,7 +400,8 @@ class PosterScenePainter extends CustomPainter {
         size.width * .58,
         size.height * .92,
       )
-      ..quadraticBezierTo(size.width * .8, size.height, size.width, size.height * .9)
+      ..quadraticBezierTo(
+          size.width * .8, size.height, size.width, size.height * .9)
       ..lineTo(size.width, size.height)
       ..close();
     canvas.drawPath(hillPath2, hillPaint2);

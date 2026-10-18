@@ -444,9 +444,7 @@ class _BrandBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logoIn = reduced
-        ? 1.0
-        : _phase(0, .46, curve: AppMotion.curvePop);
+    final logoIn = reduced ? 1.0 : _phase(0, .46, curve: AppMotion.curvePop);
     final wordIn = reduced ? 1.0 : _phase(.16, .62);
     final taglineIn = reduced ? 1.0 : _phase(.30, .78);
     final titleSize = compact ? 27.0 : 33.0;
@@ -514,17 +512,17 @@ class _BrandBlock extends StatelessWidget {
                   'کارتونیا',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        fontSize: titleSize,
-                        color: Colors.white,
-                        letterSpacing: -.4,
-                        shadows: const [
-                          Shadow(
-                            color: Color(0x99000000),
-                            blurRadius: 18,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
+                    fontSize: titleSize,
+                    color: Colors.white,
+                    letterSpacing: -.4,
+                    shadows: const [
+                      Shadow(
+                        color: Color(0x99000000),
+                        blurRadius: 18,
+                        offset: Offset(0, 3),
                       ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -542,11 +540,12 @@ class _BrandBlock extends StatelessWidget {
                       child: Text(
                         'دنیای شاد و امن کودکان',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: const Color(0xFFDCEBFA),
-                              fontWeight: FontWeight.w500,
-                              fontSize: compact ? 12.5 : 14,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: const Color(0xFFDCEBFA),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: compact ? 12.5 : 14,
+                                ),
                       ),
                     ),
                     const SizedBox(width: 9),
@@ -665,7 +664,8 @@ class _SplashAtmospherePainter extends CustomPainter {
     for (var point = 0; point < 8; point++) {
       final a = point * math.pi / 4;
       final r = point.isEven ? radius : radius * .22;
-      final p = Offset(center.dx + r * math.cos(a), center.dy + r * math.sin(a));
+      final p =
+          Offset(center.dx + r * math.cos(a), center.dy + r * math.sin(a));
       if (point == 0) {
         path.moveTo(p.dx, p.dy);
       } else {

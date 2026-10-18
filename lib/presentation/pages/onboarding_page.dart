@@ -142,13 +142,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         child: Text(
                           '${toFaDigits('${_currentPage + 1}')} از '
                           '${toFaDigits('${_pages.length}')}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall
-                              ?.copyWith(
-                                color: page.color,
-                                fontWeight: FontWeight.w800,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: page.color,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                         ),
                       ),
                     ),
@@ -164,7 +162,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: _pages.length,
-                  onPageChanged: (value) => setState(() => _currentPage = value),
+                  onPageChanged: (value) =>
+                      setState(() => _currentPage = value),
                   itemBuilder: (context, index) {
                     final item = _pages[index];
                     return AnimatedBuilder(
@@ -174,7 +173,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         if (_pageController.hasClients &&
                             _pageController.position.hasContentDimensions &&
                             context.motion.enabled) {
-                          final pageValue = _pageController.page ?? index.toDouble();
+                          final pageValue =
+                              _pageController.page ?? index.toDouble();
                           delta = (pageValue - index).clamp(-1.0, 1.0);
                         }
                         return Opacity(
@@ -201,7 +201,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                             Text(
                               item.description,
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
                                     color: context.secondaryTextColor,
                                   ),
                             ),
@@ -226,9 +229,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           width: selected ? 26 : 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: selected
-                                ? page.color
-                                : context.softBorderColor,
+                            color:
+                                selected ? page.color : context.softBorderColor,
                             borderRadius: BorderRadius.circular(8),
                           ),
                         );
@@ -325,7 +327,8 @@ class _OnboardingHero extends StatelessWidget {
                   child: PreRenderedFlak(
                     width: 176,
                     height: 242,
-                    semanticLabel: 'فِلَک، راهنمای سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
+                    semanticLabel:
+                        'فِلَک، راهنمای سه‌بعدی از پیش‌رندرشدهٔ کارتونیا',
                   ),
                 ),
               PositionedDirectional(

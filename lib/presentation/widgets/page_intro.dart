@@ -47,7 +47,8 @@ class PageIntro extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   gradient: gradient ?? AppColors.coolGradient,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium + 2),
+                  borderRadius:
+                      BorderRadius.circular(AppTheme.radiusMedium + 2),
                   boxShadow: AppTheme.glow(
                     gradient == null ? AppColors.violet : AppColors.sky,
                     opacity: .26,

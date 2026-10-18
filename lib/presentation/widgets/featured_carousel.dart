@@ -289,18 +289,17 @@ class _SpotlightCard extends StatelessWidget {
                           color: AppColors.coral,
                           borderRadius:
                               BorderRadius.circular(AppTheme.radiusCircular),
-                          boxShadow: AppTheme.glow(AppColors.coral, opacity: .4),
+                          boxShadow:
+                              AppTheme.glow(AppColors.coral, opacity: .4),
                         ),
                         child: Text(
                           'تازه',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w800,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.labelLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                         ),
                       ),
                     ],
@@ -332,16 +331,16 @@ class _SpotlightCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style:
                           Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                                shadows: const [
-                                  Shadow(
-                                    color: Colors.black45,
-                                    blurRadius: 8,
-                                  ),
-                                ],
-                              ),
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        shadows: const [
+                          Shadow(
+                            color: Colors.black45,
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Wrap(
@@ -610,9 +609,8 @@ class _CarouselDots extends StatelessWidget {
                         width: i == active ? 20 : 7,
                         height: 6,
                         decoration: BoxDecoration(
-                          gradient: i == active
-                              ? AppColors.primaryGradient
-                              : null,
+                          gradient:
+                              i == active ? AppColors.primaryGradient : null,
                           color: i == active
                               ? null
                               : context.secondaryTextColor.withOpacity(.30),

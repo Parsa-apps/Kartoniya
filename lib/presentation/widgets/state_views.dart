@@ -129,7 +129,8 @@ class ErrorStateView extends StatelessWidget {
     );
 
     if (compact) {
-      return Center(child: Padding(padding: const EdgeInsets.all(16), child: content));
+      return Center(
+          child: Padding(padding: const EdgeInsets.all(16), child: content));
     }
     return Center(
       child: Padding(padding: const EdgeInsets.all(24), child: content),

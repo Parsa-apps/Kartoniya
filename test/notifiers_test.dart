@@ -130,7 +130,8 @@ void main() {
       expect(results.first.rating, greaterThanOrEqualTo(results.last.rating));
     });
 
-    test('continueWatching فقط قسمت‌های معتبر و نیمه‌تمام را نشان می‌دهد', () async {
+    test('continueWatching فقط قسمت‌های معتبر و نیمه‌تمام را نشان می‌دهد',
+        () async {
       final container = await _container({
         'watch_progress': '{"felak-1":0.5,"felak-99":0.5,"math-1":0.999}',
       });

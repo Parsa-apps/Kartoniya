@@ -146,7 +146,8 @@ class _FavoritesLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(AppTheme.pageMargin, 18, AppTheme.pageMargin, 20),
+      padding: const EdgeInsets.fromLTRB(
+          AppTheme.pageMargin, 18, AppTheme.pageMargin, 20),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 220,
         mainAxisSpacing: 14,

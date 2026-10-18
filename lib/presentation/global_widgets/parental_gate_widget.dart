@@ -67,7 +67,8 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
       TweenSequenceItem(tween: Tween(begin: -9, end: 9), weight: 2),
       TweenSequenceItem(tween: Tween(begin: 9, end: -6), weight: 2),
       TweenSequenceItem(tween: Tween(begin: -6, end: 0), weight: 1),
-    ]).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
+    ]).animate(
+        CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
     _newChallenge();
   }
 
@@ -163,7 +164,8 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
           alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: _accepted
-                ? const LinearGradient(colors: [AppColors.green, AppColors.greenDeep])
+                ? const LinearGradient(
+                    colors: [AppColors.green, AppColors.greenDeep])
                 : AppColors.sunsetGradient,
             shape: BoxShape.circle,
             boxShadow: AppTheme.glow(
@@ -196,7 +198,9 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
                     color: _lockedOut
                         ? AppColors.red.withOpacity(.08)
                         : AppColors.skySoft.withOpacity(
-                            Theme.of(context).brightness == Brightness.dark ? .12 : 1,
+                            Theme.of(context).brightness == Brightness.dark
+                                ? .12
+                                : 1,
                           ),
                     borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     border: Border.all(
@@ -236,11 +240,13 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
                           '$_first  $_operator  $_second  =  ؟',
                           textAlign: TextAlign.center,
                           textDirection: TextDirection.ltr,
-                          style:
-                              Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    color: AppColors.skyDeep,
-                                    fontWeight: FontWeight.w900,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                color: AppColors.skyDeep,
+                                fontWeight: FontWeight.w900,
+                              ),
                         ),
                 ),
               ),

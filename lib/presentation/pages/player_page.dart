@@ -61,13 +61,15 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   late final WatchHistoryNotifier _historyNotifier;
 
   /// موقعیت «+۱۰/-۱۰» بعد از دابل‌تپ: انیمیشن حبابی موقت.
-  final ValueNotifier<_SeekBurst?> _seekBurst = ValueNotifier<_SeekBurst?>(null);
+  final ValueNotifier<_SeekBurst?> _seekBurst =
+      ValueNotifier<_SeekBurst?>(null);
   Timer? _seekBurstTimer;
 
   EpisodeModel get _current => _episode;
 
   int get _episodeIndex {
-    final index = widget.cartoon.episodes.indexWhere((e) => e.id == _episode.id);
+    final index =
+        widget.cartoon.episodes.indexWhere((e) => e.id == _episode.id);
     return index;
   }
 
@@ -154,7 +156,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'برای این قسمت هنوز آدرس ویدئوی قابل پخش ثبت نشده است.';
+          _errorMessage =
+              'برای این قسمت هنوز آدرس ویدئوی قابل پخش ثبت نشده است.';
         });
       }
       return;
@@ -176,7 +179,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
         return;
       }
       if (controller.value.hasError) {
-        throw StateError(controller.value.errorDescription ?? 'خطا در آماده‌سازی ویدئو');
+        throw StateError(
+            controller.value.errorDescription ?? 'خطا در آماده‌سازی ویدئو');
       }
       _videoController = controller;
 
@@ -197,7 +201,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _showControls = resumedFrom == Duration.zero || !ref.read(autoplayProvider);
+          _showControls =
+              resumedFrom == Duration.zero || !ref.read(autoplayProvider);
         });
         if (resumedFrom > Duration.zero) {
           _showResumedToast(resumedFrom);
@@ -210,7 +215,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'ویدئو باز نشد. اتصال اینترنت یا آدرس فایل را بررسی کنید.';
+          _errorMessage =
+              'ویدئو باز نشد. اتصال اینترنت یا آدرس فایل را بررسی کنید.';
         });
       }
     }
@@ -251,7 +257,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
       _historyNotifier.saveProgress(_current.id, progress);
     }
 
-    if (controller.value.isCompleted && _nextEpisodeTimer == null &&
+    if (controller.value.isCompleted &&
+        _nextEpisodeTimer == null &&
         _errorMessage == null) {
       _startNextEpisodeFlow();
       return;
@@ -359,9 +366,11 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   Future<void> _seekBy(int seconds, {bool fromDoubleTap = false}) async {
     final controller = _videoController;
     if (controller == null || !controller.value.isInitialized) return;
-    final targetMilliseconds = controller.value.position.inMilliseconds + (seconds * 1000);
-    final safeMilliseconds =
-        targetMilliseconds.clamp(0, controller.value.duration.inMilliseconds).toInt();
+    final targetMilliseconds =
+        controller.value.position.inMilliseconds + (seconds * 1000);
+    final safeMilliseconds = targetMilliseconds
+        .clamp(0, controller.value.duration.inMilliseconds)
+        .toInt();
     await controller.seekTo(Duration(milliseconds: safeMilliseconds));
     if (fromDoubleTap && context.mounted) {
       _showSeekBurst(seconds);
@@ -383,7 +392,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
     if (controller == null || !controller.value.isInitialized) return;
     await controller.seekTo(
       Duration(
-        milliseconds: (controller.value.duration.inMilliseconds * value).round(),
+        milliseconds:
+            (controller.value.duration.inMilliseconds * value).round(),
       ),
     );
   }
@@ -591,7 +601,8 @@ class _SeekBurstOverlay extends StatelessWidget {
                     ? const Alignment(.82, 0)
                     : const Alignment(-.82, 0),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(.55),
                     borderRadius: BorderRadius.circular(20),
@@ -661,7 +672,8 @@ class _PlayerError extends StatelessWidget {
                 const PreRenderedFlak(
                   width: 92,
                   height: 106,
-                  semanticLabel: 'فِلَک در وضعیت خطای پخش؛ تصویر سه‌بعدی از پیش‌رندرشده',
+                  semanticLabel:
+                      'فِلَک در وضعیت خطای پخش؛ تصویر سه‌بعدی از پیش‌رندرشده',
                 ),
                 const SizedBox(height: 13),
                 const Text(
@@ -687,7 +699,8 @@ class _PlayerError extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).maybePop(),
-                  child: const Text('بازگشت', style: TextStyle(color: Colors.white)),
+                  child: const Text('بازگشت',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -741,9 +754,8 @@ class _PlayerTopBar extends StatelessWidget {
                 ),
               ),
               _PlayerIconButton(
-                tooltip: orientationLocked
-                    ? 'چرخش آزاد: روشن'
-                    : 'چرخش آزاد: خاموش',
+                tooltip:
+                    orientationLocked ? 'چرخش آزاد: روشن' : 'چرخش آزاد: خاموش',
                 icon: orientationLocked
                     ? Icons.screen_lock_rotation_rounded
                     : Icons.screen_rotation_rounded,
@@ -799,9 +811,7 @@ class _PlayerCenterControl extends StatelessWidget {
                 child: AnimatedSwitcher(
                   duration: context.motion.dur(AppMotion.micro),
                   child: Icon(
-                    isPlaying
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
+                    isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                     key: ValueKey(isPlaying),
                     color: Colors.white,
                     size: 44,
@@ -842,9 +852,10 @@ class _PlayerBottomControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final duration = controller.value.duration;
-    final position = controller.value.position.inMilliseconds > duration.inMilliseconds
-        ? duration
-        : controller.value.position;
+    final position =
+        controller.value.position.inMilliseconds > duration.inMilliseconds
+            ? duration
+            : controller.value.position;
     final value = duration.inMilliseconds == 0
         ? 0.0
         : (position.inMilliseconds / duration.inMilliseconds)

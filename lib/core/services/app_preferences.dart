@@ -55,9 +55,9 @@ class AppPreferences {
 
   String get parentName => _storage.getString(_parentNameKey) ?? 'والد مهربان';
   Future<bool> saveParentName(String value) => _storage.setString(
-    _parentNameKey,
-    value.trim().isEmpty ? 'والد مهربان' : value.trim(),
-  );
+        _parentNameKey,
+        value.trim().isEmpty ? 'والد مهربان' : value.trim(),
+      );
 
   Map<String, double> get watchProgress {
     final raw = _storage.getString(_watchProgressKey);
@@ -121,7 +121,6 @@ class AppPreferences {
     return _storage.setString(_childProfileKey, jsonEncode(payload));
   }
 
-  Future<void> clearWatchProgress() async =>
-      _storage.remove(_watchProgressKey);
+  Future<void> clearWatchProgress() async => _storage.remove(_watchProgressKey);
   Future<void> clearFavorites() async => _storage.remove(_favoritesKey);
 }

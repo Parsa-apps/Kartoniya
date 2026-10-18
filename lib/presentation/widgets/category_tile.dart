@@ -169,9 +169,7 @@ class CategoryTile extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
             border: Border.all(
-              color: selected
-                  ? Colors.white
-                  : Colors.white.withOpacity(.28),
+              color: selected ? Colors.white : Colors.white.withOpacity(.28),
               width: selected ? 2.4 : 1,
             ),
             boxShadow: [
@@ -259,9 +257,7 @@ class CategoryTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 1),
                   Text(
-                    count == 0
-                        ? 'به‌زودی'
-                        : '${toFaDigits('$count')} کارتون',
+                    count == 0 ? 'به‌زودی' : '${toFaDigits('$count')} کارتون',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(

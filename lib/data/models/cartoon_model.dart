@@ -21,10 +21,14 @@ class EpisodeModel {
   /// Only canonical HTTPS Aparat watch pages can enter the embedded player.
   String? get aparatVideoHash {
     final uri = Uri.tryParse(videoUrl);
-    if (uri == null || uri.scheme != 'https' ||
+    if (uri == null ||
+        uri.scheme != 'https' ||
         !const ['www.aparat.com', 'aparat.com'].contains(uri.host) ||
-        uri.userInfo.isNotEmpty || uri.hasPort || uri.hasQuery ||
-        uri.hasFragment || uri.pathSegments.length != 2 ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasPort ||
+        uri.hasQuery ||
+        uri.hasFragment ||
+        uri.pathSegments.length != 2 ||
         uri.pathSegments.first != 'v') return null;
     final hash = uri.pathSegments.last;
     return RegExp(r'^[a-zA-Z0-9]+$').hasMatch(hash) ? hash : null;
@@ -32,14 +36,18 @@ class EpisodeModel {
 
   Uri? get aparatEmbedUri {
     final hash = aparatVideoHash;
-    return hash == null ? null : Uri.https('www.aparat.com',
-        '/video/video/embed/videohash/$hash/vt/frame');
+    return hash == null
+        ? null
+        : Uri.https(
+            'www.aparat.com', '/video/video/embed/videohash/$hash/vt/frame');
   }
 
   String get durationLabel {
     final minutes = durationSeconds ~/ 60;
     final seconds = durationSeconds % 60;
-    return seconds == 0 ? '$minutes دقیقه' : '$minutes:${seconds.toString().padLeft(2, '0')} دقیقه';
+    return seconds == 0
+        ? '$minutes دقیقه'
+        : '$minutes:${seconds.toString().padLeft(2, '0')} دقیقه';
   }
 }
 

@@ -138,9 +138,8 @@ class ProfilePage extends ConsumerWidget {
                         SwitchListTile.adaptive(
                           value: themeMode == ThemeMode.dark,
                           onChanged: (value) {
-                            ref
-                                .read(themeModeProvider.notifier)
-                                .setMode(value ? ThemeMode.dark : ThemeMode.light);
+                            ref.read(themeModeProvider.notifier).setMode(
+                                value ? ThemeMode.dark : ThemeMode.light);
                           },
                           secondary: const Icon(Icons.dark_mode_outlined),
                           title: const Text('حالت تاریک'),
@@ -211,7 +210,8 @@ class ProfilePage extends ConsumerWidget {
                         color: AppColors.tealSoft.withOpacity(
                           context.isDarkMode ? .10 : 1,
                         ),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                        borderRadius:
+                            BorderRadius.circular(AppTheme.radiusLarge),
                         border: Border.all(
                           color: AppColors.teal.withOpacity(.25),
                         ),
@@ -230,12 +230,16 @@ class ProfilePage extends ConsumerWidget {
                               children: [
                                 Text(
                                   'حریم خصوصی و داده‌ها',
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
                                   'تنظیمات روی دستگاه می‌ماند؛ پخش ویدئو به سرویس میزبان متصل می‌شود.',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
                                         color: context.secondaryTextColor,
                                       ),
                                 ),
@@ -282,8 +286,7 @@ class ProfilePage extends ConsumerWidget {
           autofocus: true,
           maxLength: 28,
           textInputAction: TextInputAction.done,
-          onSubmitted: (value) =>
-              Navigator.of(dialogContext).pop(value),
+          onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
           decoration: const InputDecoration(
             hintText: 'مثلاً مامان یا بابا',
             counterText: '',
@@ -337,8 +340,7 @@ class _ChildCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final (emoji, colorValue) = child.avatar;
     final color = Color(colorValue);
-    final displayName =
-        child.hasName ? child.name : 'کودک من';
+    final displayName = child.hasName ? child.name : 'کودک من';
     return PressableScale(
       onTap: onEdit,
       child: Container(
@@ -553,9 +555,7 @@ class _AvatarOption extends StatelessWidget {
             height: 56,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: selected
-                  ? color.withOpacity(.2)
-                  : context.surfaceAltColor,
+              color: selected ? color.withOpacity(.2) : context.surfaceAltColor,
               shape: BoxShape.circle,
               border: Border.all(
                 color: selected ? color : Colors.transparent,

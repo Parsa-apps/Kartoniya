@@ -13,23 +13,31 @@ void main() {
         cartoons.every(
           (cartoon) =>
               cartoon.episodes.isNotEmpty &&
-              cartoon.episodes.every((episode) => episode.videoUrl.startsWith('https://')),
+              cartoon.episodes
+                  .every((episode) => episode.videoUrl.startsWith('https://')),
         ),
         isTrue,
       );
     });
 
-    test('هر بخش دو ویدیوی متمایز آپارات دارد؛ هیچ فایل نمونه‌ای نیست', () async {
+    test('هر بخش دو ویدیوی متمایز آپارات دارد؛ هیچ فایل نمونه‌ای نیست',
+        () async {
       final cartoons = await LocalCartoonRepository().fetchCartoons();
       final episodes = cartoons.expand((cartoon) => cartoon.episodes).toList();
       expect(cartoons.length, 8);
       expect(cartoons.every((cartoon) => cartoon.episodes.length == 2), isTrue);
       expect(episodes.length, 16);
-      expect(episodes.map((episode) => episode.aparatVideoHash).toSet().length, 16);
-      expect(episodes.every((episode) => episode.aparatEmbedUri != null), isTrue);
-      expect(episodes.every((episode) => episode.durationSeconds >= 30), isTrue);
-      expect(episodes.every((episode) => episode.description.contains('آپارات')), isTrue);
-      expect(episodes.any((episode) => episode.videoUrl.contains('bee.mp4')), isFalse);
+      expect(episodes.map((episode) => episode.aparatVideoHash).toSet().length,
+          16);
+      expect(
+          episodes.every((episode) => episode.aparatEmbedUri != null), isTrue);
+      expect(
+          episodes.every((episode) => episode.durationSeconds >= 30), isTrue);
+      expect(
+          episodes.every((episode) => episode.description.contains('آپارات')),
+          isTrue);
+      expect(episodes.any((episode) => episode.videoUrl.contains('bee.mp4')),
+          isFalse);
     });
 
     test('دستهٔ همه در ابتدای فهرست قرار دارد', () async {
@@ -44,7 +52,8 @@ void main() {
       expect(assets.toSet().length, cartoons.length);
       expect(
         assets.every(
-          (asset) => asset!.startsWith('asset/images/posters/') &&
+          (asset) =>
+              asset!.startsWith('asset/images/posters/') &&
               asset.endsWith('.webp'),
         ),
         isTrue,

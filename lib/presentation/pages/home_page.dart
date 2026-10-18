@@ -589,7 +589,8 @@ class _SearchPrompt extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: AppColors.primaryGradient,
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: AppTheme.glow(AppColors.sky, opacity: .28, lift: 4),
+                  boxShadow:
+                      AppTheme.glow(AppColors.sky, opacity: .28, lift: 4),
                 ),
                 child: const Icon(
                   Icons.search_rounded,
@@ -696,11 +697,10 @@ class _ContinueCard extends StatelessWidget {
                         entry.episode.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: context.secondaryTextColor,
-                                  fontSize: 11,
-                                ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: context.secondaryTextColor,
+                              fontSize: 11,
+                            ),
                       ),
                       const SizedBox(height: 9),
                       AnimatedProgressBar(value: entry.progress, color: color),

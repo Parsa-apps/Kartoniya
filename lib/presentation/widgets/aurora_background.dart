@@ -179,8 +179,10 @@ class _AuroraPainter extends CustomPainter {
 
     final angle = t * 2 * math.pi;
     for (final blob in blobs) {
-      final dx = (blob.baseX + math.sin(angle + blob.phase) * blob.driftX) * size.width;
-      final dy = (blob.baseY + math.cos(angle + blob.phase) * blob.driftY) * size.height;
+      final dx = (blob.baseX + math.sin(angle + blob.phase) * blob.driftX) *
+          size.width;
+      final dy = (blob.baseY + math.cos(angle + blob.phase) * blob.driftY) *
+          size.height;
       final r = blob.radius * size.shortestSide;
       final paint = Paint()
         ..shader = RadialGradient(

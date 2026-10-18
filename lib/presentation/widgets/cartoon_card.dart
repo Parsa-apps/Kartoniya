@@ -35,9 +35,8 @@ class CartoonCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isFavorite = ref.watch(favoritesProvider).contains(cartoon.id);
     final categoryColor = AppColors.categoryColor(cartoon.category);
-    final progress = showProgress
-        ? _maxProgress(ref.watch(watchHistoryProvider))
-        : 0.0;
+    final progress =
+        showProgress ? _maxProgress(ref.watch(watchHistoryProvider)) : 0.0;
 
     return Semantics(
       button: true,

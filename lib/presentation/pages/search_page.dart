@@ -132,15 +132,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
     final result = ref.watch(searchResultsProvider);
     final categories = ref.watch(categoriesProvider);
-    final catalogue = ref.watch(cartoonsProvider).valueOrNull ??
-        const <CartoonModel>[];
+    final catalogue =
+        ref.watch(cartoonsProvider).valueOrNull ?? const <CartoonModel>[];
     final activeQuery = ref.watch(searchQueryProvider).trim();
     final hasQuery = _query.trim().isNotEmpty;
     final categoryCounts = <String, int>{
       for (final item in catalogue)
         item.category: (catalogue
-                .where((cartoon) => cartoon.category == item.category)
-                .length),
+            .where((cartoon) => cartoon.category == item.category)
+            .length),
     };
 
     return Column(
@@ -281,8 +281,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                           .textTheme
                                           .labelMedium
                                           ?.copyWith(
-                                            color:
-                                                context.secondaryTextColor,
+                                            color: context.secondaryTextColor,
                                             fontWeight: FontWeight.w600,
                                           ),
                                     ),
@@ -336,81 +335,81 @@ class _SearchField extends StatelessWidget {
     return AnimatedBuilder(
       animation: focusNode,
       builder: (context, child) => AnimatedContainer(
-      duration: context.motion.dur(AppMotion.quick),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
-        boxShadow: [
-          BoxShadow(
-            color: focusNode.hasFocus
-                ? AppColors.sky.withOpacity(.24)
-                : Colors.black.withOpacity(
-                    context.isDarkMode ? .22 : .06,
-                  ),
-            blurRadius: focusNode.hasFocus ? 22 : 16,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        textInputAction: TextInputAction.search,
-        textDirection: TextDirection.rtl,
-        onChanged: onChanged,
-        onSubmitted: onSubmitted,
-        onTapOutside: (_) => focusNode.unfocus(),
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontSize: 14.5,
+        duration: context.motion.dur(AppMotion.quick),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
+          boxShadow: [
+            BoxShadow(
+              color: focusNode.hasFocus
+                  ? AppColors.sky.withOpacity(.24)
+                  : Colors.black.withOpacity(
+                      context.isDarkMode ? .22 : .06,
+                    ),
+              blurRadius: focusNode.hasFocus ? 22 : 16,
+              offset: const Offset(0, 7),
             ),
-        decoration: InputDecoration(
-          hintText: 'مثلاً اسکار، الفبا، حیوانات…',
-          filled: true,
-          fillColor: context.surfaceColor,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 15,
-          ),
-          prefixIcon: Padding(
-            padding: const EdgeInsetsDirectional.only(start: 10, end: 8),
-            child: Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(11),
+          ],
+        ),
+        child: TextField(
+          controller: controller,
+          focusNode: focusNode,
+          textInputAction: TextInputAction.search,
+          textDirection: TextDirection.rtl,
+          onChanged: onChanged,
+          onSubmitted: onSubmitted,
+          onTapOutside: (_) => focusNode.unfocus(),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontSize: 14.5,
               ),
-              child: const Icon(
-                Icons.search_rounded,
-                color: Colors.white,
-                size: 19,
+          decoration: InputDecoration(
+            hintText: 'مثلاً اسکار، الفبا، حیوانات…',
+            filled: true,
+            fillColor: context.surfaceColor,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 15,
+            ),
+            prefixIcon: Padding(
+              padding: const EdgeInsetsDirectional.only(start: 10, end: 8),
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: const Icon(
+                  Icons.search_rounded,
+                  color: Colors.white,
+                  size: 19,
+                ),
               ),
             ),
-          ),
-          prefixIconConstraints: const BoxConstraints(
-            minWidth: 52,
-            minHeight: 40,
-          ),
-          suffixIcon: showClear
-              ? IconButton(
-                  tooltip: 'پاک کردن جست‌وجو',
-                  onPressed: onClear,
-                  icon: const Icon(Icons.close_rounded, size: 20),
-                )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
-            borderSide: BorderSide(color: context.softBorderColor),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
-            borderSide: BorderSide(color: context.softBorderColor),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
-            borderSide: const BorderSide(color: AppColors.sky, width: 1.8),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 52,
+              minHeight: 40,
+            ),
+            suffixIcon: showClear
+                ? IconButton(
+                    tooltip: 'پاک کردن جست‌وجو',
+                    onPressed: onClear,
+                    icon: const Icon(Icons.close_rounded, size: 20),
+                  )
+                : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
+              borderSide: BorderSide(color: context.softBorderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
+              borderSide: BorderSide(color: context.softBorderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusLarge - 4),
+              borderSide: const BorderSide(color: AppColors.sky, width: 1.8),
+            ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -574,64 +573,64 @@ class _FelakSearchPrompt extends StatelessWidget {
       onTap: onTap,
       pressedScale: .99,
       child: Container(
-      padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 16, 10),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: AlignmentDirectional.centerStart,
-          end: AlignmentDirectional.centerEnd,
-          colors: [
-            AppColors.sky.withOpacity(context.isDarkMode ? .18 : .12),
-            context.surfaceColor,
-          ],
+        padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 16, 10),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: AlignmentDirectional.centerStart,
+            end: AlignmentDirectional.centerEnd,
+            colors: [
+              AppColors.sky.withOpacity(context.isDarkMode ? .18 : .12),
+              context.surfaceColor,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+          border: Border.all(color: AppColors.sky.withOpacity(.18)),
         ),
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-        border: Border.all(color: AppColors.sky.withOpacity(.18)),
-      ),
-      child: Row(
-        children: [
-          Semantics(
-            image: true,
-            label: 'فِلَک در حال کتاب‌خواندن، تصویر سه‌بعدی از پیش‌رندرشده',
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: Image.asset(
-                KartoniyaScene.reading.assetPath,
-                width: 82,
-                height: 80,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.medium,
-                excludeFromSemantics: true,
-                cacheWidth: 246,
-                errorBuilder: (context, error, stackTrace) =>
-                    const SizedBox(width: 82, height: 80),
+        child: Row(
+          children: [
+            Semantics(
+              image: true,
+              label: 'فِلَک در حال کتاب‌خواندن، تصویر سه‌بعدی از پیش‌رندرشده',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                child: Image.asset(
+                  KartoniyaScene.reading.assetPath,
+                  width: 82,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.medium,
+                  excludeFromSemantics: true,
+                  cacheWidth: 246,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox(width: 82, height: 80),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'از فِلَک بپرس',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'نام کارتون یا موضوعی که دوست داری بنویس؛ '
-                  'فِلَک بهترین نتیجه‌ها را پیدا می‌کند.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: context.secondaryTextColor,
-                        height: 1.6,
-                      ),
-                ),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'از فِلَک بپرس',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'نام کارتون یا موضوعی که دوست داری بنویس؛ '
+                    'فِلَک بهترین نتیجه‌ها را پیدا می‌کند.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: context.secondaryTextColor,
+                          height: 1.6,
+                        ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
