@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
@@ -105,7 +106,7 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
     final submitted = _normalizeDigits(_answerController.text.trim());
     final parsed = int.tryParse(submitted);
     if (parsed == _answer) {
-      HapticFeedback.lightImpact();
+      AppHaptics.light();
       setState(() => _accepted = true);
       // مکث کوتاه برای دیدن حالت موفقیت، سپس خروج.
       Timer(const Duration(milliseconds: 260), () {
@@ -114,7 +115,7 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog>
       return;
     }
 
-    HapticFeedback.heavyImpact();
+    AppHaptics.heavy();
     _failedAttempts++;
     if (_failedAttempts >= _maxFailedAttempts) {
       _startCooldown();

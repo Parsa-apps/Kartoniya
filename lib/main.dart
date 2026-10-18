@@ -4,6 +4,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/services/app_haptics.dart';
+import 'core/services/app_preferences.dart';
 import 'core/theme/app_motion.dart';
 import 'core/theme/app_theme.dart';
 import 'data/models/cartoon_model.dart';
@@ -13,6 +15,7 @@ import 'presentation/pages/splash_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final preferences = await SharedPreferences.getInstance();
+  AppHaptics.setEnabled(AppPreferences(preferences).hapticsEnabled);
 
   await SystemChrome.setPreferredOrientations(const [
     DeviceOrientation.portraitUp,

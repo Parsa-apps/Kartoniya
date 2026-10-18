@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/services/app_haptics.dart';
 import '../../core/services/app_preferences.dart';
 import '../../core/utils/text_normalizer.dart';
 import '../../domain/repositories/cartoon_repository.dart';
@@ -190,6 +191,25 @@ class ReduceMotionNotifier extends StateNotifier<bool> {
   Future<void> setEnabled(bool value) async {
     state = value;
     await _preferences.saveReduceMotionEnabled(value);
+  }
+}
+
+/// بازخورد لمسی اختیاری؛ یک تنظیم واحد برای همهٔ اجزای تعاملی.
+final hapticsProvider = StateNotifierProvider<HapticsNotifier, bool>((ref) {
+  return HapticsNotifier(ref.watch(appPreferencesProvider));
+});
+
+class HapticsNotifier extends StateNotifier<bool> {
+  HapticsNotifier(this._preferences) : super(_preferences.hapticsEnabled) {
+    AppHaptics.setEnabled(state);
+  }
+
+  final AppPreferences _preferences;
+
+  Future<void> setEnabled(bool value) async {
+    state = value;
+    AppHaptics.setEnabled(value);
+    await _preferences.saveHapticsEnabled(value);
   }
 }
 

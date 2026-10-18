@@ -123,6 +123,11 @@ class _DiscoverTab extends ConsumerStatefulWidget {
 }
 
 class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
+  void _searchFor(String query) {
+    ref.read(searchQueryProvider.notifier).state = query;
+    widget.onOpenSearch();
+  }
+
   void _openDetail(CartoonModel cartoon) {
     pushAppPage<void>(context, CartoonDetailPage(cartoon: cartoon));
   }
@@ -421,7 +426,7 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                   title: 'قصه‌های آرام شب',
                   subtitle: 'فندوقی قصه‌های خیلی آرام را پیشنهاد می‌دهد.',
                   actionLabel: 'قصه‌های شب',
-                  onAction: widget.onOpenCategories,
+                  onAction: () => _searchFor('خواب'),
                   semanticLabel: 'فندوقی خوابیده روی ابرها',
                 ),
               ),

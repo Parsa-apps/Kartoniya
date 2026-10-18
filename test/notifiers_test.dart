@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartoniya/core/services/app_haptics.dart';
 import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:kartoniya/data/models/child_profile_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -98,7 +99,7 @@ void main() {
     });
   });
 
-  group('ReduceMotion / Theme / Autoplay', () {
+  group('ReduceMotion / Theme / Autoplay / Haptics', () {
     test('مقادیر اولیه از SharedPreferences خوانده و ذخیره می‌شوند', () async {
       final container = await _container({
         'theme_mode': 'dark',
@@ -110,6 +111,18 @@ void main() {
 
       await container.read(reduceMotionProvider.notifier).setEnabled(false);
       expect(container.read(reduceMotionProvider), isFalse);
+    });
+
+    test('تنظیم هپتیک همهٔ تعامل‌های رابط را همگام می‌کند', () async {
+      addTearDown(() => AppHaptics.setEnabled(true));
+      final container = await _container({'haptics_enabled': false});
+
+      expect(container.read(hapticsProvider), isFalse);
+      expect(AppHaptics.enabled, isFalse);
+
+      await container.read(hapticsProvider.notifier).setEnabled(true);
+      expect(container.read(hapticsProvider), isTrue);
+      expect(AppHaptics.enabled, isTrue);
     });
   });
 

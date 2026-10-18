@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
@@ -20,6 +20,7 @@ class SettingsPage extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final autoplay = ref.watch(autoplayProvider);
     final reduceMotion = ref.watch(reduceMotionProvider);
+    final hapticsEnabled = ref.watch(hapticsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -94,6 +95,19 @@ class SettingsPage extends ConsumerWidget {
                           subtitle: const Text(
                             'انیمیشن‌های تزئینی خاموش یا خیلی کوتاه می‌شوند؛ '
                             'مناسب گوشی‌های ضعیف‌تر یا کودکان حساس به حرکت',
+                          ),
+                        ),
+                        const Divider(indent: 72, endIndent: 16),
+                        SwitchListTile.adaptive(
+                          value: hapticsEnabled,
+                          onChanged: (value) => ref
+                              .read(hapticsProvider.notifier)
+                              .setEnabled(value),
+                          secondary: const Icon(Icons.vibration_rounded),
+                          title: const Text('بازخورد لمسی'),
+                          subtitle: const Text(
+                            'لرزش‌های ظریف هنگام لمس؛ تنظیم لرزش دستگاه '
+                            'همچنان رعایت می‌شود',
                           ),
                         ),
                       ],
@@ -301,7 +315,7 @@ class _ThemeSegmentsState extends State<_ThemeSegments> {
                             borderRadius:
                                 BorderRadius.circular(AppTheme.radiusMedium),
                             onTap: () {
-                              HapticFeedback.selectionClick();
+                              AppHaptics.selection();
                               widget.onChanged(option.$1);
                             },
                             child: Padding(

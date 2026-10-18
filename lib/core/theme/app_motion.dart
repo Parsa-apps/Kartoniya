@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
+import '../services/app_haptics.dart';
 
 /// توکن‌های حرکتی کارتونیا.
 ///
@@ -271,7 +272,7 @@ class _PressableScaleState extends State<PressableScale> {
       onTapCancel: () => _setPressed(false),
       onTapUp: (_) {
         _setPressed(false);
-        if (widget.enableHaptics) HapticFeedback.selectionClick();
+        if (widget.enableHaptics) AppHaptics.selection();
         widget.onTap?.call();
       },
       onLongPress: widget.onLongPress,

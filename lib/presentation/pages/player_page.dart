@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
@@ -349,7 +350,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   Future<void> _togglePlay() async {
     final controller = _videoController;
     if (controller == null || !controller.value.isInitialized) return;
-    HapticFeedback.mediumImpact();
+    AppHaptics.medium();
     if (controller.value.isPlaying) {
       await controller.pause();
       unawaited(WakelockPlus.disable());
@@ -411,7 +412,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   }
 
   Future<void> _toggleOrientationLock() async {
-    HapticFeedback.selectionClick();
+    AppHaptics.selection();
     final lockLandscape = !_landscapeLock;
     setState(() => _landscapeLock = lockLandscape);
     await SystemChrome.setPreferredOrientations(
@@ -792,7 +793,7 @@ class _PlayerCenterControl extends StatelessWidget {
             ignoring: !visible,
             child: GestureDetector(
               onTap: () {
-                HapticFeedback.mediumImpact();
+                AppHaptics.medium();
                 onPressed();
               },
               child: Container(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/navigation/app_routes.dart';
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
@@ -107,7 +107,7 @@ class CategoriesPage extends ConsumerWidget {
                       count: counts[category.name] ?? 0,
                       selected: selected,
                       onTap: () {
-                        HapticFeedback.selectionClick();
+                        AppHaptics.selection();
                         ref.read(selectedCategoryProvider.notifier).state =
                             isAll ? null : category.name;
                       },

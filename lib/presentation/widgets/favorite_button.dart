@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
+import '../../core/services/app_haptics.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/app_motion.dart';
@@ -78,7 +78,7 @@ class _FavoriteButtonState extends State<FavoriteButton>
   }
 
   void _handleTap() {
-    HapticFeedback.lightImpact();
+    AppHaptics.light();
     if (widget.isFavorite && context.motion.enabled) _burst.forward(from: 0);
     widget.onPressed();
   }

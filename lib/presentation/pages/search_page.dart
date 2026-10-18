@@ -41,6 +41,26 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   bool get _showSuggestions => _query.trim().isEmpty;
 
+  void _syncSharedQuery(String value, {bool resetFilter = false}) {
+    _debounce?.cancel();
+    if (_controller.text != value) {
+      _controller.value = TextEditingValue(
+        text: value,
+        selection: TextSelection.collapsed(offset: value.length),
+      );
+    }
+    if (!mounted) return;
+    if (_query != value ||
+        _waitingForQuery ||
+        (resetFilter && _categoryFilter != null)) {
+      setState(() {
+        _query = value;
+        _waitingForQuery = false;
+        if (resetFilter) _categoryFilter = null;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -125,8 +145,19 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<String>(searchQueryProvider, (previous, next) {
+      if (previous != next) _syncSharedQuery(next);
+    });
     ref.listen<int>(searchFocusRequestProvider, (previous, next) {
-      if (previous != null && next > previous) _requestFocus();
+      if (previous != null && next > previous) {
+        // ورودی از بنر یا خانه ممکن است حتی همان عبارت قبلی باشد؛ در هر
+        // درخواست تازه، پیش‌نویس/فیلتر موقت با مقدار مشترک همگام می‌شود.
+        _syncSharedQuery(
+          ref.read(searchQueryProvider),
+          resetFilter: true,
+        );
+        _requestFocus();
+      }
     });
 
     final result = ref.watch(searchResultsProvider);
