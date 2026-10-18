@@ -4,16 +4,17 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- نشان کارتونیا: دایرهٔ آسمانی، دیسک طلایی و مثلث پخش مرجانی -->
     <path
-        android:fillColor="#FF8A50"
+        android:fillColor="#2E9BEB"
         android:pathData="M54,4C26.4,4 4,26.4 4,54C4,81.6 26.4,104 54,104C81.6,104 104,81.6 104,54C104,26.4 81.6,4 54,4Z" />
     <path
-        android:fillColor="#FFD93D"
-        android:pathData="M54,14C31.9,14 14,31.9 14,54C14,76.1 31.9,94 54,94C76.1,94 94,76.1 94,54C94,31.9 76.1,14 54,14Z" />
+        android:fillColor="#FFC53D"
+        android:pathData="M54,16C33.0,16 16,33.0 16,54C16,75.0 33.0,92 54,92C75.0,92 92,75.0 92,54C92,33.0 75.0,16 54,16Z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M42,33L76,54L42,75Z" />
+        android:pathData="M42,33L78,54L42,75Z" />
     <path
-        android:fillColor="#FF8A50"
-        android:pathData="M48,43L48,65L66,54Z" />
+        android:fillColor="#FF7A59"
+        android:pathData="M48,42L48,66L70,54Z" />
 </vector>
