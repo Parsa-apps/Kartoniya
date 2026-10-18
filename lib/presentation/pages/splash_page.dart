@@ -11,6 +11,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_mascot.dart';
 import 'home_page.dart';
 import 'onboarding_page.dart';
 
@@ -32,11 +33,33 @@ class _SplashPageState extends ConsumerState<SplashPage>
   @override
   void initState() {
     super.initState();
-    _enter = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
-      ..forward();
-    _drift = AnimationController(vsync: this, duration: const Duration(seconds: 9));
-    if (context.motionEnabledAtInit) _drift.repeat();
+    _enter = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _drift = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 9),
+    );
+    if (context.motionEnabledAtInit) {
+      _enter.forward();
+      _drift.repeat();
+    } else {
+      _enter.value = 1;
+    }
     unawaited(_openNextPage());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (context.motion.enabled) {
+      if (_enter.value < 1 && !_enter.isAnimating) _enter.forward();
+      if (!_drift.isAnimating) _drift.repeat();
+    } else {
+      _enter.value = 1;
+      _drift.stop(canceled: false);
+    }
   }
 
   @override
@@ -109,16 +132,21 @@ class _SplashPageState extends ConsumerState<SplashPage>
       opacity: CurvedAnimation(parent: _enter, curve: Curves.easeOut),
       child: ScaleTransition(
         scale: CurvedAnimation(parent: _enter, curve: Curves.easeOutBack),
-        child: const _SplashContents(still: false),
+        child: _SplashContents(still: false, enter: _enter),
       ),
     );
   }
 }
 
+/// محتوای اسپلش با ورود پلکانی: نشان برند، نام برنامه و سپس «فِلَک».
 class _SplashContents extends StatelessWidget {
-  const _SplashContents({required this.still});
+  const _SplashContents({required this.still, this.enter});
 
   final bool still;
+
+  /// انیمیشن ورود اسپلش؛ با «کاهش حرکت» مقدار آن از ابتدا ۱ است و همهٔ
+  /// مراحل بلافاصله در وضعیت نهایی دیده می‌شوند.
+  final Animation<double>? enter;
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +168,21 @@ class _SplashContents extends StatelessWidget {
                 color: context.secondaryTextColor,
               ),
         ),
-        const SizedBox(height: 38),
+        const SizedBox(height: 18),
+        ScaleTransition(
+          scale: Tween<double>(begin: .55, end: 1).animate(
+            CurvedAnimation(
+              parent: enter ?? const AlwaysStoppedAnimation(1),
+              curve: const Interval(.4, .92, curve: AppMotion.curvePop),
+            ),
+          ),
+          child: const KartoniyaMascot(
+            size: 78,
+            mood: MascotMood.cheering,
+            accent: AppColors.gold,
+          ),
+        ),
+        const SizedBox(height: 26),
         _LoadingDots(still: still),
       ],
     );
@@ -170,6 +212,27 @@ class _LoadingDotsState extends State<_LoadingDots>
       duration: const Duration(milliseconds: 900),
     );
     if (!widget.still && context.motionEnabledAtInit) _controller.repeat();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncMotion();
+  }
+
+  @override
+  void didUpdateWidget(covariant _LoadingDots oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.still != widget.still) _syncMotion();
+  }
+
+  void _syncMotion() {
+    if (!widget.still && context.motion.enabled) {
+      if (!_controller.isAnimating) _controller.repeat();
+    } else {
+      _controller.stop(canceled: false);
+      _controller.value = 0;
+    }
   }
 
   @override

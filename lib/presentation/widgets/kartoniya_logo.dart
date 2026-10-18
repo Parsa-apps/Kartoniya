@@ -127,6 +127,20 @@ class _LogoOrbitsState extends State<_LogoOrbits>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncMotion();
+  }
+
+  void _syncMotion() {
+    if (context.motion.enabled && !_controller.isAnimating) {
+      _controller.repeat();
+    } else if (!context.motion.enabled) {
+      _controller.stop(canceled: false);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

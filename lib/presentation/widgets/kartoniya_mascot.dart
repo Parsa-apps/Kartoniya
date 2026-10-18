@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
@@ -20,6 +21,7 @@ class KartoniyaMascot extends StatefulWidget {
     this.size = 96,
     this.accent = AppColors.sky,
     this.float = true,
+    this.onTap,
   });
 
   final MascotMood mood;
@@ -29,6 +31,10 @@ class KartoniyaMascot extends StatefulWidget {
   /// شناور شدن عمودی آرام؛ در بنرها بهتر است روشن باشد.
   final bool float;
 
+  /// اختیاری؛ شخصیت همیشه یک واکنش بصری کوتاه دارد، این callback برای
+  /// اتصال واکنش به رفتار صفحه استفاده می‌شود.
+  final VoidCallback? onTap;
+
   @override
   State<KartoniyaMascot> createState() => _KartoniyaMascotState();
 }
@@ -37,6 +43,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
     with TickerProviderStateMixin {
   late final AnimationController _blink;
   late final AnimationController _bob;
+  late final AnimationController _reaction;
   late final Animation<double> _bobAnimation;
 
   @override
@@ -50,25 +57,49 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
       vsync: this,
       duration: const Duration(milliseconds: 3400),
     );
+    _reaction = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 520),
+    );
     _bobAnimation = Tween<double>(begin: 0, end: -widget.size * .045).animate(
       CurvedAnimation(parent: _bob, curve: Curves.easeInOut),
     );
-    if (context.motionEnabledAtInit) {
-      _scheduleBlink();
-      if (widget.float) _bob.repeat(reverse: true);
+    if (context.motionEnabledAtInit && widget.float) {
+      _bob.repeat(reverse: true);
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncMotion();
   }
 
   @override
   void didUpdateWidget(covariant KartoniyaMascot oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final motionOn = context.motion.enabled;
-    if (motionOn && !_bob.isAnimating && widget.float) {
-      _bob.repeat(reverse: true);
-    } else if (!motionOn) {
-      _bob.stop();
-      _blink.value = 0;
+    if (oldWidget.float != widget.float) _syncMotion();
+  }
+
+  void _syncMotion() {
+    if (context.motion.enabled) {
+      if (widget.float && !_bob.isAnimating) _bob.repeat(reverse: true);
+      if (_blinkTimer == null) _scheduleBlink();
+      return;
     }
+    _bob.stop(canceled: false);
+    _reaction.stop(canceled: false);
+    _reaction.value = 0;
+    _blinkTimer?.cancel();
+    _blinkTimer = null;
+    _blink.stop(canceled: false);
+    _blink.value = 0;
+  }
+
+  void _reactToTap() {
+    if (context.motion.enabled) _reaction.forward(from: 0);
+    HapticFeedback.selectionClick();
+    widget.onTap?.call();
   }
 
   final _blinkRandom = math.Random();
@@ -77,7 +108,7 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
 
   void _scheduleBlink() {
     _blinkTimer?.cancel();
-    if (!mounted || !context.motionEnabledAtInit) return;
+    if (!mounted || !context.motion.enabled) return;
     _blinkTimer = Timer(
       Duration(milliseconds: 1600 + _blinkRandom.nextInt(2600)),
       () async {
@@ -99,29 +130,51 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
     _blinkTimer?.cancel();
     _blink.dispose();
     _bob.dispose();
+    _reaction.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      // `container` keeps the character in its own accessibility node so a
+      // screen reader announces it as one tappable item instead of merging it
+      // into the surrounding content.
+      container: true,
+      button: true,
       label: 'شخصیت کارتونی فِلَک',
-      child: AnimatedBuilder(
-        animation: Listenable.merge([_blink, _bob]),
-        builder: (context, child) => Transform.translate(
-          offset: Offset(0, _bobAnimation.value),
-          child: child,
-        ),
-        child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: CustomPaint(
-            painter: _MascotPainter(
-              mood: widget.mood,
-              accent: widget.accent,
-              blink: _blink.value,
-            ),
-          ),
+      hint: 'برای دیدن واکنش فِلَک ضربه بزن',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _reactToTap,
+        child: AnimatedBuilder(
+          animation: Listenable.merge([_blink, _bob, _reaction]),
+          builder: (context, _) {
+            final bounce = math.sin(_reaction.value * math.pi);
+            final tilt = math.sin(_reaction.value * math.pi * 2) * .035;
+            return Transform.translate(
+              offset: Offset(0, _bobAnimation.value - bounce * widget.size * .055),
+              child: Transform.rotate(
+                angle: tilt,
+                child: Transform.scale(
+                  scale: 1 + bounce * .085,
+                  child: SizedBox(
+                    width: widget.size,
+                    height: widget.size,
+                    child: CustomPaint(
+                      painter: _MascotPainter(
+                        mood: _reaction.isAnimating
+                            ? MascotMood.cheering
+                            : widget.mood,
+                        accent: widget.accent,
+                        blink: _blink.value,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -161,8 +214,48 @@ class _MascotPainter extends CustomPainter {
       ..addOval(Rect.fromLTWH(w * .06, h * .44, w * .34, h * .3))
       ..addOval(Rect.fromLTWH(w * .6, h * .42, w * .35, h * .32))
       ..addOval(Rect.fromLTWH(w * .3, h * .2, w * .42, h * .36));
-    canvas.drawShadow(cloud, Colors.black.withOpacity(.12), 8, false);
+    // A small offset under-shell creates a soft toy-like extrusion without
+    // pretending this vector artwork is a real-time 3D model.
+    canvas.drawPath(
+      cloud.shift(Offset(0, h * .035)),
+      Paint()..color = Color.lerp(accent, const Color(0xFF17233B), .28)!,
+    );
+    canvas.drawShadow(cloud, Colors.black.withOpacity(.16), w * .09, false);
     canvas.drawPath(cloud, bodyPaint);
+
+    canvas.save();
+    canvas.clipPath(cloud);
+    final surface = Offset.zero & size;
+    canvas.drawRect(
+      surface,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            Color.lerp(accent, const Color(0xFF17233B), .34)!
+                .withOpacity(.20),
+          ],
+          stops: const [.48, 1],
+        ).createShader(surface),
+    );
+    final gloss = Rect.fromLTWH(w * .16, h * .24, w * .56, h * .22);
+    canvas.drawOval(
+      gloss,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [Colors.white.withOpacity(.50), Colors.white.withOpacity(0)],
+        ).createShader(gloss),
+    );
+    canvas.restore();
+    canvas.drawPath(
+      cloud,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * .012
+        ..color = Colors.white.withOpacity(.38),
+    );
 
     final faceCenter = Offset(w * .5, h * .58);
     final eyeGap = w * .14;

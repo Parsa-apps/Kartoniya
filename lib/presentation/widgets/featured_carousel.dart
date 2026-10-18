@@ -47,7 +47,7 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
   int _page = 0;
 
   bool get _autoAllowed =>
-      context.motion.enabled && widget.cartoons.length > 1;
+      context.motion.enabled && TickerMode.of(context) && widget.cartoons.length > 1;
 
   @override
   void didChangeDependencies() {

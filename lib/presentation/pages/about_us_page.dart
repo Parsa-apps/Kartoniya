@@ -34,6 +34,16 @@ class _AboutUsPageState extends State<AboutUsPage>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (context.motion.enabled) {
+      if (!_glowController.isAnimating) _glowController.repeat(reverse: true);
+    } else {
+      _glowController.stop(canceled: false);
+    }
+  }
+
+  @override
   void dispose() {
     _glowController.dispose();
     super.dispose();

@@ -60,6 +60,18 @@ jobs:
       - name: نصب پکیج‌ها (pub get)
         run: flutter pub get
 
+      - name: بررسی قالب‌بندی Dart (غیربازدارنده)
+        run: |
+          set +e
+          dart format --output=none --set-exit-if-changed lib test 2>&1 | tee /tmp/flutter-format.log
+          format_status=${PIPESTATUS[0]}
+          if [[ $format_status -ne 0 ]]; then
+            echo 'Existing Dart files need formatting; analysis, tests, and APK build will still run.' | tee -a /tmp/flutter-format.log
+          fi
+
+      - name: تحلیل Flutter
+        run: flutter analyze --no-pub 2>&1 | tee /tmp/flutter-analyze.log
+
       - name: تست‌ها
         timeout-minutes: 5
         run: flutter test --reporter expanded 2>&1 | tee /tmp/flutter-tests.log
@@ -124,7 +136,10 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib, subprocess
           parts = []
-          for name in ('/tmp/flutter-tests.log', '/tmp/flutter-build.log', '/tmp/api-delivery.json'):
+          for name in (
+              '/tmp/flutter-format.log', '/tmp/flutter-analyze.log',
+              '/tmp/flutter-tests.log', '/tmp/flutter-build.log', '/tmp/api-delivery.json',
+          ):
               path = pathlib.Path(name)
               if path.exists():
                   log = path.read_text(errors='replace')
