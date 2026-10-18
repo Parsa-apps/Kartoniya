@@ -315,7 +315,10 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
     final mood = widget.mood;
 
     return Semantics(
+      container: true,
       image: true,
+      button: widget.interactive,
+      enabled: widget.interactive,
       label: widget.semanticLabel,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,

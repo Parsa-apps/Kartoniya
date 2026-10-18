@@ -92,9 +92,29 @@ void main() {
       greaterThan(.25),
       reason: 'پس‌زمینهٔ شخصیت حذف نشده است.',
     );
+    // اگر پس‌زمینه (سفید یا شطرنجی) باقی بماند، حاشیهٔ کادر تقریباً یکدست
+    // مات می‌شود؛ در برش تمیز، بیشترِ حاشیه شفاف است.
+    final width = frame.image.width;
+    final height = frame.image.height;
+    var border = 0;
+    var borderOpaque = 0;
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        if (x >= 8 && x < width - 8 && y >= 8 && y < height - 8) continue;
+        border++;
+        if (rgba[(y * width + x) * 4 + 3] > 128) borderOpaque++;
+      }
+    }
+    expect(
+      borderOpaque / border,
+      lessThan(.30),
+      reason: 'کادر تصویر شخصیت هنوز پس‌زمینهٔ مات دارد.',
+    );
+    // پیکسل‌های تیرهٔ خنثی در گسترهٔ چشم‌ها (مژه/سایه) طبیعی‌اند؛ مقدار
+    // بزرگ نشانهٔ باقی‌ماندن صفحه‌شطرنجی در برش است.
     expect(
       darkNeutralOpaque,
-      lessThan(2600),
+      lessThan(6000),
       reason: 'لبهٔ برش شخصیت بقایای صفحه‌شطرنجی/خاکستری دارد.',
     );
     codec.dispose();
