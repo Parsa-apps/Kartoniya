@@ -83,7 +83,7 @@ void main() {
   });
 
   group('ChildProfileNotifier', () {
-    test('نام با fاصله‌گذاری ذخیره و آواتار کلمپ می‌شود', () async {
+    test('نام با فاصله‌گذاری ذخیره و آواتار کلمپ می‌شود', () async {
       final container = await _container();
       final notifier = container.read(childProfileProvider.notifier);
 

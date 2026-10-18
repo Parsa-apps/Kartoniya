@@ -95,7 +95,7 @@ final searchResultsProvider = FutureProvider<List<CartoonModel>>((ref) async {
     final score = searchRelevanceScore(a, query).compareTo(
       searchRelevanceScore(b, query),
     );
-    if (score != 0) return score;
+    if (score != 0) return score; // امتیاز کمتر یعنی مرتبط‌تر
     return b.rating.compareTo(a.rating);
   });
   return List.unmodifiable(matches);
