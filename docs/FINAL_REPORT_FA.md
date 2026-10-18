@@ -10,7 +10,7 @@
 |---|---|
 | شاخه | `arena/f29eaa28-kartoniya` |
 | commit شروع | `b572e32` (merge فاز ۶ پیش از کار شخصیت) |
-| آخرین commit کد/تست | `d9eea56` — «chore(ci): document why a bot format commit needs a follow-up code push» |
+| آخرین commit کد/تست | `812eb5a` — «feat(mascot): keep Fandaq breathing in banners and avatars» |
 | commitهای بعدی | فقط `docs:` (این گزارش) |
 | تعداد commitها در این بازه | بیش از ۶۰ |
 
@@ -46,12 +46,18 @@
     (`scaleX 1.036 / scaleY 0.94` در اوج)، HapticFeedback و `onTap`.
   - جزئیات حالتی بدون فایل تازه: سه «z» شناور برای خواب‌آلود، دو جرقهٔ
     چهارپر برای هیجان، و کشش عمودی ۰٫۶٪ در چرخهٔ نفس.
+  - «زنده بودن» به `float` گره نخورده است: حتی در آواتارها و بنرهایی که
+    شناوری عمودی خاموش است، نفس، تاب برگ و تکان آرام دست‌ها ادامه دارد و
+    فقط بالا–پایین رفتن کل بدن قطع می‌شود. با «کاهش حرکت» همه چیز در یک
+    فریم ثابت قفل می‌شود.
   - «شخصیت راهنما» فقط تزئینی نیست: در کارت «از فندوقی بپرس» لمس خودِ
     فندوقی همان اکشن کارت را اجرا می‌کند (فوکوس فیلد جست‌وجو + هپتیک) و
     برای screen reader دکمه اعلام می‌شود؛ بنر روز خانه هنگام ساخت یک
     «سلام» کوتاه دست‌تکان دارد.
-  - تست‌ها: ساخت هر پنج حالت، نبود استثنا با کلیک/بلینک، و خاموش‌شدن
-    افکت‌های «z»/جرقه با «کاهش حرکت».
+  - تست‌ها: ساخت هر پنج حالت، نبود استثنا با کلیک/بلینک، خاموش‌شدن
+    افکت‌های «z»/جرقه با «کاهش حرکت»، تغییر позا در طول زمان با
+    `float:false`، قفل کامل در حالت کاهش حرکت، و رندر بدون خطا در
+    اندازه‌های ۴۰×۴۴ تا ۳۲۰×۳۴۸ (`test/mascot_life_test.dart`).
   - چهره‌ها و حالت‌ها: `happy` (چهرهٔ پایه)، `cheering` (چشم بستهٔ خندان +
     دهان باز)، `sleepy` (پلک سنگین + خمیازه)، `confused` (ابروی بالا +
     دهان گرد) و `sad` (ابروی افتاده + لب پایین).
@@ -112,18 +118,18 @@
   ذخیره‌سازی محلی تغییر نکرده‌اند؛ تغییرات صفحهٔ پخش فقط ظاهری/متنی است.
 - هیچ dependency جدیدی اضافه نشده است.
 
-## ۶) نتیجهٔ واقعی CI (commit `d9eea56`)
+## ۶) نتیجهٔ واقعی CI (commit `812eb5a`)
 
 | بررسی | نتیجه |
 |---|---|
-| `dart format lib test` | «Formatted 60 files (0 changed)» |
-| `flutter analyze` | `No issues found! (ran in 13.3s)` |
-| `flutter test` | `00:15 +62 ~1: All tests passed!` (۶۲ موفق، ۱ skip اختیاری اسکرین‌شات) |
+| `dart format lib test` | «Formatted 61 files (0 changed)» |
+| `flutter analyze` | `No issues found! (ran in 9.5s)` |
+| `flutter test` | `00:12 +65 ~1: All tests passed!` (۶۵ موفق، ۱ skip اختیاری اسکرین‌شات) |
 | Build Android APK | موفق |
-| UI Snapshots | موفق (run قبلی، کد یکسان) |
+| UI Snapshots | موفق — run [`39167762742`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39167762742) |
 
-- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۶۳٬۰۷۲ بایت) در run
-  [`39166786457`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39166786457).
+- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۶۲٬۹۴۱ بایت) در run
+  [`39167762667`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39167762667).
 - ویدئوی بازبینی انیمیشن (رندر همان لایه‌ها با همان منحنی‌ها):
   `docs/mascot_animation_demo.gif` و تصویر پنج حالت:
   `docs/screenshots/13_mascot_faces.png`.
