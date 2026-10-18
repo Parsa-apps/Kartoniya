@@ -558,8 +558,8 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                                 for (var i = 0; i < 3; i++)
                                   _DozingZ(
                                     phase: (t + i / 3) % 1,
-                                    left: dx + 400 * scale,
-                                    top: dy + 120 * scale,
+                                    left: dx + 120 * scale,
+                                    top: dy + 96 * scale,
                                     size: (16 * scale + 4).clamp(9.0, 22.0).toDouble(),
                                     color: AppColors.deepInk,
                                   ),
@@ -568,9 +568,8 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
                                 for (var i = 0; i < 2; i++)
                                   _Twinkle(
                                     phase: (t * 2 + i * .5) % 1,
-                                    left: dx +
-                                        (i == 0 ? 92 : 470) * scale,
-                                    top: dy + (i == 0 ? 96 : 150) * scale,
+                                    left: dx + (i == 0 ? 96 : 470) * scale,
+                                    top: dy + (i == 0 ? 84 : 200) * scale,
                                     size: (13 * scale + 3).clamp(8.0, 20.0).toDouble(),
                                     color: AppColors.gold,
                                   ),
