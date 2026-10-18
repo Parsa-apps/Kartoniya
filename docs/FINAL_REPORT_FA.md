@@ -10,7 +10,7 @@
 |---|---|
 | شاخه | `arena/f29eaa28-kartoniya` |
 | commit شروع | `b572e32` (merge فاز ۶ پیش از کار شخصیت) |
-| آخرین commit کد/تست | `112babc` — «test(mascot): build every mood once…» |
+| آخرین commit کد/تست | `ae26ef4` — «fix(mascot): keep the sleepy z's clear of the leaf» |
 | commitهای بعدی | فقط `docs:` (این گزارش) |
 | تعداد commitها در این بازه | بیش از ۶۰ |
 
@@ -110,14 +110,14 @@
 
 | بررسی | نتیجه |
 |---|---|
-| `dart format lib test` | «Formatted 60 files (0 changed)» |
-| `flutter analyze` | `No issues found! (ran in 13.9s)` |
-| `flutter test` | `00:16 +60 ~1: All tests passed!` (۶۰ موفق، ۱ skip اختیاری اسکرین‌شات) |
+| `dart format lib test` | «Formatted 60 files (1 changed)» — خودکار در commit بعدی اصلاح شد |
+| `flutter analyze` | `No issues found! (ran in 10.3s)` |
+| `flutter test` | `00:12 +60 ~1: All tests passed!` (۶۰ موفق، ۱ skip اختیاری اسکرین‌شات) |
 | Build Android APK | موفق |
 | UI Snapshots | موفق |
 
-- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۵۴٬۷۷۱ بایت) در run
-  [`39161517631`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39161517631).
+- Artifact APK: `kartoniya-release-apks` (۶۵٬۷۶۲٬۲۶۹ بایت) در run
+  [`39164046400`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39164046400).
 - ویدئوی بازبینی انیمیشن (رندر همان لایه‌ها با همان منحنی‌ها):
   `docs/mascot_animation_demo.gif` و تصویر پنج حالت:
   `docs/screenshots/13_mascot_faces.png`.
