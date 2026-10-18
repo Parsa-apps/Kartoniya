@@ -784,8 +784,6 @@ class _RailSection extends StatelessWidget {
     required this.cartoons,
     required this.onTap,
     required this.icon,
-    this.actionLabel,
-    this.onAction,
   });
 
   final String title;
@@ -794,8 +792,6 @@ class _RailSection extends StatelessWidget {
   final List<CartoonModel> cartoons;
   final ValueChanged<CartoonModel> onTap;
   final IconData icon;
-  final String? actionLabel;
-  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -808,8 +804,6 @@ class _RailSection extends StatelessWidget {
           subtitle: subtitle,
           icon: icon,
           accent: accent,
-          actionLabel: actionLabel,
-          onAction: onAction,
         ),
         SizedBox(
           height: 198,
