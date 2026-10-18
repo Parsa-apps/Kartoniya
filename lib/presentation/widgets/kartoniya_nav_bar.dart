@@ -114,7 +114,7 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = Colors.white;
+    const activeColor = Colors.white;
     final idleColor = context.secondaryTextColor;
     return Semantics(
       button: true,

@@ -22,13 +22,13 @@ class ShimmerCard extends StatelessWidget {
               aspectRatio: compact ? 1.55 : 1.42,
               child: const _Block(radius: 0),
             ),
-            Expanded(
+            const Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
+                  children: [
                     _Block(width: double.infinity, height: 14),
                     Row(
                       children: [

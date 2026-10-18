@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/theme/app_motion.dart';
 
 /// دکمهٔ علاقه‌مندی با بازخورد آنی: پاپ قلب، موج حلقوی هنگام افزودن و
@@ -43,13 +44,20 @@ class _FavoriteButtonState extends State<FavoriteButton>
       duration: const Duration(milliseconds: 520),
     );
     _scale = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1, end: 1.32), weight: 3),
       TweenSequenceItem(
-        tween: Tween(begin: 1.32, end: .92).chain(CurveTween(curve: Curves.easeIn)),
+        tween: Tween<double>(begin: 1.0, end: 1.32),
+        weight: 3,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.32, end: .92).chain(
+          CurveTween(curve: Curves.easeIn),
+        ),
         weight: 2,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: .92, end: 1).chain(CurveTween(curve: AppMotion.curvePop)),
+        tween: Tween<double>(begin: .92, end: 1.0).chain(
+          CurveTween(curve: AppMotion.curvePop),
+        ),
         weight: 3,
       ),
     ]).animate(_burst);

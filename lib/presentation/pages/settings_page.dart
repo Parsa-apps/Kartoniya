@@ -43,9 +43,9 @@ class SettingsPage extends ConsumerWidget {
                 40,
               ),
               children: [
-                StaggeredReveal(
+                const StaggeredReveal(
                   index: 0,
-                  child: const _SectionLabel(label: 'ظاهر برنامه'),
+                  child: _SectionLabel(label: 'ظاهر برنامه'),
                 ),
                 StaggeredReveal(
                   index: 1,
@@ -61,9 +61,9 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                StaggeredReveal(
+                const StaggeredReveal(
                   index: 2,
-                  child: const _SectionLabel(label: 'حرکت و انیمیشن'),
+                  child: _SectionLabel(label: 'حرکت و انیمیشن'),
                 ),
                 StaggeredReveal(
                   index: 3,
@@ -87,9 +87,9 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                StaggeredReveal(
+                const StaggeredReveal(
                   index: 4,
-                  child: const _SectionLabel(label: 'پخش ویدئو'),
+                  child: _SectionLabel(label: 'پخش ویدئو'),
                 ),
                 StaggeredReveal(
                   index: 5,
@@ -111,9 +111,9 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                StaggeredReveal(
+                const StaggeredReveal(
                   index: 6,
-                  child: const _SectionLabel(label: 'داده‌های این دستگاه'),
+                  child: _SectionLabel(label: 'داده‌های این دستگاه'),
                 ),
                 StaggeredReveal(
                   index: 7,
