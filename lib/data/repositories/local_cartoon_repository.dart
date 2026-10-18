@@ -1,14 +1,9 @@
 import '../../domain/repositories/cartoon_repository.dart';
 import '../models/cartoon_model.dart';
 
-/// منبع محلی کاتالوگ نسخهٔ اول.
-///
-/// URL آزمایشی فقط برای تست فنی player است و پیش از انتشار باید با CDN دارای
-/// مجوز محتوای کودک جایگزین شود. UI از منبع داده مستقل است.
+/// کاتالوگ منتخب آپارات؛ شناسهٔ پایدار صفحه، نه URL موقت CDN.
+/// منابع و محدودیت‌های بازبینی در docs/aparat-content.md ثبت شده‌اند.
 class LocalCartoonRepository implements CartoonRepository {
-  static const _demoVideoUrl =
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
-
   @override
   Future<List<CartoonModel>> fetchCartoons() async =>
       List<CartoonModel>.unmodifiable(_cartoons);
@@ -17,13 +12,14 @@ class LocalCartoonRepository implements CartoonRepository {
   Future<List<CategoryModel>> fetchCategories() async =>
       List<CategoryModel>.unmodifiable(_categories);
 
-  EpisodeModel _episode(String cartoonId, int number, int minutes) {
+  EpisodeModel _episode(String cartoonId, int number, String hash,
+      String title, int seconds, String publisher) {
     return EpisodeModel(
       id: '$cartoonId-$number',
-      title: 'قسمت $number',
-      description: 'یک ماجرای تازه و رنگی برای تماشا و یادگیری.',
-      durationSeconds: minutes * 60,
-      videoUrl: _demoVideoUrl,
+      title: title,
+      description: 'منبع: آپارات · منتشرکننده: $publisher',
+      durationSeconds: seconds,
+      videoUrl: 'https://www.aparat.com/v/$hash',
       isNew: number == 1,
     );
   }
@@ -31,11 +27,11 @@ class LocalCartoonRepository implements CartoonRepository {
   late final List<CartoonModel> _cartoons = [
     CartoonModel(
       id: 'felak',
-      title: 'ماجراهای فِلَک',
+      title: 'ماجراهای اسکار',
       description:
-          'فِلَک، ابر کوچولوی مهربان، با دوستانش در آسمان سفر می‌کند و در هر قسمت یک راه تازه برای کمک‌کردن یاد می‌گیرد.',
+          'دو ویدیوی کارتون اسکار مارمولک از آپارات؛ عنوان واقعی هر ویدیو در فهرست قسمت‌ها آمده است.',
       category: 'ماجراجویی',
-      duration: 14,
+      duration: 11,
       rating: 4.8,
       ageRange: '۳ تا ۷',
       artworkEmoji: '☁️',
@@ -43,110 +39,134 @@ class LocalCartoonRepository implements CartoonRepository {
       isNew: true,
       isFeatured: true,
       tags: const ['دوستی', 'آسمان', 'ماجراجویی'],
-      episodes: [_episode('felak', 1, 14), _episode('felak', 2, 13)],
+      episodes: [
+        _episode('felak', 1, 'vsb5i06', 'اسکار مارمولک', 677, 'آپارات نیوا'),
+        _episode('felak', 2, 'z803g86', 'ماجراهای جدید اسکار', 425, 'فیلمنما'),
+      ],
     ),
     CartoonModel(
       id: 'alefba',
-      title: 'الفبای شاد',
+      title: 'الفبای فارسی',
       description:
-          'حروف فارسی را با آهنگ، بازی و مثال‌های ساده یاد بگیر؛ هر قسمت کوتاه است تا فرصت تمرین و شادی داشته باشی.',
+          'آموزش حروف فارسی با انیمیشن و ترانه از کوچکستان و سنجاقک آبی.',
       category: 'آموزشی',
-      duration: 10,
+      duration: 7,
       rating: 4.9,
       ageRange: '۴ تا ۶',
       artworkEmoji: 'آ',
       artworkColorValue: 0xFF4DB9EE,
       isFeatured: true,
       tags: const ['الفبا', 'فارسی', 'یادگیری'],
-      episodes: [_episode('alefba', 1, 10), _episode('alefba', 2, 10)],
+      episodes: [
+        _episode('alefba', 1, 'ddy5427', 'الفبای فارسی با انیمیشن موزیکال', 420, 'کوچکستان'),
+        _episode('alefba', 2, 'SfomR', 'آموزش الفبا؛ الف تا ث', 249, 'سنجاقک آبی'),
+      ],
     ),
     CartoonModel(
       id: 'math',
-      title: 'دنیای ریاضی جادویی',
+      title: 'شمارش و اعداد',
       description:
-          'اعداد جادویی منتظرند؛ همراه دوست‌های رنگی بشمار، مقایسه کن و معماهای کوچک را حل کن.',
+          'آموزش شمارش یک تا بیست و اعداد صفر تا سی با چوب‌خط.',
       category: 'آموزشی',
-      duration: 12,
+      duration: 2,
       rating: 4.7,
       ageRange: '۵ تا ۸',
       artworkEmoji: '🔢',
       artworkColorValue: 0xFF53B86A,
       isNew: true,
       tags: const ['اعداد', 'حل مسئله', 'ریاضی'],
-      episodes: [_episode('math', 1, 12), _episode('math', 2, 12)],
+      episodes: [
+        _episode('math', 1, 'ymji038', 'آموزش اعداد ۱ تا ۲۰', 121, 'فیکولند'),
+        _episode('math', 2, 'rfa2n7f', 'اعداد ۰ تا ۳۰ با چوب‌خط', 151, 'کوچولوها'),
+      ],
     ),
     CartoonModel(
       id: 'bedtime',
-      title: 'قصه‌های شب‌بخیر',
+      title: 'قصه‌های تصویری',
       description:
-          'قصه‌های آرام و کوتاه برای پایان یک روز شاد؛ با لحن ملایم و پیام‌های مهربانانه دربارهٔ خانواده و دوستی.',
+          'دو داستان تصویری قوری و نور آبی از کانال deliha در آپارات.',
       category: 'سرگرمی',
-      duration: 18,
+      duration: 12,
       rating: 4.9,
       ageRange: '۲ تا ۶',
       artworkEmoji: '🌙',
       artworkColorValue: 0xFF9B7CEB,
       isFeatured: true,
       tags: const ['قصه', 'خواب', 'آرامش'],
-      episodes: [_episode('bedtime', 1, 18), _episode('bedtime', 2, 17)],
+      episodes: [
+        _episode('bedtime', 1, 'wyz0s88', 'قصهٔ قوری', 734, 'deliha'),
+        _episode('bedtime', 2, 'g0716gm', 'قصهٔ نور آبی', 897, 'deliha'),
+      ],
     ),
     CartoonModel(
       id: 'kitchen',
-      title: 'کارگاه آشپزی کوچولو',
+      title: 'آشپزی کوچولو',
       description:
-          'در یک آشپزخانهٔ امن و رنگی، مواد سالم را بشناس و همراه بزرگ‌ترها ایده‌های خوشمزه بساز.',
+          'تماشای تهیه و تزئین غذای کوچک و کیک؛ انجام آشپزی فقط همراه بزرگ‌ترها.',
       category: 'هنری',
-      duration: 16,
+      duration: 1,
       rating: 4.6,
       ageRange: '۵ تا ۹',
       artworkEmoji: '🍓',
       artworkColorValue: 0xFFFF8A50,
       tags: const ['خلاقیت', 'غذا', 'مهارت زندگی'],
-      episodes: [_episode('kitchen', 1, 16), _episode('kitchen', 2, 15)],
+      episodes: [
+        _episode('kitchen', 1, 'l0498kh', 'تهیهٔ کیک باب اسفنجی', 59, 'مرد عنکبوتی'),
+        _episode('kitchen', 2, 'ncky1g1', 'آشپزی کوچولو', 45, 'The land of gamers'),
+      ],
     ),
     CartoonModel(
       id: 'rainbow',
-      title: 'باغ رنگین‌کمان',
+      title: 'آشنایی با حیوانات',
       description:
-          'گل‌ها، حشرات و حیوانات باغ رنگین‌کمان با هم بازی می‌کنند و دربارهٔ مراقبت از طبیعت حرف می‌زنند.',
+          'ویدیوهای آشنایی با حیوانات مزرعه، باغ وحش و حیوانات دیگر از آپارات.',
       category: 'سرگرمی',
-      duration: 15,
+      duration: 4,
       rating: 4.8,
       ageRange: '۲ تا ۶',
       artworkEmoji: '🌈',
       artworkColorValue: 0xFFFFC83D,
       isFeatured: true,
       tags: const ['طبیعت', 'حیوانات', 'دوستی'],
-      episodes: [_episode('rainbow', 1, 15), _episode('rainbow', 2, 15)],
+      episodes: [
+        _episode('rainbow', 1, 'd1391q9', 'حیوانات مزرعه و باغ وحش', 214, 'آپارات گرام'),
+        _episode('rainbow', 2, 'j93q0wf', 'آشنایی با حیوانات', 1683, 'آپارات گرام'),
+      ],
     ),
     CartoonModel(
       id: 'lab',
-      title: 'آزمایشگاه کوچولو',
+      title: 'کشف دنیای علم',
       description:
-          'با آزمایش‌های ساده و بی‌خطر، پرسش بپرس و جواب‌ها را کشف کن؛ کنجکاوی بهترین ابزار یک دانشمند است.',
+          'آموزش کارکرد گوش و آشنایی با آب‌و‌هوا از کانال فیکولند.',
       category: 'علمی',
-      duration: 13,
+      duration: 4,
       rating: 4.7,
       ageRange: '۶ تا ۱۰',
       artworkEmoji: '🔬',
       artworkColorValue: 0xFF53B86A,
       isNew: true,
       tags: const ['علم', 'آزمایش', 'کنجکاوی'],
-      episodes: [_episode('lab', 1, 13), _episode('lab', 2, 13)],
+      episodes: [
+        _episode('lab', 1, 'ywrbs8s', 'گوش چطور کار می‌کند؟', 229, 'فیکولند'),
+        _episode('lab', 2, 'z0666k3', 'شناخت انواع آب‌و‌هوا', 238, 'فیکولند'),
+      ],
     ),
     CartoonModel(
       id: 'melody',
-      title: 'ملودی جنگل',
+      title: 'ترانه‌های کودکانه',
       description:
-          'صدای سازها و حیوانات جنگل را بشناس، ریتم بساز و با حرکت‌های شاد همراه موسیقی بازی کن.',
+          'ترانهٔ انگلیسی حیوانات جنگل و آهنگ فارسی منظومهٔ شمسی.',
       category: 'موسیقی',
-      duration: 11,
+      duration: 3,
       rating: 4.6,
       ageRange: '۲ تا ۵',
       artworkEmoji: '🎵',
       artworkColorValue: 0xFFFFC83D,
       tags: const ['موسیقی', 'ریتم', 'جنگل'],
-      episodes: [_episode('melody', 1, 11), _episode('melody', 2, 11)],
+      episodes: [
+        _episode('melody', 1, 'a15fnfv', 'حیوانات جنگل (انگلیسی)', 195, 'تفریح و سرگرمی'),
+        _episode('melody', 2, 'a02g7w9', 'آهنگ منظومهٔ شمسی', 99, 'فیکولند'),
+      ],
     ),
   ];
 
