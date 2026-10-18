@@ -3,7 +3,9 @@ name: CI Verify
 on:
   push:
     branches: ["main", "arena/**"]
+    tags: ["v*"]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   verify:
