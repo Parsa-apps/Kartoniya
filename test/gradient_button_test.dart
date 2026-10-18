@@ -32,7 +32,7 @@ void main() {
     expect(taps, 0);
 
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Scaffold(
           body: Center(
             child: GradientButton(
