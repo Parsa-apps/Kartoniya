@@ -7,7 +7,10 @@ void main() {
   testWidgets('app tickers pause in background and resume in foreground',
       (tester) async {
     await tester.pumpWidget(
-      const AppLifecycleTickerMode(child: _TickerModeProbe()),
+      const Directionality(
+        textDirection: TextDirection.rtl,
+        child: AppLifecycleTickerMode(child: _TickerModeProbe()),
+      ),
     );
     expect(find.text('active'), findsOneWidget);
 
@@ -36,7 +39,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('mascot responds to touch and exposes an accessible action',
+  testWidgets('mascot reacts to touch and is exposed as a button',
       (tester) async {
     var taps = 0;
     final semanticsHandle = tester.ensureSemantics();
@@ -57,11 +60,9 @@ void main() {
     );
     await tester.pump();
 
-    // Read the live semantics tree instead of widget fields: Semantics only
-    // keeps its flags in SemanticsProperties, while the tree shows what a
-    // screen reader would actually receive.
-    final mascot = find.bySemanticsLabel('شخصیت کارتونی فِلَک');
-    expect(mascot, findsOneWidget);
+    // The semantics tree shows what a screen reader receives; the Semantics
+    // widget itself only keeps its flags inside SemanticsProperties.
+    final mascot = find.byType(KartoniyaMascot);
     expect(
       tester.getSemantics(mascot),
       containsSemantics(
@@ -85,11 +86,14 @@ class _RevealHost extends StatelessWidget {
   final bool reduced;
 
   @override
-  Widget build(BuildContext context) => MotionScope(
-        info: MotionInfo(reduced: reduced),
-        child: const StaggeredReveal(
-          index: 0,
-          child: Text('reveal'),
+  Widget build(BuildContext context) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: MotionScope(
+          info: MotionInfo(reduced: reduced),
+          child: const StaggeredReveal(
+            index: 0,
+            child: Text('reveal'),
+          ),
         ),
       );
 }

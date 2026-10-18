@@ -137,6 +137,10 @@ class _KartoniyaMascotState extends State<KartoniyaMascot>
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      // `container` keeps the character in its own accessibility node so a
+      // screen reader announces it as one tappable item instead of merging it
+      // into the surrounding content.
+      container: true,
       button: true,
       label: 'شخصیت کارتونی فِلَک',
       hint: 'برای دیدن واکنش فِلَک ضربه بزن',

@@ -14,7 +14,7 @@ import '../widgets/aurora_background.dart';
 import '../widgets/cartoon_artwork.dart';
 import '../widgets/cartoon_card.dart';
 import '../widgets/featured_carousel.dart';
-import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_mascot.dart';
 import '../widgets/kartoniya_nav_bar.dart';
 import '../widgets/section_header.dart';
 import '../widgets/shimmer_loader.dart';
@@ -350,8 +350,10 @@ class _HomeHeader extends StatelessWidget {
     final name = childName;
     return Row(
       children: [
-        const KartoniyaLogoMark(size: 44),
-        const SizedBox(width: 11),
+        // «فِلَک»، شخصیت برند، جای نشان ثابت را در خانه می‌گیرد: شناور شدن
+        // آرام و واکنش به لمس، هویت اپ را در اولین نگاه معرفی می‌کند.
+        const KartoniyaMascot(size: 48, accent: AppColors.sky),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -11,6 +11,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/kartoniya_logo.dart';
+import '../widgets/kartoniya_mascot.dart';
 import 'home_page.dart';
 import 'onboarding_page.dart';
 
@@ -131,16 +132,21 @@ class _SplashPageState extends ConsumerState<SplashPage>
       opacity: CurvedAnimation(parent: _enter, curve: Curves.easeOut),
       child: ScaleTransition(
         scale: CurvedAnimation(parent: _enter, curve: Curves.easeOutBack),
-        child: const _SplashContents(still: false),
+        child: _SplashContents(still: false, enter: _enter),
       ),
     );
   }
 }
 
+/// محتوای اسپلش با ورود پلکانی: نشان برند، نام برنامه و سپس «فِلَک».
 class _SplashContents extends StatelessWidget {
-  const _SplashContents({required this.still});
+  const _SplashContents({required this.still, this.enter});
 
   final bool still;
+
+  /// انیمیشن ورود اسپلش؛ با «کاهش حرکت» مقدار آن از ابتدا ۱ است و همهٔ
+  /// مراحل بلافاصله در وضعیت نهایی دیده می‌شوند.
+  final Animation<double>? enter;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +168,21 @@ class _SplashContents extends StatelessWidget {
                 color: context.secondaryTextColor,
               ),
         ),
-        const SizedBox(height: 38),
+        const SizedBox(height: 18),
+        ScaleTransition(
+          scale: Tween<double>(begin: .55, end: 1).animate(
+            CurvedAnimation(
+              parent: enter ?? const AlwaysStoppedAnimation(1),
+              curve: const Interval(.4, .92, curve: AppMotion.curvePop),
+            ),
+          ),
+          child: const KartoniyaMascot(
+            size: 78,
+            mood: MascotMood.cheering,
+            accent: AppColors.gold,
+          ),
+        ),
+        const SizedBox(height: 26),
         _LoadingDots(still: still),
       ],
     );
