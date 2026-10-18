@@ -15,8 +15,7 @@ void main() {
         ),
       );
 
-  testWidgets('فشردن سطح، پرسپکتیو و مقیاس ملایم اعمال می‌کند',
-      (tester) async {
+  testWidgets('فشردن سطح، پرسپکتیو و مقیاس ملایم اعمال می‌کند', (tester) async {
     await tester.pumpWidget(
       wrap(
         PressableScale(
