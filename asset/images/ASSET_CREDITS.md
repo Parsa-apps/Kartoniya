@@ -71,3 +71,17 @@ splash and poster images are opaque.
   (`KartoniyaLogoMark`) استفاده می‌شود تا شخصیت، خودِ هویت برند باشد.
 - **ادعای سه‌بعدی:** این‌ها رندرهای از پیش ساخته‌شده‌اند (نه مدل زنده). حرکت
   دست/پا/برگ/چشم در Flutter با تبدیل لایه‌ها انجام می‌شود.
+
+## Branding — نشان استودیوی Parsa Apps
+
+| Asset | Used by | Content | Runtime classification |
+| --- | --- | --- | --- |
+| `branding/parsa_apps_logo.webp` | پردهٔ آغازین `SplashPage` و `AboutUsPage` | نشان رسمی استودیوی Parsa Apps (تاج، مدالیون مدار، برگ‌های طلایی و نوشتار برند) | اثر دوبعدی برند (WebP شفاف، نه مدل سه‌بعدی) |
+
+Source & license: the original transparent PNG (1254x1254, RGBA, alpha already
+present) was provided by the brand owner (Parsa Apps studio) for this
+repository on 2026-10-19. No redrawing, recoloring or reshaping was applied:
+the pipeline only cropped the empty alpha margin (+6 px pad), resized to
+810x1024 with Lanczos and encoded to lossless WebP with alpha preserved. All
+rights to the mark remain with its owner; it ships inside the app as a local
+asset and nothing is fetched at runtime.
