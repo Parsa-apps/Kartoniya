@@ -74,8 +74,7 @@ jobs:
 
       - name: تست‌ها
         timeout-minutes: 6
-        continue-on-error: true
-        run: flutter test --reporter expanded 2>&1 | tee /tmp/flutter-tests.log
+        run: flutter test --reporter compact 2>&1 | tee /tmp/flutter-tests.log
 
       - name: انتشار لاگ تست‌ها
         if: always()
