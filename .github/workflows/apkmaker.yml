@@ -86,6 +86,26 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      - name: API delivery for test log (for restricted clients)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PYTHON'
+          import base64, json, os, pathlib, subprocess
+          path = pathlib.Path('/tmp/flutter-tests.log')
+          if path.exists():
+              data = path.read_bytes()
+              result = subprocess.run(['gh', 'api', '--method', 'POST',
+                  'repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/blobs',
+                  '--input', '-'], input=json.dumps({
+                      'content': base64.b64encode(data).decode(), 'encoding': 'base64',
+                  }), text=True, capture_output=True, check=True)
+              sha = json.loads(result.stdout)['sha']
+              pathlib.Path('/tmp/test-log-blob.json').write_text(json.dumps({'blob': sha, 'bytes': len(data)}))
+              print(f"Test log blob: {sha}")
+          PYTHON
+
       # رندر صفحه‌ها با فونت و assetهای واقعی برای بازبینی طراحی. خروجی
       # اسکرین‌شات گوشی واقعی نیست و شکست آن بیلد APK را متوقف نمی‌کند.
       - name: اسکرین‌شات‌های رندر‌شده
@@ -182,7 +202,7 @@ jobs:
           parts = []
           for name in (
               '/tmp/flutter-format.log', '/tmp/flutter-analyze.log',
-              '/tmp/flutter-tests.log', '/tmp/flutter-build.log', '/tmp/api-delivery.json',
+              '/tmp/flutter-tests.log', '/tmp/flutter-build.log', '/tmp/api-delivery.json', '/tmp/test-log-blob.json',
           ):
               path = pathlib.Path(name)
               if path.exists():
