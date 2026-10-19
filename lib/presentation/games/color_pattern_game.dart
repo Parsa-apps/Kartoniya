@@ -45,18 +45,20 @@ class _ColorPatternGamePageState extends ConsumerState<ColorPatternGamePage> {
   void _clear(int i) { if (i>=3) setState(()=> _answer[i]=null); }
 
   void _check() {
-    if (_answer.any((e)=> e==null)) return;
-    final correct = _answer.every((c)=> _target[_answer.indexOf(c)]==c) && _answer.join(',')==_target.join(',');
-    // simpler: compare each index
+    if (_answer.any((e)=> e==null)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('همه خانه‌ها را پر کن'), duration: Duration(milliseconds: 600)));
+      return;
+    }
     bool ok = true;
     for (var i=0;i<6;i++) if (_answer[i]!=_target[i]) ok=false;
     if (ok) _score+=10;
     if (_round >= _max) { _showEnd(); return; }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(ok?'درست!':'نادرست!'), backgroundColor: ok?Colors.green:Colors.red, duration: const Duration(milliseconds: 600)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(ok?'درست!':'نادرست! پاسخ صحیح را ببین'), backgroundColor: ok?Colors.green:Colors.red, duration: const Duration(milliseconds: 600)));
     setState((){ _round++; _load(); });
   }
 
   void _showEnd() {
+    if (!mounted) return;
     ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(context: context, barrierDismissible: false, builder: (_)=> GameResultDialog(title: _score>=30?'الگوساز!':'پایان', message: 'امتیاز $_score از ${_max*10}', score: _score, isWin: _score>=30, onRestart: (){ Navigator.of(context).pop(); setState((){ _score=0; _round=1; _load();});}, onExit: (){ Navigator.of(context).pop(); Navigator.of(context).maybePop();}));
   }

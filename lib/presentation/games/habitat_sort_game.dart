@@ -51,6 +51,7 @@ class _HabitatSortGamePageState extends ConsumerState<HabitatSortGamePage> {
   }
 
   void _showEnd() {
+    if (!mounted) return;
     ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(context: context, barrierDismissible: false, builder: (_) => GameResultDialog(title: 'آفرین مربی!', message: 'هر 6 حیوان را به خانه بردی', score: _score, isWin: true, onRestart: (){ Navigator.of(context).pop(); setState(_init);}, onExit: (){ Navigator.of(context).pop(); Navigator.of(context).maybePop();}));
   }

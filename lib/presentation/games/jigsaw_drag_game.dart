@@ -28,15 +28,26 @@ class _JigsawDragGamePageState extends ConsumerState<JigsawDragGamePage> {
 
   void _onAccept(int slot, int piece) {
     if (_slots[slot] != null) return;
+    final isCorrect = piece == slot;
     setState(() {
       _slots[slot] = piece;
       _pieces.remove(piece);
-      if (piece == slot) _correct++;
-      if (_slots.every((e) => e != null)) _showEnd();
+      if (isCorrect) _correct++;
+      if (_slots.every((e) => e != null)) {
+        Future.delayed(const Duration(milliseconds: 200), _showEnd);
+      }
     });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(isCorrect ? 'آفرین! جای درست' : 'اشتباه، ولی ادامه بده'),
+        backgroundColor: isCorrect ? Colors.green : Colors.orange,
+        duration: const Duration(milliseconds: 600),
+      ),
+    );
   }
 
   void _showEnd() {
+    if (!mounted) return;
     final score = _correct * 10;
     ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, score);
     showDialog(context: context, barrierDismissible: false, builder: (_) => GameResultDialog(title: _correct==4 ? 'کامل شد!' : 'پایان', message: '$_correct از 4 تکه درست', score: score, isWin: _correct>=3, onRestart: () { Navigator.of(context).pop(); setState(_init); }, onExit: () { Navigator.of(context).pop(); Navigator.of(context).maybePop(); }));

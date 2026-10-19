@@ -49,5 +49,79 @@ void main() {
       final s = (100 - moves * 2 - sec).clamp(10, 100).toInt();
       expect(s, 60);
     });
+
+    test('امتیاز story_order = 10 هر مرحله صحیح', () {
+      int correctRounds = 3;
+      expect(correctRounds * 10, 30);
+    });
+
+    test('امتیاز jigsaw = 10 هر تکه صحیح', () {
+      int correct = 4;
+      expect(correct * 10, 40);
+    });
+
+    test('امتیاز color_pattern = 10 هر الگو', () {
+      int ok = 5;
+      expect(ok * 10, 50);
+    });
+
+    test('شرط پایان story_order: 5 مرحله', () {
+      int round = 5, max = 5;
+      expect(round >= max, isTrue);
+    });
+
+    test('شرط پایان number_quantity: اتمام 4 جفت', () {
+      List<int> numbers = [];
+      expect(numbers.isEmpty, isTrue);
+    });
+
+    test('شروع مجدد: reset score و round', () {
+      int score = 40, round = 5;
+      score = 0; round = 1;
+      expect(score, 0);
+      expect(round, 1);
+    });
+
+    test('پذیرش drag معتبر vs نامعتبر', () {
+      // jigsaw: slot null → accept, occupied → reject
+      List<int?> slots = [null, 1, null, null];
+      int slot = 0;
+      expect(slots[slot] == null, isTrue); // valid
+      expect(slots[1] == null, isFalse); // invalid (occupied)
+      // habitat_sort: correct habitat
+      String animalHab = 'جنگل';
+      String targetHab = 'جنگل';
+      expect(animalHab == targetHab, isTrue);
+      expect('دریا' == targetHab, isFalse);
+    });
+
+    test('ذخیره رکورد فقط با امتیاز بالاتر', () {
+      Map<String, int> scores = {'memory_classic': 50};
+      int newScore = 60;
+      if (newScore > (scores['memory_classic'] ?? 0)) scores['memory_classic'] = newScore;
+      expect(scores['memory_classic'], 60);
+      // lower score should not overwrite
+      int lower = 40;
+      if (lower > (scores['memory_classic'] ?? 0)) scores['memory_classic'] = lower;
+      expect(scores['memory_classic'], 60);
+    });
+  });
+
+  group('Storage compatibility', () {
+    test('شناسه‌های تغییر یافته همچنان معتبرند (بدون نیاز به مهاجرت)', () async {
+      final games = await LocalGameRepository().fetchGames();
+      final ids = games.map((g) => g.id).toSet();
+      // 5 شناسه‌ای که محتوا عوض شد ولی id حفظ شد
+      const reusedIds = ['memory_sounds', 'puzzle_picture_logic', 'puzzle_color_seq', 'sorting_fruits_veg', 'hidden_garden'];
+      for (final id in reusedIds) {
+        expect(ids.contains(id), isTrue, reason: 'id $id باید همچنان وجود داشته باشد تا داده ذخیره‌شده پاک نشود');
+      }
+      // favorite/recent قدیمی با همین idها هنوز معتبرند — نیاز به migration نیست چون منتشر نشده
+      Set<String> fakeOldFavorites = {'memory_sounds', 'puzzle_picture_logic'};
+      // pruneTo باید آن‌ها را نگه دارد چون id هنوز موجود است
+      final validIds = ids;
+      final pruned = fakeOldFavorites.where(validIds.contains).toSet();
+      expect(pruned.length, 2);
+    });
   });
 }

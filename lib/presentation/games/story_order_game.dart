@@ -68,6 +68,7 @@ class _StoryOrderGamePageState extends ConsumerState<StoryOrderGamePage> {
   }
 
   void _showEnd() {
+    if (!mounted) return;
     ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(context: context, barrierDismissible: false, builder: (_) => GameResultDialog(title: _score >= 30 ? 'داستان‌سرا!' : 'پایان', message: 'امتیاز $_score از ${_max*10}', score: _score, isWin: _score >= 30, onRestart: () { Navigator.of(context).pop(); setState(() { _score=0; _round=1; _loadRound(); }); }, onExit: () { Navigator.of(context).pop(); Navigator.of(context).maybePop(); }));
   }
@@ -85,10 +86,12 @@ class _StoryOrderGamePageState extends ConsumerState<StoryOrderGamePage> {
             child: ReorderableListView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               onReorder: (oldIdx, newIdx) { setState(() { if (newIdx > oldIdx) newIdx--; final item = _order.removeAt(oldIdx); _order.insert(newIdx, item); }); },
-              children: _order.map((label) {
+              children: _order.asMap().entries.map((entry) {
+                final label = entry.value;
+                final idx = entry.key;
                 final step = _current.firstWhere((s) => s.label == label, orElse: () => _story.steps.firstWhere((s) => s.label == label));
                 return Container(
-                  key: ValueKey(label + _round.toString()),
+                  key: ValueKey('${label}_${_round}_$idx'),
                   margin: const EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(color: widget.game.accentColor.withOpacity(.10), borderRadius: BorderRadius.circular(14), border: Border.all(color: widget.game.accentColor.withOpacity(.25))),
                   child: ListTile(

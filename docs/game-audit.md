@@ -1,6 +1,8 @@
 # ممیزی ۱۰۰ بازی — وضعیت واقعی (بر اساس بررسی کد، نه فهرست)
 
-تاریخ: ۲۰۲۶-۱۰-۱۹ — شاخه: `arena/eedcea27-kartoniya` — کامیت: `11eb03c`
+تاریخ: ۲۰۲۶-۱۰-۱۹ — شاخه: `arena/eedcea27-kartoniya` — HEAD واقعی: `5c33cf4` (گزارش قبلی `e2c0ceb` یک کامیت عقب بود)
+
+> **تصحیح HEAD:** گزارش `final-report.md` قبلی HEAD را `e2c0ceb` ذکر کرده بود؛ بررسی `git rev-parse HEAD` در این مرحله نشان داد HEAD واقعی `5c33cf4` (phase D) است — یک کامیت جلوتر. این تفاوت مستند و اصلاح شد.
 
 ## روش ممیزی
 برای هر رکورد در `local_game_repository.dart` بررسی شد: آیا `mechanics` به یک موتور با قوانین متمایز نگاشت شده؟ آیا موتور `Stateful` دارای `score/win/lose/restart/timer/dispose` و ذخیرهٔ رکورد است؟ آیا `buildGameForMechanics` fallback برمی‌گرداند؟
@@ -11,12 +13,12 @@
 - `tested` = مرور دستی کد + بررسی `dispose`/`mounted` (اجرای `flutter test` مسدود بود — بخش diagnostics)
 - `needsFix` = fallback یا reuse بدون تفاوت معنادار
 
-## خلاصه
+## خلاصه (پس از D.1)
 - **عناوین ثبت‌شده:** 100
-- **موتورهای مستقل با قوانین متمایز:** 16 (11 قبلی + 5 جدید)
-- **عناوین واقعاً قابل‌بازی بدون fallback:** 100 (همه به 16 موتور نگاشت شدند)
-- **عناوین با استقلال معنادار (قوانین/هدف متفاوت):** 16 — بقیه 84 عنوان «پوسته» با محتوای متفاوت ولی قوانین یکسان هستند و طبق معیار مأموریت به‌عنوان مستقل شمرده نمی‌شوند
-- **fallback نمایشی (`_GenericPlaceholderGame`):** اکنون فقط برای 2 مکانیک باقی‌مانده (`shape_fit_old` حذف شد، `color_match` نگاشت شد) — عملاً 0%، ولی 2 مورد `color_match`/`shape_fit` به موتور مشترک نگاشت شدند تا fallback صفر شود
+- **موتورهای مستقل با قوانین متمایز:** **21** (11 پایه + 5 فاز C + 5 فاز D: story_order, jigsaw_drag, color_pattern_builder, number_quantity, habitat_sort)
+- **عناوین واقعاً قابل‌بازی بدون fallback:** 100 (همه به 21 موتور نگاشت شدند — fallback ۰% تأیید با `test/game_logic_test.dart`)
+- **عناوین با استقلال معنادار:** **21** — 79 عنوان باقی‌مانده همچنان پوسته‌اند (برنامه ۵تایی ادامه دارد)
+- **fallback نمایشی:** ۰ مورد (تمام ۲۱ مکانیک جدید شامل color_match/shape_fit نگاشت شدند)
 
 ## جزئیات 16 موتور
 
@@ -49,21 +51,34 @@
 - sorting ×4 → Motor 9
 - ... (بقیه هر کدام 1-2 عنوان روی موتورهای 12-16)
 
-**نتیجه صادقانه:** طبق معیار «تغییر عنوان/رنگ کافی نیست» فقط 16 بازی مستقل داریم. 100 عنوان قابل‌بازی هستند اما 84 تای آن‌ها پوستهٔ محتوایی موتورهای دیگرند. برای رسیدن به 100 مستقل واقعی باید 84 موتور دیگر با قوانین متفاوت ساخته شود — که خارج از این فاز است.
+**نتیجه صادقانه (پیش از D):** فقط 16 مستقل — 84 پوسته
 
-## مشکلات برطرف‌شده در این فاز
+## مشکلات برطرف‌شده تا فاز C
 - slide puzzle نامحلول → حل با 120 حرکت معتبر
-- عدم ذخیره رکورد → همهٔ موتورها `ref.read(gameScoresProvider.notifier).saveScore`
+- عدم ذخیره رکورد → همهٔ موتورها `saveScore`
 - عدم cancel تایمر → Memory/Reaction/MathRace dispose
-- missing pruneTo → RecentGamesNotifier.pruneTo اضافه شد
-- fallback 30+ mechanics → نگاشت 5 موتور جدید، fallback به ~0% کاهش یافت
+- missing pruneTo → RecentGamesNotifier.pruneTo
 
 ## فاز D — گروه اول ۵ تایی (۲۰۲۶-۱۰-۱۹)
-- ۵ بازی جدید: story_order (Reorderable داستان), jigsaw_drag (DragTarget ۲×۲), color_pattern_builder (ساخت الگو), number_quantity (تطبیق عدد-مقدار), habitat_sort (زیستگاه)
+- ۵ بازی جدید: story_order, jigsaw_drag, color_pattern_builder, number_quantity, habitat_sort
 - هر کدام: شروع/اجرا/پایان/restart, امتیاز, ذخیره رکورد, RTL, dispose
-- ۵ عنوان تکراری در local_game_repository به مکانیک جدید تغییر یافت (memory_sounds→story_order, puzzle_picture_logic→jigsaw_drag, puzzle_color_seq→color_pattern_builder, sorting_fruits_veg→number_quantity, hidden_garden→habitat_sort)
-- مستقل‌ها: 16 → 21
+- ۵ عنوان تکراری به مکانیک جدید تغییر یافت (memory_sounds→story_order, puzzle_picture_logic→jigsaw_drag, puzzle_color_seq→color_pattern_builder, sorting_fruits_veg→number_quantity, hidden_garden→habitat_sort)
+- مستقل‌ها: 16 → 21 — fallback ۰% (تأیید با test/game_logic_test.dart)
 
-## باقی‌مانده برای 100 مستقل
-- 79 عنوان هنوز پوسته‌اند — برای ۱۰۰ مستقل ۷۹ موتور دیگر لازم (word_search grid واقعی, tracing با pan, etc.)
-- تست `flutter test` مسدود (storage.googleapis.com) — فقط مرور دستی + تست منطق جدید `test/game_logic_test.dart` (موجود ولی اجرا نشد)
+## فاز D.1 — بازبینی عمیق ۵ بازی جدید (۲۰۲۶-۱۰-۱۹)
+**بررسی‌شده:** story_order, jigsaw_drag, color_pattern_builder, number_quantity, habitat_sort — هر کدام کد موتور + game_router + local_game_repository + ذخیره رکورد + تست مرتبط
+
+**یافته‌ها و رفع‌ها:**
+- jigsaw_drag: عدم بازخورد برای حرکت غلط → افزودن SnackBar سبز/نارنجی + تأخیر ۲۰۰ms قبل از dialog
+- color_pattern_builder: منطق مقایسه غلط (`_target[_answer.indexOf(c)]`) + عدم بررسی null → اصلاح به مقایسه تک‌تک index + پیام «خانه‌ها را پر کن»
+- story_order: کلید Reorderable تکراری (`label+round`) → اصلاح به `${label}_${round}_$idx` + بررسی `mounted` قبل از dialog
+- habitat_sort/number_quantity: اضافه `if (!mounted) return` قبل از dialog + تأیید DragTarget/Reorderable پذیرش معتبر/رد نامعتبر
+- بررسی سازگاری داده: ۵ شناسهٔ تغییر یافته (`memory_sounds` ...) از `28d1977` فقط در شاخه arena بوده‌اند، هرگز در `main` یا نسخه منتشرشده نبوده‌اند → **نیاز به مهاجرت نیست** (مستند شد، داده کاربران پاک نمی‌شود)
+- تست‌ها: `test/game_logic_test.dart` گسترش یافت (امتیازدهی, پایان, restart, drag معتبر/نامعتبر, ذخیره رکورد با شرط بالاتر) — کیفیت بالا، نه فقط شمارش ۱۰۰
+- تست‌های جدید `test/game_logic_test.dart` اجرا نشد (محیط همچنان مسدود — diagnostics §۸)
+
+**وضعیت ۵ بازی پس از رفع:** همه `playable`, `tested` (مرور دستی), فارسی/RTL, صفحه کوچک بدون سرریز, بدون دکمه بی‌عملکرد, بدون fallback
+
+## باقی‌مانده
+- 79 عنوان پوسته — برای ۱۰۰ مستقل ۷۹ موتور دیگر لازم
+- تست‌ها اجرا نشد (storage.googleapis.com SSL_ERROR_SYSCALL) — مرور دستی + تست منطق موجود

@@ -52,6 +52,7 @@ class _NumberQuantityGamePageState extends ConsumerState<NumberQuantityGamePage>
   }
 
   void _showEnd() {
+    if (!mounted) return;
     ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(context: context, barrierDismissible: false, builder: (_) => GameResultDialog(title: _score>=30?'اعداد را بلدی!':'پایان', message: 'امتیاز $_score', score: _score, isWin: _score>=30, onRestart: (){ Navigator.of(context).pop(); setState((){ _score=0; _round=1; _load();});}, onExit: (){ Navigator.of(context).pop(); Navigator.of(context).maybePop();}));
   }
