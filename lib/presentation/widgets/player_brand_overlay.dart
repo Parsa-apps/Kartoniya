@@ -387,7 +387,7 @@ class _NeonLogo extends StatelessWidget {
           // Subtle particle twinkles (only if not reduced)
           if (!MotionScope.reducedGlobally && haloIntensity > 0.6) ...[
             // Top sparkle
-            Positioned(
+            PositionedDirectional(
               top: -size * 0.04,
               end: -size * 0.06,
               child: _TwinkleDot(
@@ -397,7 +397,7 @@ class _NeonLogo extends StatelessWidget {
               ),
             ),
             // Bottom sparkle opposite
-            Positioned(
+            PositionedDirectional(
               bottom: -size * 0.02,
               start: -size * 0.05,
               child: _TwinkleDot(

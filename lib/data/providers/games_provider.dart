@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/game_model.dart';
 import '../repositories/local_game_repository.dart';
@@ -61,10 +60,10 @@ final gameSearchResultsProvider = FutureProvider<List<GameModel>>((ref) async {
   final lower = query.toLowerCase();
   return games
       .where((g) =>
-          g.title.contains(query) ||
-          g.description.contains(query) ||
-          g.category.labelFa.contains(query) ||
-          g.tags.any((t) => t.contains(query)))
+          g.title.toLowerCase().contains(lower) ||
+          g.description.toLowerCase().contains(lower) ||
+          g.category.labelFa.toLowerCase().contains(lower) ||
+          g.tags.any((t) => t.toLowerCase().contains(lower)))
       .toList(growable: false);
 });
 

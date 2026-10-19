@@ -170,10 +170,21 @@ class _GamesPageState extends ConsumerState<GamesPage> {
                 ),
               );
             },
-            loading: () => const SliverToBoxAdapter(
+            loading: () => SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.all(16),
-                child: ShimmerGrid(count: 6),
+                padding: const EdgeInsets.all(16),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.88,
+                  ),
+                  itemCount: 6,
+                  itemBuilder: (_, __) => const ShimmerCard(),
+                ),
               ),
             ),
             error: (e, _) => SliverToBoxAdapter(

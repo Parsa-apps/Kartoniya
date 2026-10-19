@@ -27,6 +27,7 @@ import '../../data/providers/games_provider.dart';
 import 'categories_page.dart';
 import 'cartoon_detail_page.dart';
 import 'favorites_page.dart';
+import 'game_detail_page.dart';
 import 'games_page.dart';
 import 'player_page.dart';
 import 'profile_page.dart';

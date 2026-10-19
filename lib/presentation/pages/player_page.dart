@@ -508,7 +508,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                       showPlayAffordance: false,
                     ),
                     DecoratedBox(
-                      color: Colors.black.withOpacity(.45),
+                      decoration: BoxDecoration(color: Colors.black.withOpacity(.45)),
                       child: const _PlayerLoading(),
                     ),
                   ],

@@ -69,7 +69,7 @@ void main() {
       durationSeconds: 60,
       videoUrl: 'https://www.aparat.com/v/bad!hash',
     );
-    const badCartoon = CartoonModel(
+    final badCartoon = CartoonModel(
       id: 'bad',
       title: 'تست خراب',
       description: 'توضیح تست',
@@ -86,7 +86,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-        child: const MaterialApp(
+        child: MaterialApp(
           home: AparatPlayer(cartoon: badCartoon, initialEpisode: badEpisode),
         ),
       ),
