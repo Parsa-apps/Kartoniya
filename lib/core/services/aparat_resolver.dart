@@ -60,9 +60,12 @@ abstract final class AparatResolver {
     }
     final hash = hashFromUrl(url);
     if (hash == null) {
-      // اگر URL خالی نیست ولی آپارات نیست، ممکن است direct URL باشد
       final uri = Uri.tryParse(url);
-      if (uri != null && uri.scheme == 'https' && uri.host.isNotEmpty) {
+      // فقط URLهای غیرآپارات به‌عنوان direct پذیرفته می‌شوند
+      if (uri != null &&
+          uri.scheme == 'https' &&
+          uri.host.isNotEmpty &&
+          !const ['www.aparat.com', 'aparat.com'].contains(uri.host)) {
         return AparatResolution.direct(uri);
       }
       return const AparatResolution.invalid('شناسهٔ ویدئو نامعتبر است.');

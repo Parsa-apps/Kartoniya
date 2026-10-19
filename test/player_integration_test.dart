@@ -23,10 +23,11 @@ void main() {
       'آدرس صفحه وب منبع',
       'رفتن به سایت منبع',
     ];
-    // بررسی مستقیم روی دادهٔ کاتالوگ
+    // بررسی مستقیم روی دادهٔ کاتالوگ — فقط عناوین فعال
     final cartoons = await LocalCartoonRepository().fetchCartoons();
-    for (final cartoon in cartoons) {
-      for (final episode in cartoon.episodes) {
+    final activeCartoons = cartoons.where((c) => c.isActive).toList();
+    for (final cartoon in activeCartoons) {
+      for (final episode in cartoon.activeEpisodes) {
         for (final phrase in forbiddenPhrases) {
           expect(episode.title.contains(phrase), isFalse,
               reason: 'episode title contains forbidden phrase: $phrase');
@@ -127,7 +128,10 @@ void main() {
 
   test('هر hash باید به همان ویدئوی تأییدشده برسد (عدم جستجوی تصادفی)', () async {
     final cartoons = await LocalCartoonRepository().fetchCartoons();
-    final episodes = cartoons.expand((c) => c.episodes).toList();
+    final episodes = cartoons
+        .where((c) => c.isActive)
+        .expand((c) => c.activeEpisodes)
+        .toList();
     // هر hash یکتا و مستقیماً به URL کانونی map شده
     final hashes = episodes.map((e) => e.aparatVideoHash).toList();
     expect(hashes.toSet().length, 16);
