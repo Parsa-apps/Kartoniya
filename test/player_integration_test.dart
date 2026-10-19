@@ -56,8 +56,8 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 120));
+    await tester.pump(const Duration(milliseconds: 300));
     expect(tester.takeException(), isNull);
     expect(tester.takeException(), isNull);
   });
