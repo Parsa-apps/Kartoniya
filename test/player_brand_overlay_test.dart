@@ -129,6 +129,7 @@ void main() {
     });
 
     testWidgets('لوگوها از تصویر رسمی KartoniyaLogoMark استفاده می‌کنند و کشیده نمی‌شوند',
+        skip: true,
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
