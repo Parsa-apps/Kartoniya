@@ -1082,3 +1082,27 @@
 - **امتیازدهی:** ۱۰ امتیاز هر مرحله صحیح، نمایش بهترین رکورد در GameScaffold — ذخیره در `gameScoresProvider`
 - **تفاوت با سایرین:** با نسخه‌های دیگر همین خانواده تفاوت در theme/تعداد/اندازه دارد؛ اما طبق معیار «رنگ کافی نیست»، این عنوان به‌عنوان پوسته محسوب می‌شود مگر مکانیک جدید زیر اضافه شود: Mixed با پارامتر متفاوت (مثلاً اندازه شبکه یا زمان)
 - **تست لازم:** امتیازدهی، شرط پایان، restart بدون باقی‌ماندن state، dispose تایمر، RTL
+
+---
+# اولویت‌بندی ۷۹ پوسته باقی‌مانده — فاز E
+
+از ۱۰۰ عنوان، ۲۱ موتور مستقل است (۱۶ اولیه + ۵ جدید فاز D). ۷۹ عنوان دیگر پوسته‌هایی از همین موتورهاست که طبق معیار «رنگ/نام کافی نیست» مستقل محسوب نمی‌شوند. برای رسیدن به ۱۰۰ مستقل، هر پوسته باید با مکانیک جدید جایگزین شود.
+
+## اولویت ۱ — ۱۵ عنوان (دسته‌های کم‌پوشش + toddler)
+`memory_sounds`→`story_order` (riddle) ✅، `puzzle_picture_logic`→`jigsaw_drag` (puzzle) ✅، `puzzle_color_seq`→`color_pattern` (sorting) ✅، `hidden_garden`→`habitat_sort` (sorting) ✅، `sorting_fruits_veg`→`number_quantity` (numbers) ✅ — ۵ انجام شد، ۱۰ مانده:
+`memory_animals`, `coloring_number`, `difference_light`, `hidden_objects2`, `shadow_match2`, `counting_5`, `reaction_tap_green2`, `maze_simple`, `odd_one_shape`, `sorting_size` → هرکدام نیاز به موتور جدید (مثلاً memory با صدا، coloring با الگو، difference با زمان، maze با جمع‌آوری)
+
+## اولویت ۲ — ۲۵ عنوان (تکمیل ۱۵ دسته به ۶-۷ عنوان)
+هر دسته باید ۶-۷ بازی داشته باشد تا تنوع تضمین شود. دسته‌های فعلی: puzzle ۷، memory ۷، sorting ۶، etc. دسته‌های کم: toddler (۳)، shape-match (۲)، maze (۴) — ۲۵ عنوان بعدی باید این خلأ را پر کند با موتورهای جدید: shape-rotation, toddler-tap, maze-collect
+
+## اولویت ۳ — ۳۹ عنوان (گسترش عمقی)
+باقی‌مانده برای رسیدن به ۱۰۰، با تمرکز بر مکانیک‌های سخت (riddle/hard, reaction/hard) و ترکیبی (mixed_challenge) — هرکدام باید تست `flutter test` + `small_screen 320px` + `mounted` را بدون overflow بگذراند.
+
+## معیار تبدیل پوسته به مستقل
+- ورودی متفاوت (tap vs drag vs swipe vs reorder)
+- شرط برد متفاوت (زمان vs امتیاز vs تعداد مرحله)
+- UI متفاوت (grid 3×3 vs 4×4 vs list vs canvas)
+- تست مستقل (file: `test/game_logic_test.dart` + widgetTest برای هر موتور)
+
+## گزارش شفاف gap
+اگر تا فاز E ۱۰۰ مستقل نرسید، `docs/game-audit.md` باید دقیقاً بگوید: «۲۱ مستقل + ۷۹ پوسته — دلیل: زمان/منبع/تست ناکافی — نقشه راه بالا برای تکمیل»
