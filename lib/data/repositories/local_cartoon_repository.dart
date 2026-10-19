@@ -301,6 +301,7 @@ class LocalCartoonRepository implements CartoonRepository {
   static const List<CategoryModel> _categories = [
     CategoryModel(id: 'all', name: 'همه', emoji: '✨', colorValue: 0xFFFF8A50),
     CategoryModel(id: 'adventure', name: 'ماجراجویی', emoji: '🚀', colorValue: 0xFFF06A70),
+    CategoryModel(id: 'education', name: 'آموزشی', emoji: '📚', colorValue: 0xFF4DB9EE),
     CategoryModel(id: 'comedy', name: 'کمدی و خنده‌دار', emoji: '😂', colorValue: 0xFFFFC53D),
     CategoryModel(id: 'animals', name: 'حیوانات و طبیعت', emoji: '🦁', colorValue: 0xFF53B86A),
     CategoryModel(id: 'educational', name: 'داستان آموزنده', emoji: '📚', colorValue: 0xFF4DB9EE),
@@ -309,7 +310,6 @@ class LocalCartoonRepository implements CartoonRepository {
     CategoryModel(id: 'short', name: 'انیمیشن کوتاه', emoji: '🎬', colorValue: 0xFF9B765F),
     CategoryModel(id: 'classic', name: 'کلاسیک', emoji: '🎞️', colorValue: 0xFF9B765F),
     CategoryModel(id: 'toddler', name: 'خردسالان', emoji: '👶', colorValue: 0xFF7BC4FF),
-    CategoryModel(id: 'education', name: 'آموزشی', emoji: '📚', colorValue: 0xFF4DB9EE),
     CategoryModel(id: 'fun', name: 'سرگرمی', emoji: '🎪', colorValue: 0xFFFF6B9D),
     CategoryModel(id: 'art', name: 'هنری', emoji: '🎨', colorValue: 0xFF9B7CEB),
     CategoryModel(id: 'science', name: 'علمی', emoji: '🔬', colorValue: 0xFF53B86A),
