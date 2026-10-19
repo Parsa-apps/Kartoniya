@@ -176,7 +176,7 @@ jobs:
               path = pathlib.Path(name)
               if path.exists():
                   log = path.read_text(errors='replace')
-                  parts.append(log if len(log) <= 24000 else log[:12000] + '\n...\n' + log[-12000:])
+                  parts.append(log)
           payload = {
               'name': 'Flutter diagnostics',
               'head_sha': os.environ['GITHUB_SHA'],
