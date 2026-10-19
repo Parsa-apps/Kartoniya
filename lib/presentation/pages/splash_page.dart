@@ -11,17 +11,23 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/kartoniya_logo.dart';
+import '../widgets/parsa_brand.dart';
 import '../widgets/kartoniya_mascot.dart';
 import 'home_page.dart';
 import 'onboarding_page.dart';
 
-/// اسپلش برند کارتونیا.
+/// اسپلش برند کارتونیا با پردهٔ آغازین استودیوی Parsa Apps.
 ///
-/// یک صحنهٔ شبانهٔ اختصاصی (ابرهای نرم، جزیرهٔ قصه و ماه)، ستاره‌های چشمک‌زن،
-/// ورود مرحله‌ای نشان/نام/فندوقی و خروج نرم به صفحهٔ بعد. هیچ تأخیر تزئینیِ
-/// ثابتی اعمال نمی‌شود: خروج زمانی رخ می‌دهد که انیمیشن ورود تمام شده باشد
-/// **و** کاتالوگ محلی آماده باشد (با سقف زمانی ۱٫۴ ثانیه)، تا خانه بدون
-/// پرش و با دادهٔ حاضر باز شود.
+/// یک توالی پیوسته در یک صفحه: ابتدا هویت سازنده (پس‌زمینهٔ گرافیتی بسیار
+/// تیره، خط نور طلایی، ورود لوگوی اصلی Parsa Apps با هاله و بازتاب نور، و
+/// نوار پیشرفت طلایی با «در حال آماده‌سازی...») و سپس کراس‌فید نرم به صحنهٔ
+/// شبانهٔ کارتونیا (ابرهای نرم، جزیرهٔ قصه، ماه، ستاره‌های چشمک‌زن و ورود
+/// پلکانی نشان/نام/فندوقی) و خروج نرم به صفحهٔ بعد.
+///
+/// هیچ تأخیر تزئینیِ قفل‌کننده وجود ندارد: خروج زمانی رخ می‌دهد که کمینهٔ
+/// نمایش برند دیده شده باشد **و** انیمیشن ورود تمام شده باشد **و** کاتالوگ
+/// محلی آماده باشد (با سقف زمانی)، تا خانه بدون پرش و با دادهٔ حاضر باز شود.
+/// خطای آماده‌سازی مسیر را قفل نمی‌کند و در مقصد مدیریت می‌شود.
 ///
 /// هر حرکت با «کاهش حرکت» (تنظیم سیستم یا والد) به وضعیت نهایی می‌رسد و
 /// با لمس پس از شروع، کاربر می‌تواند بی‌درنگ وارد شود.
@@ -41,14 +47,38 @@ class _SplashPageState extends ConsumerState<SplashPage>
   late final Animation<double> _exitOpacity;
   late final Animation<double> _exitScale;
 
+  late final AnimationController _ident;
+  late final AnimationController _handoff;
+  late final AnimationController _progress;
+  late final AnimationController _barSheen;
+
+  late final Animation<double> _identLine;
+  late final Animation<double> _identLogo;
+  late final Animation<double> _identSheen;
+  late final Animation<double> _identHalo;
+  late final Animation<double> _loaderIn;
+
+  final Completer<void> _entranceDone = Completer<void>();
   Timer? _tapEnableTimer;
+  Timer? _sceneTimer;
   bool _leaving = false;
   bool _canSkip = false;
+  bool _identGone = false;
 
-  /// کمینهٔ نمایش برند؛ برای دیده‌شدن ورود پلکانی، نه معطل‌کردن کاربر.
-  static const _brandBeat = Duration(milliseconds: 900);
-  static const _brandBeatReduced = Duration(milliseconds: 380);
+  /// زمان‌بندی مرکزی اسپلش؛ تنها نقطهٔ تنظیم مدت‌ها همین‌جاست:
+  /// کمینهٔ نمایش کل هویت بصری، مدت پردهٔ استودیو، لحظهٔ شروع صحنهٔ
+  /// کارتونیا، دست‌به‌دستی بین دو پرده، مکث پیش از خروج و سقف آماده‌سازی.
+  /// آماده‌سازی واقعی (کاتالوگ) می‌تواند خروج را عقب بیندازد ولی هرگز قفل
+  /// نمی‌کند؛ هیچ عملیات شبکه‌ای صرفاً برای طولانی‌کردن اسپلش وجود ندارد.
+  static const _minSplashBeat = Duration(milliseconds: 2000);
+  static const _minSplashBeatReduced = Duration(milliseconds: 420);
+  static const _identDuration = Duration(milliseconds: 1150);
+  static const _sceneDelay = Duration(milliseconds: 650);
+  static const _sceneDelayReduced = Duration(milliseconds: 260);
+  static const _handoffDuration = Duration(milliseconds: 320);
+  static const _holdBeforeExit = Duration(milliseconds: 140);
   static const _exitDuration = Duration(milliseconds: 300);
+  static const _catalogTimeout = Duration(milliseconds: 1400);
 
   @override
   void initState() {
@@ -65,6 +95,43 @@ class _SplashPageState extends ConsumerState<SplashPage>
     _exitOpacity = Tween<double>(begin: 1, end: 0).animate(
       CurvedAnimation(parent: _exit, curve: Curves.easeInCubic),
     );
+    // پردهٔ استودیو: یک کنترل‌کننده و چند Interval تا خط نور، ورود لوگو،
+    // بازتاب لبه‌ها و هالهٔ طلایی هم‌زمان ولی پلکانی حرکت کنند.
+    _ident = AnimationController(vsync: this, duration: _identDuration);
+    _identLine = CurvedAnimation(
+      parent: _ident,
+      curve: const Interval(.02, .46, curve: Curves.easeOutCubic),
+    );
+    _identLogo = CurvedAnimation(
+      parent: _ident,
+      curve: const Interval(.10, .66, curve: Curves.easeOutCubic),
+    );
+    _identSheen = CurvedAnimation(
+      parent: _ident,
+      curve: const Interval(.44, .98, curve: Curves.easeInOut),
+    );
+    _identHalo = CurvedAnimation(
+      parent: _ident,
+      curve: const Interval(.28, .92, curve: Curves.easeOut),
+    );
+    _loaderIn = CurvedAnimation(
+      parent: _ident,
+      curve: const Interval(.34, .78, curve: Curves.easeOut),
+    );
+    _handoff = AnimationController(vsync: this, duration: _handoffDuration);
+    _handoff.addStatusListener((status) {
+      // پس از کراس‌فید، پردهٔ استودیو از درخت حذف می‌شود تا بیهوده رنگ
+      // نشود؛ بازتاب نوار هم برای همیشه می‌ایستد.
+      if (status == AnimationStatus.completed && mounted) {
+        setState(() => _identGone = true);
+        _barSheen.stop(canceled: false);
+      }
+    });
+    _progress = AnimationController(vsync: this, duration: _minSplashBeat);
+    _barSheen = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    );
     // خروج با «بالا رفتن» آرام صحنه انجام می‌شود تا حس بازشدن در باشد و به
     // ورود پلکانی خانه گره بخورد.
     _exitScale = Tween<double>(begin: 1, end: 1.045).animate(
@@ -73,6 +140,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     if (context.motionEnabledAtInit) {
       _ambient.repeat();
+      _barSheen.repeat();
       _tapEnableTimer = Timer(
         const Duration(milliseconds: 450),
         () {
@@ -80,7 +148,9 @@ class _SplashPageState extends ConsumerState<SplashPage>
         },
       );
     } else {
+      _ident.value = 1;
       _entrance.value = 1;
+      _progress.value = .8;
       _canSkip = true;
     }
     unawaited(_bootstrap());
@@ -92,48 +162,100 @@ class _SplashPageState extends ConsumerState<SplashPage>
     // اگر «کاهش حرکت» در میانهٔ اسپلش فعال شود، صحنه بی‌درنگ ثابت می‌شود.
     if (!context.motion.enabled) {
       _ambient.stop(canceled: false);
+      _barSheen.stop(canceled: false);
+      if (_ident.value < 1) _ident.value = 1;
       if (_entrance.value < 1) _entrance.value = 1;
+      if (_progress.value < .8) _progress.value = .8;
       _canSkip = true;
     } else if (!_ambient.isAnimating && !_leaving) {
       _ambient.repeat();
+      if (!_identGone && !_barSheen.isAnimating) _barSheen.repeat();
     }
   }
 
   @override
   void dispose() {
     _tapEnableTimer?.cancel();
+    _sceneTimer?.cancel();
     _entrance.dispose();
     _ambient.dispose();
     _exit.dispose();
+    _ident.dispose();
+    _handoff.dispose();
+    _progress.dispose();
+    _barSheen.dispose();
     super.dispose();
   }
 
   Future<void> _bootstrap() async {
     final motion = context.motionEnabledAtInit;
-    final beat = motion ? _brandBeat : _brandBeatReduced;
+    final beat = motion ? _minSplashBeat : _minSplashBeatReduced;
 
     // کاتالوگ موازی با انیمیشن آماده می‌شود؛ خطا مسیر را قفل نمی‌کند و در
     // خانهٔ مقصد با ErrorStateView و «تلاش دوباره» مدیریت می‌شود.
     final ready = ref
         .read(cartoonsProvider.future)
         .then<void>((_) {}, onError: (Object _) {})
-        .timeout(const Duration(milliseconds: 1400), onTimeout: () {})
+        .timeout(_catalogTimeout, onTimeout: () {})
         .catchError((Object _) {});
-    final entranceDone = motion
-        ? _entrance.forward().orCancel.catchError((_) {})
-        : Future<void>.value();
+
+    if (motion) {
+      unawaited(_ident.forward());
+      // نوار تا ۸۰٪ با همان کمینهٔ نمایش پر می‌شود و فقط با آماده‌شدن
+      // واقعی به ۱۰۰٪ می‌رسد؛ پس کاربر معطل تزئین نمی‌ماند.
+      unawaited(
+        _progress
+            .animateTo(.8, duration: beat, curve: Curves.easeOutCubic)
+            .orCancel
+            .catchError((_) {}),
+      );
+      _sceneTimer = Timer(_sceneDelay, _startScene);
+    } else {
+      _sceneTimer = Timer(_sceneDelayReduced, _startScene);
+    }
 
     await Future.wait<void>([
       Future<void>.delayed(beat),
-      entranceDone,
+      _entranceDone.future,
       ready,
     ]);
     if (!mounted || _leaving) return;
 
+    // نوار طلایی با آماده‌شدن واقعی کامل می‌شود، نه با تایمر تزئینی.
+    if (context.motion.enabled) {
+      await _progress
+          .animateTo(1, duration: const Duration(milliseconds: 160))
+          .orCancel
+          .catchError((_) {});
+    } else {
+      _progress.value = 1;
+    }
+    if (!mounted || _leaving) return;
+
     // مکث کوتاه برای دیده‌شدن وضعیت نهایی، سپس خروج.
-    await Future<void>.delayed(const Duration(milliseconds: 170));
+    await Future<void>.delayed(_holdBeforeExit);
     if (!mounted || _leaving) return;
     await _leave();
+  }
+
+  /// آغاز صحنهٔ کارتونیا هم‌زمان با محو پردهٔ استودیو؛ فقط یک‌بار.
+  void _startScene() {
+    if (!mounted || _leaving) return;
+    if (!context.motion.enabled) {
+      // کاهش حرکت: بدون انیمیشن، پرده‌ها جابه‌جا می‌شوند.
+      _handoff.value = 1;
+      _completeEntrance();
+      return;
+    }
+    unawaited(_handoff.forward());
+    _entrance.forward().orCancel.then(
+          (_) => _completeEntrance(),
+          onError: (Object _) => _completeEntrance(),
+        );
+  }
+
+  void _completeEntrance() {
+    if (!_entranceDone.isCompleted) _entranceDone.complete();
   }
 
   Future<void> _leave() async {
@@ -168,7 +290,9 @@ class _SplashPageState extends ConsumerState<SplashPage>
         behavior: HitTestBehavior.opaque,
         onTap: _handleSkip,
         child: Scaffold(
-          backgroundColor: const Color(0xFF0B2A3D),
+          // هم‌رنگ با پس‌زمینهٔ پردهٔ استودیو و launch_background بومی تا
+          // هیچ پرش رنگی در دست‌به‌دست‌شدن لایه‌ها دیده نشود.
+          backgroundColor: const Color(0xFF04060A),
           body: Semantics(
             label: 'کارتونیا، دنیای شاد و امن کودکان',
             hint: 'برای ورود ضربه بزن',
@@ -176,10 +300,25 @@ class _SplashPageState extends ConsumerState<SplashPage>
               opacity: _exitOpacity,
               child: ScaleTransition(
                 scale: _exitScale,
-                child: _SplashScene(
-                  entrance: _entrance,
-                  ambient: _ambient,
-                  exiting: _leaving,
+                child: _HandoffStack(
+                  handoff: _handoff,
+                  identGone: _identGone,
+                  ident: _ParsaIdentLayer(
+                    line: _identLine,
+                    logo: _identLogo,
+                    sheen: _identSheen,
+                    halo: _identHalo,
+                    loaderIn: _loaderIn,
+                    progress: _progress,
+                    barSheen: _barSheen,
+                    ambient: _ambient,
+                    reduced: !context.motion.enabled,
+                  ),
+                  scene: _SplashScene(
+                    entrance: _entrance,
+                    ambient: _ambient,
+                    exiting: _leaving,
+                  ),
                 ),
               ),
             ),
@@ -790,4 +929,398 @@ class _SplashLoaderState extends State<_SplashLoader>
       ),
     );
   }
+}
+
+/// کراس‌فید پیوستهٔ دو پردهٔ اسپلش. فرزندها یک‌بار در `build` ساخته می‌شوند
+/// تا در فریم‌های محو فقط opacity دو لایه عوض شود و بازچینی سنگین رخ ندهد.
+class _HandoffStack extends StatelessWidget {
+  const _HandoffStack({
+    required this.handoff,
+    required this.identGone,
+    required this.ident,
+    required this.scene,
+  });
+
+  final Animation<double> handoff;
+  final bool identGone;
+  final Widget ident;
+  final Widget scene;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: handoff,
+      builder: (context, _) => Stack(
+        fit: StackFit.expand,
+        children: [
+          Opacity(opacity: handoff.value, child: scene),
+          if (!identGone) Opacity(opacity: 1 - handoff.value, child: ident),
+        ],
+      ),
+    );
+  }
+}
+
+/// پردهٔ آغازین استودیوی Parsa Apps: گرافیتی بسیار تیره، ذرات نور اندک،
+/// خط نور طلایی، لوگوی اصلی با هاله و بازتاب نور، و نوار پیشرفت طلایی.
+/// این لایه فقط «نمایش» است؛ تمام زمان‌بندی از [SplashPage] می‌آید تا یک
+/// خط زمانی واحد و قابل تنظیم بماند.
+class _ParsaIdentLayer extends StatelessWidget {
+  const _ParsaIdentLayer({
+    required this.line,
+    required this.logo,
+    required this.sheen,
+    required this.halo,
+    required this.loaderIn,
+    required this.progress,
+    required this.barSheen,
+    required this.ambient,
+    required this.reduced,
+  });
+
+  final Animation<double> line;
+  final Animation<double> logo;
+  final Animation<double> sheen;
+  final Animation<double> halo;
+  final Animation<double> loaderIn;
+  final Animation<double> progress;
+  final Animation<double> barSheen;
+  final Animation<double> ambient;
+  final bool reduced;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      label: 'استودیوی Parsa Apps؛ در حال آماده‌سازی کارتونیا',
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0, -.14),
+            radius: 1.08,
+            colors: [Color(0xFF0B101C), Color(0xFF05070C), Color(0xFF030408)],
+            stops: [0, .58, 1],
+          ),
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final w = constraints.maxWidth;
+            final h = constraints.maxHeight;
+            final safe =
+                MediaQuery.maybeOf(context)?.padding ?? EdgeInsets.zero;
+            // لوگو بزرگ اما هرگز غالب نیست؛ تناسپ اصلی فایل حفظ می‌شود.
+            final logoHeight = math.min(h * .42, math.min(w * .66, 460.0));
+            final barWidth = math.min(w * .46, 230.0);
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                if (!reduced)
+                  IgnorePointer(
+                    child: RepaintBoundary(
+                      child: AnimatedBuilder(
+                        animation: ambient,
+                        builder: (context, _) => CustomPaint(
+                          painter: _IdentMotesPainter(t: ambient.value),
+                        ),
+                      ),
+                    ),
+                  ),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      28,
+                      safe.top + 12,
+                      28,
+                      safe.bottom + 12,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AnimatedBuilder(
+                          animation:
+                              Listenable.merge([line, logo, sheen, halo]),
+                          builder: (context, _) => _IdentEmblem(
+                            line: line.value,
+                            logo: logo.value,
+                            sheen: sheen.value,
+                            halo: halo.value,
+                            height: logoHeight,
+                            width: w,
+                          ),
+                        ),
+                        SizedBox(height: math.max(18, h * .032)),
+                        AnimatedBuilder(
+                          animation: loaderIn,
+                          builder: (context, _) => Opacity(
+                            opacity: loaderIn.value,
+                            child: _IdentLoader(
+                              progress: progress,
+                              barSheen: barSheen,
+                              width: barWidth,
+                              reduced: reduced,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// نشان استودیو با نورپردازی سینمایی: هالهٔ طلایی تثبیت‌شونده، خط نوری که
+/// از مرکز عبور می‌کند و بازتاب نوری که روی لبه‌های خود لوگو می‌لغزد.
+class _IdentEmblem extends StatelessWidget {
+  const _IdentEmblem({
+    required this.line,
+    required this.logo,
+    required this.sheen,
+    required this.halo,
+    required this.height,
+    required this.width,
+  });
+
+  final double line;
+  final double logo;
+  final double sheen;
+  final double halo;
+  final double height;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    final lineGlow = math.sin(math.pi * line.clamp(0.0, 1.0));
+    final sheenGlow = math.sin(math.pi * sheen.clamp(0.0, 1.0));
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // هالهٔ طلایی نرم؛ با همان لوگو بزرگ می‌شود و آرام تثبیت می‌گردد.
+        Transform.scale(
+          scale: .88 + .12 * halo,
+          child: Container(
+            width: height * 1.55,
+            height: height * 1.55,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.gold.withOpacity(.26 * halo),
+                  AppColors.goldDark.withOpacity(.10 * halo),
+                  AppColors.gold.withOpacity(0),
+                ],
+                stops: const [0, .45, 1],
+              ),
+            ),
+          ),
+        ),
+        // خط نور طلایی که از بخش مرکزی عبور می‌کند و محو می‌شود.
+        Opacity(
+          opacity: lineGlow.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset((line * 2 - 1) * width * .16, 0),
+            child: Container(
+              height: 1.4,
+              width: width * .58,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.gold.withOpacity(0),
+                    AppColors.goldLight.withOpacity(.85),
+                    AppColors.gold.withOpacity(0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Opacity(
+          opacity: logo.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, (1 - logo) * 12),
+            child: Transform.scale(
+              scale: .94 + .06 * logo,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  ParsaBrandMark(height: height),
+                  // بازتاب نور فقط روی خود پیکسل‌های لوگو می‌لغزد.
+                  if (sheenGlow > .02)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: ExcludeSemantics(
+                          child: Opacity(
+                            opacity: .5 * sheenGlow,
+                            child: ShaderMask(
+                              blendMode: BlendMode.srcIn,
+                              shaderCallback: (rect) {
+                                final shift = rect.width * 1.5 * (sheen - .5);
+                                return const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0x00FFF6DF),
+                                    Color(0xCCFFF6DF),
+                                    Color(0x00FFF6DF),
+                                  ],
+                                  stops: [.30, .5, .70],
+                                ).createShader(
+                                  rect.shift(Offset(-shift, -shift * .55)),
+                                );
+                              },
+                              child: ParsaBrandMark(height: height),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// نوار پیشرفت باریک طلایی با نور متحرک ظریف و متن فارسی آماده‌سازی.
+class _IdentLoader extends StatelessWidget {
+  const _IdentLoader({
+    required this.progress,
+    required this.barSheen,
+    required this.width,
+    required this.reduced,
+  });
+
+  final Animation<double> progress;
+  final Animation<double> barSheen;
+  final double width;
+  final bool reduced;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([progress, barSheen]),
+      builder: (context, _) {
+        final value = progress.value.clamp(0.0, 1.0);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Semantics(
+              label: 'در حال آماده‌سازی کارتونیا',
+              child: SizedBox(
+                width: width,
+                height: 4,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Stack(
+                    children: [
+                      const Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(color: Color(0x1AFFFFFF)),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: FractionallySizedBox(
+                            widthFactor: value,
+                            heightFactor: 1,
+                            child: const DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: AlignmentDirectional.centerStart,
+                                  end: AlignmentDirectional.centerEnd,
+                                  colors: [
+                                    AppColors.goldDark,
+                                    AppColors.gold,
+                                    AppColors.goldLight,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (!reduced)
+                        Positioned(
+                          top: 0,
+                          bottom: 0,
+                          left: (barSheen.value * 1.2 - .1) * width,
+                          width: 26,
+                          child: const DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0x00FFFFFF),
+                                  Color(0x4DFFFFFF),
+                                  Color(0x00FFFFFF),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'در حال آماده‌سازی...',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.goldSoft.withOpacity(.8),
+                    fontSize: 12.5,
+                    letterSpacing: .2,
+                    height: 1.6,
+                  ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// ذرات نور اندک و بسیار آرام پردهٔ استودیو؛ یک CustomPaint سبک بدون blur.
+class _IdentMotesPainter extends CustomPainter {
+  const _IdentMotesPainter({required this.t});
+
+  final double t;
+
+  static const _motes = <(double, double, double, double)>[
+    (.18, .72, 1.5, .10),
+    (.30, .30, 1.1, .55),
+    (.52, .80, 1.3, .80),
+    (.68, .26, 1.0, .30),
+    (.82, .62, 1.6, .65),
+    (.44, .18, .9, .45),
+    (.12, .48, 1.2, .90),
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final angle = t * 2 * math.pi;
+    final paint = Paint();
+    for (final mote in _motes) {
+      final pulse = .5 + .5 * math.sin(angle * 1.3 + mote.$4 * 6.28);
+      paint.color = AppColors.goldLight.withOpacity(.05 + .11 * pulse);
+      final position = Offset(
+        (mote.$1 + math.sin(angle * .9 + mote.$4 * 6.28) * .012) * size.width,
+        (mote.$2 + math.cos(angle * .7 + mote.$4 * 6.28) * .014) * size.height,
+      );
+      canvas.drawCircle(position, mote.$3 * (.85 + pulse * .4), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_IdentMotesPainter oldDelegate) => oldDelegate.t != t;
 }

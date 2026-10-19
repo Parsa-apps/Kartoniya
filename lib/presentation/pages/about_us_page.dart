@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/kartoniya_story_banner.dart';
+import '../widgets/parsa_brand.dart';
 import 'privacy_page.dart';
 
 /// صفحهٔ رسمی Parsa Apps با تصویر محیط سه‌بعدی از پیش‌رندرشده.
@@ -101,6 +102,39 @@ class _AboutUsPageState extends State<AboutUsPage>
                     index: 1,
                     child: Card(
                       child: Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
+                        child: Column(
+                          children: [
+                            const ParsaBrandMark(height: 104),
+                            const SizedBox(height: 10),
+                            Text(
+                              'استودیوی Parsa Apps',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w800),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'سازندهٔ کارتونیَا؛ طراحی، توسعه و انتشار',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  StaggeredReveal(
+                    index: 2,
+                    child: Card(
+                      child: Padding(
                         padding: const EdgeInsets.all(18),
                         child: Column(
                           children: [
@@ -139,7 +173,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 14),
                   StaggeredReveal(
-                    index: 2,
+                    index: 3,
                     child: Card(
                       child: InkWell(
                         onTap: () {
@@ -198,7 +232,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 12),
                   StaggeredReveal(
-                    index: 3,
+                    index: 4,
                     child: Card(
                       child: ListTile(
                         leading: const Icon(
@@ -222,7 +256,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 14),
                   StaggeredReveal(
-                    index: 4,
+                    index: 5,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -275,7 +309,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 22),
                   StaggeredReveal(
-                    index: 5,
+                    index: 6,
                     child: Column(
                       children: [
                         Text(

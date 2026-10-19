@@ -48,22 +48,26 @@ class _GradientButtonState extends State<GradientButton> {
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(debugLabel: 'Kartoniya primary action')
-      ..addListener(_handleFocusChange);
-  }
-
-  void _handleFocusChange() {
-    final focused = _focusNode.hasFocus;
-    if (!mounted || _focused == focused) return;
-    setState(() => _focused = focused);
+    _focusNode = FocusNode(debugLabel: 'Kartoniya primary action');
+    // حلقهٔ فوکوس مستقیم از خود FocusNode خوانده می‌شود، نه از
+    // onShowFocusHighlightِ FocusableActionDetector: آن callback فقط وقتی
+    // highlightMode برابر traditional باشد صدا زده می‌شود و روی گوشی‌های لمسی
+    // (و در تست‌های ویجت که حالت پیش‌فرض touch است) هرگز اجرا نمی‌شود؛ در
+    // نتیجه کاربر کیبورد/ریموت و TalkBack حلقهٔ فوکوس را نمی‌دید.
+    _focusNode.addListener(_handleFocusChanged);
   }
 
   @override
   void dispose() {
-    _focusNode
-      ..removeListener(_handleFocusChange)
-      ..dispose();
+    _focusNode.removeListener(_handleFocusChanged);
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  void _handleFocusChanged() {
+    final focused = _focusNode.hasFocus;
+    if (!mounted || _focused == focused) return;
+    setState(() => _focused = focused);
   }
 
   @override
@@ -142,9 +146,8 @@ class _GradientButtonState extends State<GradientButton> {
       child: FocusableActionDetector(
         focusNode: _focusNode,
         enabled: enabled,
-        mouseCursor: enabled
-            ? SystemMouseCursors.click
-            : SystemMouseCursors.basic,
+        mouseCursor:
+            enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
         shortcuts: const <ShortcutActivator, Intent>{
           SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
           SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
@@ -162,9 +165,8 @@ class _GradientButtonState extends State<GradientButton> {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
-            onTapCancel: enabled
-                ? () => setState(() => _pressed = false)
-                : null,
+            onTapCancel:
+                enabled ? () => setState(() => _pressed = false) : null,
             onTapUp: enabled
                 ? (_) {
                     setState(() => _pressed = false);
@@ -198,9 +200,8 @@ class _GradientButtonState extends State<GradientButton> {
                   boxShadow: [
                     ...AppTheme.glow(
                       _focused ? AppColors.gold : glow,
-                      opacity: _focused
-                          ? .52
-                          : (enabled && !_pressed ? .38 : .18),
+                      opacity:
+                          _focused ? .52 : (enabled && !_pressed ? .38 : .18),
                       lift: _focused ? 9 : (enabled && !_pressed ? 8 : 3),
                     ),
                   ],

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- اسپلش بومی: پس‌زمینهٔ آسمانی ملایم با هالهٔ فیروزه‌ای؛ لوگوی واقعی
-         درون خودِ Flutter (SplashPage) با انیمیشن نمایش داده می‌شود تا این
-         لایه سبک و بدون asset سنگین بماند. -->
+    <!-- اسپلش بومی: گرادیان گرافیتی بسیار تیره هم‌رنگ با پردهٔ اول اسپلش
+         Flutter (هویت استودیوی Parsa Apps) تا دست‌به‌دست‌شدن دو لایه بدون
+         هیچ پرش رنگی انجام شود. لوگوی واقعی درون خودِ Flutter (SplashPage)
+         با انیمیشن نمایش داده می‌شود تا این لایه سبک و بدون asset سنگین بماند. -->
     <item>
         <shape android:shape="rectangle">
             <gradient
-                android:angle="315"
-                android:startColor="#EAF5FF"
-                android:centerColor="#F5FAFE"
-                android:endColor="#E3F6F1"
+                android:angle="270"
+                android:startColor="#0B101C"
+                android:centerColor="#070A12"
+                android:endColor="#04060A"
                 android:type="linear" />
         </shape>
     </item>

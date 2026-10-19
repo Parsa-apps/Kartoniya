@@ -59,8 +59,11 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
     final reduceMotion = ref.watch(reduceMotionProvider);
     // هم‌سازی داده‌های محلی با کاتالوگ: شناسه‌های نامعتبر (محتوای حذف‌شده)
     // نباید در شمارنده‌ها یا فهرست‌ها باقی بمانند.
+    // valueOrNull: در حالت AsyncError دسترسی به .value همان خطا را دوباره
+    // پرتاب می‌کند و build کرش می‌کرد؛ خطای کاتالوگ فقط در مقصد نمایش داده
+    // می‌شود و هم‌سازی دادهٔ محلی بی‌خطر رد می‌شود.
     ref.listen(cartoonsProvider, (_, next) {
-      _syncLocalData(next.value);
+      _syncLocalData(next.valueOrNull);
     });
     return MaterialApp(
       debugShowCheckedModeBanner: false,

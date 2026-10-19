@@ -115,8 +115,35 @@ void main() {
         });
       }
 
+      // ثبت بدون پیش‌روی ساعت فرضی: پردهٔ استودیو فقط در ثانیهٔ اول دیده
+      // می‌شود، پس رمزگشایی تصویر با زمان واقعی انجام می‌شود نه پمپ ۹۰۰ms.
+      Future<void> captureFrozen(String name) async {
+        for (var i = 0; i < 3; i++) {
+          await tester.runAsync(() async {
+            await Future<void>.delayed(const Duration(milliseconds: 220));
+          });
+          await tester.pump();
+        }
+        final boundary = tester.renderObject<RenderRepaintBoundary>(
+          find.byKey(rootKey),
+        );
+        await tester.runAsync(() async {
+          final image = await boundary.toImage(pixelRatio: 2);
+          final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+          image.dispose();
+          File('${outDir.path}/$name.png')
+              .writeAsBytesSync(bytes!.buffer.asUint8List());
+        });
+      }
+
+      // ——— هویت استودیوی Parsa Apps ———
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      await captureFrozen('00_studio_ident');
+
       // ——— Splash ———
-      for (var i = 0; i < 12; i++) {
+      for (var i = 0; i < 7; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
       await capture('01_splash');

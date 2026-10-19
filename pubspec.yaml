@@ -35,6 +35,8 @@ flutter:
     - asset/images/posters/
     # فندوقی: لایه‌های ریگ‌شدهٔ شخصیت (بدن، دست‌ها، پاها، برگ و حالت چشم/دهان)
     - asset/images/fandaq/
+    # نشان رسمی استودیوی Parsa Apps (اسپلش و صفحهٔ دربارهٔ ما)
+    - asset/images/branding/
   # Vazirmatn (OFL 1.1, see asset/fonts/LICENSE-Vazirmatn.txt) is bundled so the
   # first run works fully offline, cold start avoids a font fetch from the
   # network and the rendering never falls back to a non-Persian fallback font.

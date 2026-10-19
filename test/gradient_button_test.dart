@@ -75,23 +75,38 @@ void main() {
         matching: find.byType(FocusableActionDetector),
       ),
     );
-    detector.focusNode!.requestFocus();
-    await tester.pump();
+    final focusNode = detector.focusNode!;
 
-    final decoration = tester
-        .widgetList<AnimatedContainer>(
-          find.descendant(
-            of: button,
-            matching: find.byType(AnimatedContainer),
-          ),
-        )
-        .first
-        .decoration as BoxDecoration;
-    expect((decoration.border! as Border).top.width, 2);
+    double focusRingWidth() {
+      final decoration = tester
+          .widgetList<AnimatedContainer>(
+            find.descendant(
+              of: button,
+              matching: find.byType(AnimatedContainer),
+            ),
+          )
+          .first
+          .decoration as BoxDecoration;
+      return (decoration.border! as Border).top.width;
+    }
+
+    expect(focusRingWidth(), 1.0);
+
+    focusNode.requestFocus();
+    await tester.pump();
+    // حالت highlight در تست (و روی گوشی‌ها) touch است؛ FocusableActionDetector
+    // در این حالت onShowFocusHighlight را صدا نمی‌زند، پس حلقهٔ فوکوس باید
+    // مستقیم از FocusNode خوانده شود تا کاربر کیبورد/ریموت نشانهٔ فوکوس داشته
+    // باشد.
+    expect(focusRingWidth(), 2.0);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
     expect(taps, 1);
+
+    focusNode.unfocus();
+    await tester.pump();
+    expect(focusRingWidth(), 1.0);
     expect(tester.takeException(), isNull);
   });
 }

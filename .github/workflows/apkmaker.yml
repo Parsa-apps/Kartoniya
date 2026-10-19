@@ -128,14 +128,28 @@ jobs:
           retention-days: 30
 
       - name: API delivery for restricted clients
-        if: ${{ (inputs.api_delivery || github.ref == 'refs/heads/arena/e2506bbc-kartoniya') && github.event.inputs.build_type != 'debug' }}
+        # کلاینت‌های محدود (بدون دسترسی به دامنهٔ blob/artifact) فایل APK را از
+        # راه API گیت‌هاب می‌گیرند: blob ساخته می‌شود و SHA آن در check-run
+        # «Flutter diagnostics» ثبت می‌شود. برای همهٔ شاخه‌های نشست فعال است.
+        if: ${{ (inputs.api_delivery || startsWith(github.ref, 'refs/heads/arena/')) && github.event.inputs.build_type != 'debug' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PYTHON'
           import base64, hashlib, json, os, pathlib, subprocess
           exported = []
-          for name in ('pubspec.lock', 'build/app/outputs/flutter-apk/app-release.apk'):
+          # APK جهان‌شمول برای همهٔ دستگاه‌ها و نسخهٔ arm64 برای دانلود سبک‌تر.
+          for name in (
+              'pubspec.lock',
+              'build/app/outputs/flutter-apk/app-release.apk',
+              'build/app/outputs/flutter-apk/app-arm64-v8a-release.apk',
+              # اسکرین‌شات‌های رندرشدهٔ اسپلش برای بازبینی طراحی در کلاینت‌های
+              # محدود؛ اگر مرحلهٔ اسکرین‌شات اجرا نشده باشد، رد می‌شود.
+              'build/screenshots/00_studio_ident.png',
+              'build/screenshots/01_splash.png',
+          ):
+              if not pathlib.Path(name).exists():
+                  continue
               data = pathlib.Path(name).read_bytes()
               result = subprocess.run(['gh', 'api', '--method', 'POST',
                   'repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/blobs',
