@@ -58,6 +58,12 @@
 - missing pruneTo → RecentGamesNotifier.pruneTo اضافه شد
 - fallback 30+ mechanics → نگاشت 5 موتور جدید، fallback به ~0% کاهش یافت
 
+## فاز D — گروه اول ۵ تایی (۲۰۲۶-۱۰-۱۹)
+- ۵ بازی جدید: story_order (Reorderable داستان), jigsaw_drag (DragTarget ۲×۲), color_pattern_builder (ساخت الگو), number_quantity (تطبیق عدد-مقدار), habitat_sort (زیستگاه)
+- هر کدام: شروع/اجرا/پایان/restart, امتیاز, ذخیره رکورد, RTL, dispose
+- ۵ عنوان تکراری در local_game_repository به مکانیک جدید تغییر یافت (memory_sounds→story_order, puzzle_picture_logic→jigsaw_drag, puzzle_color_seq→color_pattern_builder, sorting_fruits_veg→number_quantity, hidden_garden→habitat_sort)
+- مستقل‌ها: 16 → 21
+
 ## باقی‌مانده برای 100 مستقل
-- 84 عنوان هنوز پوسته‌اند — برای مستقل شدن هر کدام نیاز به طراحی مکانیک جدید (مثلاً word_search واقعی با grid تعاملی، tracing با GestureDetector، etc.)
-- تست `flutter test` مسدود (storage.googleapis.com) — فقط مرور دستی انجام شد
+- 79 عنوان هنوز پوسته‌اند — برای ۱۰۰ مستقل ۷۹ موتور دیگر لازم (word_search grid واقعی, tracing با pan, etc.)
+- تست `flutter test` مسدود (storage.googleapis.com) — فقط مرور دستی + تست منطق جدید `test/game_logic_test.dart` (موجود ولی اجرا نشد)

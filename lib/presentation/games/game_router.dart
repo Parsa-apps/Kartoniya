@@ -16,6 +16,11 @@ import 'guess_game.dart';
 import 'word_game.dart';
 import 'riddle_game.dart';
 import 'math_race_game.dart';
+import 'story_order_game.dart';
+import 'jigsaw_drag_game.dart';
+import 'color_pattern_game.dart';
+import 'number_quantity_game.dart';
+import 'habitat_sort_game.dart';
 
 /// نگاشت mechanics → ویجت قابل اجرا
 /// برای مکانیک‌های هنوز پیاده‌نشده، یک بازی تعمیم‌یافته یا پیام «به‌زودی» نمایش داده می‌شود.
@@ -98,6 +103,17 @@ Widget buildGameForMechanics(GameModel game) {
       return RiddleGamePage(game: game);
     case 'math_race':
       return MathRaceGamePage(game: game);
+    // ——— فاز D: ۵ بازی جدید ———
+    case 'story_order':
+      return StoryOrderGamePage(game: game);
+    case 'jigsaw_drag':
+      return JigsawDragGamePage(game: game);
+    case 'color_pattern_builder':
+      return ColorPatternGamePage(game: game);
+    case 'number_quantity':
+      return NumberQuantityGamePage(game: game);
+    case 'habitat_sort':
+      return HabitatSortGamePage(game: game);
     // پوشش باقی‌مانده برای حذف کامل fallback
     case 'color_match':
     case 'shape_fit':

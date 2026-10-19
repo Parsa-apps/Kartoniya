@@ -44,3 +44,11 @@ curl: (35) OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to storage.googl
 ## 7. باقی‌مانده
 - پس از رفع محدودیت شبکه: `dart format . && flutter analyze && flutter test && flutter build apk` باید با خروجی واقعی گزارش شود
 - نصب `openjdk-17` و `gradle` برای ساخت APK
+
+## ۸. بررسی مجدد فاز D (۲۰۲۶-۱۰-۱۹)
+- `which flutter` → /tmp/flutter/bin/flutter (همان clone)
+- `dart --version` / `java -version` / `gradle` → not found
+- `curl -I https://storage.googleapis.com` → همچنان `SSL_ERROR_SYSCALL`
+- `cache/dart-sdk` → خالی (فقط stamp)
+- جست‌وجوی محیط Arena دیگر (alternative toolchain) → یافت نشد — هیچ ابزار رسمی دیگری در این sandbox وجود ندارد
+- تصمیم: بدون جعل UA/TLS/repo ناامن، گزارش صادقانه تکرار شد — تست‌ها اجرا نشدند
