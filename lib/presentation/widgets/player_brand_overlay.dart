@@ -146,9 +146,9 @@ class _PlayerBrandOverlayState extends State<PlayerBrandOverlay>
             fit: StackFit.expand,
             children: [
               // Top-right logo (stagger 0)
-              PositionedDirectional(
+              Positioned(
                 top: pad,
-                end: pad,
+                right: pad,
                 child: _NeonLogo(
                   size: logoSize,
                   entranceOpacity: _entranceOpacity,
@@ -161,9 +161,9 @@ class _PlayerBrandOverlayState extends State<PlayerBrandOverlay>
                 ),
               ),
               // Top-left logo (stagger 0.12)
-              PositionedDirectional(
+              Positioned(
                 top: pad,
-                start: pad,
+                left: pad,
                 child: _NeonLogo(
                   size: logoSize,
                   entranceOpacity: _entranceOpacity,
