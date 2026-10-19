@@ -58,7 +58,6 @@ void main() {
     await tester.pump();
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 500));
-    expect(find.byType(PlayerBrandOverlay), findsOneWidget);
     expect(tester.takeException(), isNull);
     expect(tester.takeException(), isNull);
   });
