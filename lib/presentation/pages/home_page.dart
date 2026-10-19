@@ -12,6 +12,7 @@ import '../widgets/animated_progress.dart';
 import '../widgets/aurora_background.dart';
 import '../widgets/cartoon_artwork.dart';
 import '../widgets/cartoon_card.dart';
+import '../widgets/child_avatar.dart';
 import '../widgets/category_tile.dart';
 import '../widgets/featured_carousel.dart';
 import '../widgets/kartoniya_logo.dart';
@@ -192,8 +193,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
               ),
               child: _HomeHeader(
                 childName: childProfile.hasName ? childProfile.name : null,
-                avatarEmoji: childProfile.avatar.$1,
-                avatarColor: Color(childProfile.avatar.$2),
+                avatarIndex: childProfile.avatarIndex,
+                avatarColor: Color(childProfile.avatar.colorValue),
                 onProfileTap: widget.onOpenProfile,
               ),
             ),
@@ -495,13 +496,13 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
 class _HomeHeader extends StatelessWidget {
   const _HomeHeader({
     required this.childName,
-    required this.avatarEmoji,
+    required this.avatarIndex,
     required this.avatarColor,
     required this.onProfileTap,
   });
 
   final String? childName;
-  final String avatarEmoji;
+  final int avatarIndex;
   final Color avatarColor;
   final VoidCallback onProfileTap;
 
@@ -574,10 +575,7 @@ class _HomeHeader extends StatelessWidget {
                 ),
                 boxShadow: AppTheme.glow(avatarColor, opacity: .3, lift: 5),
               ),
-              child: Text(
-                avatarEmoji,
-                style: const TextStyle(fontSize: 22, height: 1),
-              ),
+              child: ChildAvatar(index: avatarIndex, size: 44),
             ),
           ),
         ),

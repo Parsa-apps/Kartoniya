@@ -84,18 +84,25 @@ void main() {
   });
 
   group('ChildProfileNotifier', () {
-    test('نام با فاصله‌گذاری ذخیره و آواتار کلمپ می‌شود', () async {
+    test('نام و سن کودک ذخیره و ایندکس آواتار در بازه نگه داشته می‌شود',
+        () async {
       final container = await _container();
       final notifier = container.read(childProfileProvider.notifier);
 
-      await notifier.rename('  آرش  ');
+      await notifier.updateProfile(
+        name: '  آرش  ',
+        ageYears: 8,
+        avatarIndex: 4,
+      );
       expect(container.read(childProfileProvider).name, 'آرش');
+      expect(container.read(childProfileProvider).ageYears, 8);
 
       await notifier.setAvatar(99);
       expect(
         container.read(childProfileProvider).avatarIndex,
         lessThan(ChildProfileModel.avatars.length),
       );
+      expect(container.read(childProfileProvider).ageYears, 8);
     });
   });
 

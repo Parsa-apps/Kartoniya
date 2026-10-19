@@ -15,7 +15,9 @@ import 'presentation/pages/splash_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final preferences = await SharedPreferences.getInstance();
-  AppHaptics.setEnabled(AppPreferences(preferences).hapticsEnabled);
+  final appPreferences = AppPreferences(preferences);
+  await appPreferences.clearLegacyParentName();
+  AppHaptics.setEnabled(appPreferences.hapticsEnabled);
 
   await SystemChrome.setPreferredOrientations(const [
     DeviceOrientation.portraitUp,

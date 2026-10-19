@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// ذخیره‌سازی کوچک و محلی تنظیم‌ها؛ هیچ حساب کاربری، رمز یا دادهٔ حساس در این
-/// سرویس نگه‌داری نمی‌شود.
+/// تنظیمات و پروفایل نمایشی کودک را فقط در حافظهٔ محلی همین دستگاه نگه می‌دارد؛
+/// حساب کاربری، رمز، تاریخ تولد یا شناسهٔ کودک در این سرویس ثبت نمی‌شود.
 class AppPreferences {
   AppPreferences(this._storage);
 
@@ -14,7 +14,7 @@ class AppPreferences {
   static const _favoritesKey = 'favorite_cartoon_ids';
   static const _themeKey = 'theme_mode';
   static const _autoplayKey = 'autoplay_enabled';
-  static const _parentNameKey = 'parent_display_name';
+  static const _legacyParentNameKey = 'parent_display_name';
   static const _watchProgressKey = 'watch_progress';
   static const _reduceMotionKey = 'reduce_motion_enabled';
   static const _hapticsKey = 'haptics_enabled';
@@ -60,11 +60,9 @@ class AppPreferences {
   Future<bool> saveHapticsEnabled(bool value) =>
       _storage.setBool(_hapticsKey, value);
 
-  String get parentName => _storage.getString(_parentNameKey) ?? 'والد مهربان';
-  Future<bool> saveParentName(String value) => _storage.setString(
-        _parentNameKey,
-        value.trim().isEmpty ? 'والد مهربان' : value.trim(),
-      );
+  /// پاک‌کردن نام والد ذخیره‌شده در نسخه‌های قبلی؛ اپ دیگر این داده را نمی‌خواند.
+  Future<bool> clearLegacyParentName() =>
+      _storage.remove(_legacyParentNameKey);
 
   Map<String, double> get watchProgress {
     final raw = _storage.getString(_watchProgressKey);
@@ -118,11 +116,31 @@ class AppPreferences {
     }
   }
 
-  Future<bool> saveChildProfile({String? name, int? avatarIndex}) async {
+  int? get childProfileAge {
+    final raw = _storage.getString(_childProfileKey);
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map<String, dynamic>) return null;
+      final age = decoded['ageYears'];
+      return age is int && age >= 1 && age <= 18 ? age : null;
+    } on FormatException {
+      return null;
+    }
+  }
+
+  Future<bool> saveChildProfile({
+    String? name,
+    int? ageYears,
+    int? avatarIndex,
+  }) async {
     final current = childProfileName;
     final currentAvatar = childAvatarIndex;
+    final requestedAge = ageYears ?? childProfileAge;
     final payload = <String, dynamic>{
       'name': name?.trim() ?? (current ?? ''),
+      if (requestedAge != null && requestedAge >= 1 && requestedAge <= 18)
+        'ageYears': requestedAge,
       'avatar': avatarIndex ?? currentAvatar,
     };
     return _storage.setString(_childProfileKey, jsonEncode(payload));

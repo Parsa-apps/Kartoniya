@@ -10,19 +10,18 @@ import '../../core/utils/fa_digits.dart';
 import '../../data/models/child_profile_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../global_widgets/parental_gate_widget.dart';
+import '../widgets/child_avatar.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import 'about_us_page.dart';
 import 'privacy_page.dart';
 import 'settings_page.dart';
 
-/// فضای والدین؛ ورود به تنظیمات حساس با قفل والدین محافظت می‌شود.
-/// کارت کودک فقط نام نمایشی و آواتار نگه می‌دارد و بدون قفل قابل ویرایش است.
+/// فضای والدین بدون درخواست نام والد؛ پروفایل کودک مستقل و محلی است.
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parentName = ref.watch(profileNameProvider);
     final child = ref.watch(childProfileProvider);
     final favorites = ref.watch(favoritesProvider);
     final history = ref.watch(watchHistoryProvider);
@@ -40,16 +39,13 @@ class ProfilePage extends ConsumerWidget {
                 child: KartoniyaStoryBanner(
                   scene: KartoniyaScene.twilight,
                   height: 172,
-                  eyebrow: 'فضای والدین',
-                  title: 'سلام $parentName!',
-                  subtitle: 'کنترل‌های امن و آرام برای خانواده',
-                  actionLabel: 'ویرایش نام',
-                  onAction: () => _editParentName(context, ref, parentName),
-                  semanticLabel: 'فضای والدین، تصویر سه‌بعدی از پیش‌رندرشده',
+                  eyebrow: 'پروفایل کودک',
+                  title: child.hasName ? 'سلام ${child.name}!' : 'دنیای کوچولوی شما',
+                  subtitle: 'نام، سن و آواتار فقط روی همین دستگاه می‌ماند',
+                  semanticLabel: 'پروفایل کودک در کارتونیا',
                 ),
               ),
             ),
-            // ——— کارت کودک ———
             SliverToBoxAdapter(
               child: StaggeredReveal(
                 index: 0,
@@ -62,12 +58,11 @@ class ProfilePage extends ConsumerWidget {
                   ),
                   child: _ChildCard(
                     child: child,
-                    onEdit: () => _editChild(context, ref, child),
+                    onEdit: () => _editChild(context, child),
                   ),
                 ),
               ),
             ),
-            // ——— آمار ———
             SliverToBoxAdapter(
               child: StaggeredReveal(
                 index: 1,
@@ -102,7 +97,6 @@ class ProfilePage extends ConsumerWidget {
                 ),
               ),
             ),
-            // ——— کنترل و تنظیمات ———
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -139,7 +133,8 @@ class ProfilePage extends ConsumerWidget {
                           value: themeMode == ThemeMode.dark,
                           onChanged: (value) {
                             ref.read(themeModeProvider.notifier).setMode(
-                                value ? ThemeMode.dark : ThemeMode.light);
+                                  value ? ThemeMode.dark : ThemeMode.light,
+                                );
                           },
                           secondary: const Icon(Icons.dark_mode_outlined),
                           title: const Text('حالت تاریک'),
@@ -151,7 +146,6 @@ class ProfilePage extends ConsumerWidget {
                 ),
               ),
             ),
-            // ——— پشتیبانی ———
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -235,7 +229,7 @@ class ProfilePage extends ConsumerWidget {
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
-                                  'تنظیمات روی دستگاه می‌ماند؛ پخش ویدئو به سرویس میزبان متصل می‌شود.',
+                                  'پروفایل کودک روی دستگاه می‌ماند؛ پخش ویدئو به سرویس میزبان متصل می‌شود.',
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodySmall
@@ -271,50 +265,7 @@ class ProfilePage extends ConsumerWidget {
     await pushAppPage<void>(context, const SettingsPage());
   }
 
-  Future<void> _editParentName(
-    BuildContext context,
-    WidgetRef ref,
-    String currentName,
-  ) async {
-    final controller = TextEditingController(text: currentName);
-    final result = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('نام نمایشی والد'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          maxLength: 28,
-          textInputAction: TextInputAction.done,
-          onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
-          decoration: const InputDecoration(
-            hintText: 'مثلاً مامان یا بابا',
-            counterText: '',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('انصراف'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(controller.text),
-            child: const Text('ذخیره'),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    if (result != null && context.mounted) {
-      await ref.read(profileNameProvider.notifier).update(result);
-    }
-  }
-
-  Future<void> _editChild(
-    BuildContext context,
-    WidgetRef ref,
-    ChildProfileModel child,
-  ) async {
+  Future<void> _editChild(BuildContext context, ChildProfileModel child) async {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -338,71 +289,57 @@ class _ChildCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (emoji, colorValue) = child.avatar;
-    final color = Color(colorValue);
+    final avatar = child.avatar;
+    final color = Color(avatar.colorValue);
     final displayName = child.hasName ? child.name : 'کودک من';
-    return PressableScale(
-      onTap: onEdit,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              color.withOpacity(.14),
-              context.surfaceColor,
-            ],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
+    final details = child.ageYears == null
+        ? 'نام و سن را برای پروفایل کودک انتخاب کنید'
+        : '${toFaDigits('${child.ageYears}')} سال • آواتار ${avatar.label}';
+
+    return Semantics(
+      button: true,
+      label: 'ویرایش پروفایل کودک، $displayName، $details',
+      child: PressableScale(
+        onTap: onEdit,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [color.withOpacity(.14), context.surfaceColor],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+            ),
+            borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+            border: Border.all(color: color.withOpacity(.35)),
+            boxShadow: AppTheme.softShadow(context),
           ),
-          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-          border: Border.all(color: color.withOpacity(.35)),
-          boxShadow: AppTheme.softShadow(context),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 62,
-              height: 62,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.lerp(color, Colors.white, .4)!,
-                    color,
+          child: Row(
+            children: [
+              ChildAvatar(index: child.avatarIndex, size: 66),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayName,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      details,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: context.secondaryTextColor,
+                          ),
+                    ),
                   ],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
                 ),
-                shape: BoxShape.circle,
-                boxShadow: AppTheme.glow(color, opacity: .35),
               ),
-              child: Text(emoji, style: const TextStyle(fontSize: 30)),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    child.hasName
-                        ? 'اینجا قلمروی کوچولوی توست ✨'
-                        : 'برای شخصی‌شدن فضا، یک اسم و آواتار انتخاب کن',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: context.secondaryTextColor,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.edit_rounded, color: color, size: 20),
-          ],
+              Icon(Icons.edit_rounded, color: color, size: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -421,12 +358,14 @@ class _ChildEditorSheet extends ConsumerStatefulWidget {
 class _ChildEditorSheetState extends ConsumerState<_ChildEditorSheet> {
   late final TextEditingController _nameController;
   late int _avatarIndex;
+  int? _ageYears;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.child.name);
     _avatarIndex = widget.child.avatarIndex;
+    _ageYears = widget.child.ageYears;
   }
 
   @override
@@ -436,15 +375,22 @@ class _ChildEditorSheetState extends ConsumerState<_ChildEditorSheet> {
   }
 
   Future<void> _save() async {
-    final notifier = ref.read(childProfileProvider.notifier);
-    await notifier.rename(_nameController.text);
-    await notifier.setAvatar(_avatarIndex);
+    final name = _nameController.text.trim();
+    final age = _ageYears;
+    if (name.isEmpty || age == null) return;
+
+    await ref.read(childProfileProvider.notifier).updateProfile(
+          name: name,
+          ageYears: age,
+          avatarIndex: _avatarIndex,
+        );
     if (!mounted) return;
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final canSave = _nameController.text.trim().isNotEmpty && _ageYears != null;
     return Padding(
       padding: EdgeInsets.only(
         left: AppTheme.pageMargin,
@@ -462,17 +408,21 @@ class _ChildEditorSheetState extends ConsumerState<_ChildEditorSheet> {
             ),
             const SizedBox(height: 4),
             Text(
-              'فقط روی همین دستگاه ذخیره می‌شود؛ هیچ اطلاعات واقعی لازم نیست.',
+              'نام، سن به سال و آواتار فقط روی این دستگاه ذخیره می‌شوند؛ تاریخ تولد لازم نیست.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: context.secondaryTextColor,
                   ),
             ),
             const SizedBox(height: 18),
-            Text('آواتار', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'آواتار کودکانه',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 10),
             Wrap(
-              spacing: 10,
-              runSpacing: 10,
+              key: const Key('child-avatar-choices'),
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 for (var i = 0; i < ChildProfileModel.avatars.length; i++)
                   _AvatarOption(
@@ -483,27 +433,44 @@ class _ChildEditorSheetState extends ConsumerState<_ChildEditorSheet> {
               ],
             ),
             const SizedBox(height: 18),
-            Text('نام نمایشی', style: Theme.of(context).textTheme.titleMedium),
+            Text('نام کودک', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             TextField(
               controller: _nameController,
               maxLength: 16,
               textInputAction: TextInputAction.done,
+              onChanged: (_) => setState(() {}),
               onSubmitted: (_) => _save(),
               decoration: const InputDecoration(
-                hintText: 'مثلاً آرش یا نازگل',
+                hintText: 'نام نمایشی یا یک اسم مستعار',
                 counterText: '',
                 prefixIcon: Icon(Icons.face_retouching_natural_rounded),
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<int>(
+              value: _ageYears,
+              decoration: const InputDecoration(
+                labelText: 'سن کودک به سال',
+                prefixIcon: Icon(Icons.cake_outlined),
+              ),
+              items: [
+                for (var age = 1; age <= 18; age++)
+                  DropdownMenuItem(
+                    value: age,
+                    child: Text('${toFaDigits('$age')} سال'),
+                  ),
+              ],
+              onChanged: (age) => setState(() => _ageYears = age),
+            ),
+            const SizedBox(height: 18),
             Row(
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: _save,
+                    onPressed: canSave ? _save : null,
                     icon: const Icon(Icons.check_rounded),
-                    label: const Text('ذخیره'),
+                    label: const Text('ذخیرهٔ پروفایل'),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -534,14 +501,15 @@ class _AvatarOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (emoji, colorValue) = ChildProfileModel.avatars[index];
-    final color = Color(colorValue);
+    final avatar = ChildProfileModel.avatars[index];
+    final color = Color(avatar.colorValue);
     return Semantics(
       button: true,
       selected: selected,
-      label: 'آواتار $emoji',
+      label: 'آواتار ${avatar.label}',
       excludeSemantics: true,
       child: GestureDetector(
+        key: ValueKey('child-avatar-option-$index'),
         onTap: () {
           AppHaptics.selection();
           onTap();
@@ -551,18 +519,19 @@ class _AvatarOption extends StatelessWidget {
           duration: context.motion.dur(AppMotion.quick),
           curve: AppMotion.curvePop,
           child: Container(
-            width: 56,
-            height: 56,
+            width: 68,
+            height: 68,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: selected ? color.withOpacity(.2) : context.surfaceAltColor,
+              color: selected ? color.withOpacity(.18) : context.surfaceAltColor,
               shape: BoxShape.circle,
               border: Border.all(
-                color: selected ? color : Colors.transparent,
-                width: 2.5,
+                color: selected ? color : context.softBorderColor,
+                width: selected ? 2.5 : 1,
               ),
+              boxShadow: selected ? AppTheme.glow(color, opacity: .2) : null,
             ),
-            child: Text(emoji, style: const TextStyle(fontSize: 26)),
+            child: ChildAvatar(index: index, size: 60),
           ),
         ),
       ),

@@ -213,23 +213,6 @@ class HapticsNotifier extends StateNotifier<bool> {
   }
 }
 
-final profileNameProvider =
-    StateNotifierProvider<ProfileNameNotifier, String>((ref) {
-  return ProfileNameNotifier(ref.watch(appPreferencesProvider));
-});
-
-class ProfileNameNotifier extends StateNotifier<String> {
-  ProfileNameNotifier(this._preferences) : super(_preferences.parentName);
-
-  final AppPreferences _preferences;
-
-  Future<void> update(String value) async {
-    final next = value.trim().isEmpty ? 'والد مهربان' : value.trim();
-    state = next;
-    await _preferences.saveParentName(next);
-  }
-}
-
 final childProfileProvider =
     StateNotifierProvider<ChildProfileNotifier, ChildProfileModel>((ref) {
   return ChildProfileNotifier(ref.watch(appPreferencesProvider));
@@ -240,11 +223,33 @@ class ChildProfileNotifier extends StateNotifier<ChildProfileModel> {
       : super(
           ChildProfileModel(
             name: _preferences.childProfileName ?? '',
+            ageYears: _preferences.childProfileAge,
             avatarIndex: _preferences.childAvatarIndex,
           ),
         );
 
   final AppPreferences _preferences;
+
+  Future<void> updateProfile({
+    required String name,
+    required int ageYears,
+    required int avatarIndex,
+  }) async {
+    final safeAge = ageYears.clamp(1, 18).toInt();
+    final safeAvatar =
+        avatarIndex.clamp(0, ChildProfileModel.avatars.length - 1).toInt();
+    final next = ChildProfileModel(
+      name: name.trim(),
+      ageYears: safeAge,
+      avatarIndex: safeAvatar,
+    );
+    state = next;
+    await _preferences.saveChildProfile(
+      name: next.name,
+      ageYears: next.ageYears,
+      avatarIndex: next.avatarIndex,
+    );
+  }
 
   Future<void> rename(String value) async {
     final next = state.copyWith(name: value.trim());
