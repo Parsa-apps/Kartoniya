@@ -42,7 +42,6 @@ void main() {
   });
 
   testWidgets('پلیر واقعی دارای دو لوگوی برند با هالهٔ نئونی است',
-      skip: true,
       (tester) async {
     // یک کانتینر ویدئوی ساده با overlay
     await tester.pumpWidget(
