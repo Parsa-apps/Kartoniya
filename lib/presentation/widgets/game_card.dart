@@ -31,46 +31,47 @@ class GameCard extends StatelessWidget {
           border: Border.all(color: game.accentColor.withOpacity(.18)),
           boxShadow: [BoxShadow(color: game.accentColor.withOpacity(.12), blurRadius: 12, offset: const Offset(0, 4))],
         ),
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: game.accentColor.withOpacity(.16),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Center(child: Text(game.thumbnailEmoji, style: const TextStyle(fontSize: 26))),
+                  child: Center(child: Text(game.thumbnailEmoji, style: const TextStyle(fontSize: 22))),
                 ),
                 const Spacer(),
                 if (onFavorite != null)
                   GestureDetector(
                     onTap: onFavorite,
                     child: Container(
-                      width: 32,
-                      height: 32,
+                      width: 28,
+                      height: 28,
                       decoration: BoxDecoration(
                         color: isFavorite ? AppColors.coral.withOpacity(.14) : Colors.black.withOpacity(.06),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                        size: 18,
+                        size: 16,
                         color: isFavorite ? AppColors.coral : Colors.black45,
                       ),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: 10),
-            Text(game.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 4),
-            Text(game.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54, height: 1.3)),
-            const Spacer(),
+            const SizedBox(height: 8),
+            Text(game.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, fontSize: 13)),
+            const SizedBox(height: 3),
+            Flexible(child: Text(game.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54, height: 1.2, fontSize: 10.5))),
+            const SizedBox(height: 6),
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
