@@ -143,6 +143,10 @@ jobs:
               'pubspec.lock',
               'build/app/outputs/flutter-apk/app-release.apk',
               'build/app/outputs/flutter-apk/app-arm64-v8a-release.apk',
+              # اسکرین‌شات‌های رندرشدهٔ اسپلش برای بازبینی طراحی در کلاینت‌های
+              # محدود؛ اگر مرحلهٔ اسکرین‌شات اجرا نشده باشد، رد می‌شود.
+              'build/screenshots/00_studio_ident.png',
+              'build/screenshots/01_splash.png',
           ):
               if not pathlib.Path(name).exists():
                   continue

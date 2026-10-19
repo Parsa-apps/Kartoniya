@@ -136,7 +136,7 @@ void main() {
     // گوشهٔ بالا-چپ کاملاً شفاف است (پس‌زمینهٔ ساخته‌شده نداریم).
     expect(rgba.getUint8(3), 0);
     // مرکز نشان (بدنهٔ حرف P) کاملاً مات است.
-    final center = (512 * 810 + 405) * 4;
+    const center = (512 * 810 + 405) * 4;
     expect(rgba.getUint8(center + 3), greaterThan(200));
 
     image.dispose();
