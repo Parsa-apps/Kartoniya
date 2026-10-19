@@ -34,21 +34,32 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>((ref) {
   return ref.watch(cartoonRepositoryProvider).fetchCategories();
 });
 
+// ——— ظرفیت ۱۰۰ با تفکیک وضعیت تأیید ———
+final verifiedCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+  final all = await ref.watch(cartoonsProvider.future);
+  return all.where((c) => c.verification.isPlayable && c.isActive).toList(growable: false);
+});
+
+final pendingCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+  final all = await ref.watch(cartoonsProvider.future);
+  return all.where((c) => !c.verification.isPlayable).toList(growable: false);
+});
+
 final featuredCartoonsProvider =
     FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
+  final cartoons = await ref.watch(verifiedCartoonsProvider.future);
   return cartoons
       .where((cartoon) => cartoon.isFeatured)
       .toList(growable: false);
 });
 
 final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
+  final cartoons = await ref.watch(verifiedCartoonsProvider.future);
   return cartoons.where((cartoon) => cartoon.isNew).toList(growable: false);
 });
 
 final popularCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
+  final cartoons = await ref.watch(verifiedCartoonsProvider.future);
   final sorted = [...cartoons]..sort((a, b) => b.rating.compareTo(a.rating));
   return List.unmodifiable(sorted);
 });

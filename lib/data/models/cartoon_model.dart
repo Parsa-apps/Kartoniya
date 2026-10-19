@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'content_source.dart';
+
 /// دادهٔ نمایشی یک قسمت. آدرس ویدئو باید فقط به محتوای دارای مجوز اشاره کند.
 ///
 /// هر قسمت با شناسه یا هش رسمی آپارات مدیریت می‌شود؛ آدرس کامل صفحه
@@ -17,6 +19,9 @@ class EpisodeModel {
     this.isActive = true,
     this.sortOrder = 0,
     this.thumbnailAsset,
+    this.source = ContentSource.aparat,
+    this.verification = VerificationStatus.verified,
+    this.license = ContentLicense.licensed,
   });
 
   final String id;
@@ -34,6 +39,15 @@ class EpisodeModel {
 
   /// تصویر بندانگشتی اختیاری (پوستر محلی یا URL)
   final String? thumbnailAsset;
+
+  /// منبع تأمین این قسمت (برای مدیریت داخلی و عیب‌یابی؛ در UI نمایش داده نمی‌شود)
+  final ContentSource source;
+
+  /// وضعیت تأیید محتوا
+  final VerificationStatus verification;
+
+  /// مجوز
+  final ContentLicense license;
 
   /// هش رسمی ویدئوی آپارات (مثلاً ddy5427)، نه URL کامل.
   /// فقط قالب کانونی HTTPS بدون query/fragment/port پذیرفته می‌شود.
@@ -110,6 +124,18 @@ class CartoonModel {
   /// ترتیب نمایش در گرید خانه / دسته‌بندی
   final int sortOrder;
 
+  /// عنوان اصلی (در صورت نیاز)
+  final String? originalTitle;
+
+  /// منبع تأمین برای مدیریت داخلی
+  final ContentSource source;
+
+  /// وضعیت تأیید
+  final VerificationStatus verification;
+
+  /// مجوز
+  final ContentLicense license;
+
   const CartoonModel({
     required this.id,
     required this.title,
@@ -127,6 +153,10 @@ class CartoonModel {
     this.artworkAsset,
     this.isActive = true,
     this.sortOrder = 0,
+    this.originalTitle,
+    this.source = ContentSource.aparat,
+    this.verification = VerificationStatus.verified,
+    this.license = ContentLicense.licensed,
   });
 
   Color get artworkColor => Color(artworkColorValue);
@@ -158,6 +188,9 @@ class CartoonModel {
     String? artworkAsset,
     bool? isActive,
     int? sortOrder,
+    String? originalTitle,
+    ContentSource? source,
+    VerificationStatus? verification,
   }) {
     return CartoonModel(
       id: id,
@@ -176,6 +209,9 @@ class CartoonModel {
       artworkAsset: artworkAsset ?? this.artworkAsset,
       isActive: isActive ?? this.isActive,
       sortOrder: sortOrder ?? this.sortOrder,
+      originalTitle: originalTitle ?? this.originalTitle,
+      source: source ?? this.source,
+      verification: verification ?? this.verification,
     );
   }
 }

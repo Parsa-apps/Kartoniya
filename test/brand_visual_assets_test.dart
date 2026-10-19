@@ -175,13 +175,15 @@ void main() {
     expect(scene.width, greaterThanOrEqualTo(1000));
     scene.dispose();
 
-    // Every catalog entry that declares artwork must point at a bundled file.
+    // Every verified catalog entry that declares artwork must point at a bundled file.
     final cartoons = await LocalCartoonRepository().fetchCartoons();
-    for (final cartoon in cartoons) {
+    final verified = cartoons.where((c) => c.verification.isPlayable).toList();
+    for (final cartoon in verified) {
       expect(cartoon.artworkAsset, isNotNull, reason: cartoon.id);
       final loaded = await rootBundle.load(cartoon.artworkAsset!);
       expect(loaded.lengthInBytes, greaterThan(0), reason: cartoon.id);
     }
+    // Pending titles use vector fallback — no asset required
   });
 
   testWidgets('world banner exposes an action and renders its Persian copy',

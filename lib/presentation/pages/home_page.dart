@@ -19,12 +19,15 @@ import '../widgets/kartoniya_logo.dart';
 import '../widgets/kartoniya_mascot.dart';
 import '../widgets/kartoniya_nav_bar.dart';
 import '../widgets/kartoniya_story_banner.dart';
+import '../widgets/game_card.dart';
 import '../widgets/section_header.dart';
 import '../widgets/shimmer_loader.dart';
 import '../widgets/state_views.dart';
+import '../../data/providers/games_provider.dart';
 import 'categories_page.dart';
 import 'cartoon_detail_page.dart';
 import 'favorites_page.dart';
+import 'games_page.dart';
 import 'player_page.dart';
 import 'profile_page.dart';
 import 'search_page.dart';
@@ -58,13 +61,15 @@ class _HomePageState extends ConsumerState<HomePage> {
             index: _selectedIndex,
             children: [
               _DiscoverTab(
-                onOpenCategories: () => _selectTab(1),
-                onOpenProfile: () => _selectTab(4),
+                onOpenCategories: () => _selectTab(2),
+                onOpenProfile: () => _selectTab(5),
                 onOpenSearch: () {
                   ref.read(searchFocusRequestProvider.notifier).state++;
-                  _selectTab(3);
+                  _selectTab(4);
                 },
+                onOpenGames: () => _selectTab(1),
               ),
+              const GamesPage(),
               const CategoriesPage(),
               FavoritesPage(onBrowse: () => _selectTab(0)),
               const SearchPage(),
@@ -81,6 +86,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             icon: Icons.home_outlined,
             activeIcon: Icons.home_rounded,
             label: 'خانه',
+          ),
+          KartoniyaNavItem(
+            icon: Icons.videogame_asset_outlined,
+            activeIcon: Icons.videogame_asset_rounded,
+            label: 'بازی‌ها',
           ),
           KartoniyaNavItem(
             icon: Icons.grid_view_outlined,
@@ -113,11 +123,13 @@ class _DiscoverTab extends ConsumerStatefulWidget {
     required this.onOpenCategories,
     required this.onOpenProfile,
     required this.onOpenSearch,
+    required this.onOpenGames,
   });
 
   final VoidCallback onOpenCategories;
   final VoidCallback onOpenProfile;
   final VoidCallback onOpenSearch;
+  final VoidCallback onOpenGames;
 
   @override
   ConsumerState<_DiscoverTab> createState() => _DiscoverTabState();
@@ -332,6 +344,60 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
               },
               loading: () => const SizedBox.shrink(),
               error: (_, __) => const SizedBox.shrink(),
+            ),
+          ),
+          // ——— بازی‌های پیشنهادی ———
+          SliverToBoxAdapter(
+            child: Consumer(
+              builder: (context, ref, _) {
+                final games = ref.watch(playableGamesProvider);
+                return games.when(
+                  data: (list) {
+                    if (list.isEmpty) return const SizedBox.shrink();
+                    final preview = list.take(6).toList();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: 'بازی کن!',
+                          subtitle: '۱۰۰ بازی تعاملی در انتظار توست',
+                          icon: Icons.videogame_asset_rounded,
+                          accent: AppColors.violet,
+                          actionLabel: 'همه',
+                          onAction: widget.onOpenGames,
+                        ),
+                        SizedBox(
+                          height: 176,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(horizontal: AppTheme.pageMargin),
+                            itemCount: preview.length,
+                            separatorBuilder: (_, __) => const SizedBox(width: 12),
+                            itemBuilder: (context, i) {
+                              final game = preview[i];
+                              return SizedBox(
+                                width: 160,
+                                child: GameCard(
+                                  game: game,
+                                  onTap: () {
+                                    ref.read(recentGamesProvider.notifier).add(game.id);
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (_) => GameDetailPage(game: game)),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                );
+              },
             ),
           ),
           // ——— تازه‌ها ———

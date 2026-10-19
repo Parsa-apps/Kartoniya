@@ -236,27 +236,45 @@ class CartoonDetailPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      StaggeredReveal(
-                        index: 3,
-                        child: GradientButton(
-                          label: resume == null
-                              ? 'شروع تماشا'
-                              : 'ادامه از ${resume.episodeTitle}',
-                          icon: resume == null
-                              ? Icons.play_circle_fill_rounded
-                              : Icons.play_arrow_rounded,
-                          expand: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.lerp(categoryColor, Colors.white, .28)!,
-                              categoryColor,
+                      if (!cartoon.verification.isPlayable)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withOpacity(.12),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: Colors.orange.withOpacity(.25)),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.hourglass_empty_rounded, color: Colors.orange),
+                              SizedBox(width: 8),
+                              Expanded(child: Text('این عنوان در حال بررسی مجوز است و به‌زودی فعال می‌شود — ظرفیت ۱۰۰تایی حفظ شده است.', style: TextStyle(color: Colors.orange))),
                             ],
                           ),
-                          glowColor: categoryColor,
-                          onPressed: () => _play(
-                              context, resume?.episode ?? cartoon.firstEpisode),
+                        )
+                      else
+                        StaggeredReveal(
+                          index: 3,
+                          child: GradientButton(
+                            label: resume == null
+                                ? 'شروع تماشا'
+                                : 'ادامه از ${resume.episodeTitle}',
+                            icon: resume == null
+                                ? Icons.play_circle_fill_rounded
+                                : Icons.play_arrow_rounded,
+                            expand: true,
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.lerp(categoryColor, Colors.white, .28)!,
+                                categoryColor,
+                              ],
+                            ),
+                            glowColor: categoryColor,
+                            onPressed: () => _play(
+                                context, resume?.episode ?? cartoon.firstEpisode),
+                          ),
                         ),
-                      ),
                       if (nextEpisode != null) ...[
                         const SizedBox(height: 14),
                         StaggeredReveal(
