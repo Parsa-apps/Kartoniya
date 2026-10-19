@@ -52,17 +52,11 @@ class EpisodeModel {
   /// هش رسمی ویدئوی آپارات (مثلاً ddy5427)، نه URL کامل.
   /// فقط قالب کانونی HTTPS بدون query/fragment/port پذیرفته می‌شود.
   String? get aparatVideoHash {
-    final uri = Uri.tryParse(videoUrl.trim());
-    if (uri == null ||
-        uri.scheme != 'https' ||
-        !const ['www.aparat.com', 'aparat.com'].contains(uri.host) ||
-        uri.userInfo.isNotEmpty ||
-        uri.hasPort ||
-        uri.hasQuery ||
-        uri.hasFragment ||
-        uri.pathSegments.length != 2 ||
-        uri.pathSegments.first != 'v') return null;
-    final hash = uri.pathSegments.last;
+    final trimmed = videoUrl.trim();
+    final match = RegExp(r'^https://(?:www\.)?aparat\.com/v/([A-Za-z0-9]+)$')
+        .firstMatch(trimmed);
+    if (match == null) return null;
+    final hash = match.group(1)!;
     return RegExp(r'^[a-zA-Z0-9]+$').hasMatch(hash) ? hash : null;
   }
 

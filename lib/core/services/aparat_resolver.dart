@@ -27,18 +27,12 @@ abstract final class AparatResolver {
   /// تلاش برای استخراج hash از یک videoUrl کانونی.
   /// فقط https، بدون query/fragment/port/userInfo.
   static String? hashFromUrl(String videoUrl) {
-    final uri = Uri.tryParse(videoUrl.trim());
-    if (uri == null) return null;
-    if (uri.scheme != 'https') return null;
-    if (!const ['www.aparat.com', 'aparat.com'].contains(uri.host)) {
-      return null;
-    }
-    if (uri.userInfo.isNotEmpty || uri.hasPort || uri.hasQuery || uri.hasFragment) {
-      return null;
-    }
-    if (uri.pathSegments.length != 2) return null;
-    if (uri.pathSegments.first != 'v') return null;
-    final hash = uri.pathSegments.last;
+    final trimmed = videoUrl.trim();
+    // استفاده از RegExp برای جلوگیری از تفاوت‌های Uri.tryParse در نسخه‌های مختلف
+    final match = RegExp(r'^https://(?:www\.)?aparat\.com/v/([A-Za-z0-9]+)$')
+        .firstMatch(trimmed);
+    if (match == null) return null;
+    final hash = match.group(1)!;
     return isValidHash(hash) ? hash : null;
   }
 
