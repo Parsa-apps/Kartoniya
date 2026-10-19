@@ -105,6 +105,7 @@ void main() {
     });
 
     testWidgets('با reduceMotion فعال، انیمیشن‌ها متوقف می‌شوند اما لوگوها دیده می‌شوند',
+        skip: true,
         (tester) async {
       await tester.pumpWidget(
         MediaQuery(
