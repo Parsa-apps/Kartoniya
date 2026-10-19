@@ -131,8 +131,7 @@ void main() {
     expect(image.width, 810);
     expect(image.height, 1024);
 
-    final rgba =
-        (await image.toByteData(format: ui.ImageByteFormat.rawRgba))!;
+    final rgba = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))!;
     // گوشهٔ بالا-چپ کاملاً شفاف است (پس‌زمینهٔ ساخته‌شده نداریم).
     expect(rgba.getUint8(3), 0);
     // مرکز نشان (بدنهٔ حرف P) کاملاً مات است.

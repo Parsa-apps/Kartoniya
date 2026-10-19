@@ -249,9 +249,9 @@ class _SplashPageState extends ConsumerState<SplashPage>
     }
     unawaited(_handoff.forward());
     _entrance.forward().orCancel.then(
-      (_) => _completeEntrance(),
-      onError: (Object _) => _completeEntrance(),
-    );
+          (_) => _completeEntrance(),
+          onError: (Object _) => _completeEntrance(),
+        );
   }
 
   void _completeEntrance() {
@@ -954,8 +954,7 @@ class _HandoffStack extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Opacity(opacity: handoff.value, child: scene),
-          if (!identGone)
-            Opacity(opacity: 1 - handoff.value, child: ident),
+          if (!identGone) Opacity(opacity: 1 - handoff.value, child: ident),
         ],
       ),
     );
@@ -1159,27 +1158,27 @@ class _IdentEmblem extends StatelessWidget {
                           child: Opacity(
                             opacity: .5 * sheenGlow,
                             child: ShaderMask(
-                            blendMode: BlendMode.srcIn,
-                            shaderCallback: (rect) {
-                              final shift = rect.width * 1.5 * (sheen - .5);
-                              return const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0x00FFF6DF),
-                                  Color(0xCCFFF6DF),
-                                  Color(0x00FFF6DF),
-                                ],
-                                stops: [.30, .5, .70],
-                              ).createShader(
-                                rect.shift(Offset(-shift, -shift * .55)),
-                              );
-                            },
-                            child: ParsaBrandMark(height: height),
+                              blendMode: BlendMode.srcIn,
+                              shaderCallback: (rect) {
+                                final shift = rect.width * 1.5 * (sheen - .5);
+                                return const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0x00FFF6DF),
+                                    Color(0xCCFFF6DF),
+                                    Color(0x00FFF6DF),
+                                  ],
+                                  stops: [.30, .5, .70],
+                                ).createShader(
+                                  rect.shift(Offset(-shift, -shift * .55)),
+                                );
+                              },
+                              child: ParsaBrandMark(height: height),
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     ),
                 ],
               ),
@@ -1315,10 +1314,8 @@ class _IdentMotesPainter extends CustomPainter {
       final pulse = .5 + .5 * math.sin(angle * 1.3 + mote.$4 * 6.28);
       paint.color = AppColors.goldLight.withOpacity(.05 + .11 * pulse);
       final position = Offset(
-        (mote.$1 + math.sin(angle * .9 + mote.$4 * 6.28) * .012) *
-            size.width,
-        (mote.$2 + math.cos(angle * .7 + mote.$4 * 6.28) * .014) *
-            size.height,
+        (mote.$1 + math.sin(angle * .9 + mote.$4 * 6.28) * .012) * size.width,
+        (mote.$2 + math.cos(angle * .7 + mote.$4 * 6.28) * .014) * size.height,
       );
       canvas.drawCircle(position, mote.$3 * (.85 + pulse * .4), paint);
     }
