@@ -31,7 +31,7 @@ class GameCard extends StatelessWidget {
           border: Border.all(color: game.accentColor.withOpacity(.18)),
           boxShadow: [BoxShadow(color: game.accentColor.withOpacity(.12), blurRadius: 12, offset: const Offset(0, 4))],
         ),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -39,13 +39,13 @@ class GameCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 42,
-                  height: 42,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: game.accentColor.withOpacity(.16),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Center(child: Text(game.thumbnailEmoji, style: const TextStyle(fontSize: 22))),
+                  child: Center(child: Text(game.thumbnailEmoji, style: const TextStyle(fontSize: 20))),
                 ),
                 const Spacer(),
                 if (onFavorite != null)
@@ -67,26 +67,26 @@ class GameCard extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(game.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, fontSize: 13)),
-            const SizedBox(height: 3),
-            Flexible(child: Text(game.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54, height: 1.2, fontSize: 10.5))),
             const SizedBox(height: 6),
+            Text(game.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, fontSize: 12)),
+            const SizedBox(height: 2),
+            Flexible(child: Text(game.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54, height: 1.1, fontSize: 9.5))),
+            const SizedBox(height: 4),
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 6,
-              runSpacing: 4,
+              spacing: 4,
+              runSpacing: 2,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(color: game.category.color.withOpacity(.12), borderRadius: BorderRadius.circular(8)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(game.category.emoji, style: const TextStyle(fontSize: 11)),
-                      const SizedBox(width: 3),
-                      Flexible(child: Text(game.category.labelFa, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700))),
+                      Text(game.category.emoji, style: const TextStyle(fontSize: 10)),
+                      const SizedBox(width: 2),
+                      Flexible(child: Text(game.category.labelFa, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700))),
                     ],
                   ),
                 ),
