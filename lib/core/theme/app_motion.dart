@@ -5,7 +5,7 @@ import '../services/app_haptics.dart';
 /// توکن‌های حرکتی کارتونیا.
 ///
 /// همهٔ انیمیشن‌ها باید از همین مقادیر استفاده کنند تا ریتم برنامه یکدست
-/// بماند. با فعال‌بودن «کاهش حرکت» (تنظیم سیستم یا تنظیم والدین) مقدار
+/// بماند. با فعال‌بودن کاهش حرکت در تنظیمات دسترس‌پذیری سیستم، مقدار
 /// durationها صفر می‌شود و ویجت‌ها وضعیت نهایی را نشان می‌دهند.
 abstract final class AppMotion {
   static const micro = Duration(milliseconds: 150);
@@ -59,8 +59,8 @@ class MotionInfo {
 }
 
 extension MotionContext on BuildContext {
-  /// `context.motion.enabled` را در ویجت‌های متحرک بخوانید؛ اگر کاربر کاهش
-  /// حرکت را فعال کرده باشد انیمیشن‌ها رد می‌شوند.
+  /// `context.motion.enabled` را در ویجت‌های متحرک بخوانید؛ اگر تنظیم
+  /// دسترس‌پذیری سیستم کاهش حرکت را فعال کرده باشد، انیمیشن‌ها رد می‌شوند.
   MotionInfo get motion {
     final scope = dependOnInheritedWidgetOfExactType<MotionScope>()?.info ??
         const MotionInfo(reduced: false);
@@ -72,12 +72,12 @@ extension MotionContext on BuildContext {
   Duration motionDur(Duration duration) => motion.dur(duration);
 
   /// برای تصمیم‌های initState؛ فقط flag ایستا را می‌خواند و به درخت وابسته
-  /// نیست. (rیشهٔ برنامه MotionScope.applyGlobal را هنگام build ست می‌کند.)
+  /// نیست. (ریشهٔ برنامه MotionScope.applyGlobal را هنگام build ست می‌کند.)
   bool get motionEnabledAtInit => !MotionScope.reducedGlobally;
 }
 
-/// یک لایه در ریشهٔ برنامه؛ «کاهش حرکت» تنظیم‌شده در فضای والدین را به همهٔ
-/// زیردرخت می‌رساند بدون اینکه هر ویجت به Riverpod وصل باشد.
+/// یک لایه در ریشهٔ برنامه؛ تنظیم کاهش حرکت سیستم را به همهٔ زیردرخت
+/// می‌رساند بدون اینکه هر ویجت به Riverpod وصل باشد.
 class MotionScope extends InheritedWidget {
   const MotionScope({required this.info, required super.child, super.key});
 
@@ -91,11 +91,8 @@ class MotionScope extends InheritedWidget {
   /// است (دسترسی به InheritedWidget در initState مجاز نیست).
   static bool get reducedGlobally => _globalReduced;
 
-  static void applyGlobal({
-    required bool parentReduced,
-    required bool systemReduce,
-  }) {
-    _globalReduced = parentReduced || systemReduce;
+  static void applyGlobal({required bool systemReduce}) {
+    _globalReduced = systemReduce;
   }
 
   @override

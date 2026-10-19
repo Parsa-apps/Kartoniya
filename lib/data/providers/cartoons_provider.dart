@@ -176,24 +176,6 @@ class AutoplayNotifier extends StateNotifier<bool> {
   }
 }
 
-/// کاهش حرکت (برای گوشی‌های ضعیف یا کودکان حساس به انیمیشن).
-final reduceMotionProvider =
-    StateNotifierProvider<ReduceMotionNotifier, bool>((ref) {
-  return ReduceMotionNotifier(ref.watch(appPreferencesProvider));
-});
-
-class ReduceMotionNotifier extends StateNotifier<bool> {
-  ReduceMotionNotifier(this._preferences)
-      : super(_preferences.reduceMotionEnabled);
-
-  final AppPreferences _preferences;
-
-  Future<void> setEnabled(bool value) async {
-    state = value;
-    await _preferences.saveReduceMotionEnabled(value);
-  }
-}
-
 /// بازخورد لمسی اختیاری؛ یک تنظیم واحد برای همهٔ اجزای تعاملی.
 final hapticsProvider = StateNotifierProvider<HapticsNotifier, bool>((ref) {
   return HapticsNotifier(ref.watch(appPreferencesProvider));

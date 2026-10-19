@@ -99,18 +99,16 @@ void main() {
     });
   });
 
-  group('ReduceMotion / Theme / Autoplay / Haptics', () {
-    test('مقادیر اولیه از SharedPreferences خوانده و ذخیره می‌شوند', () async {
-      final container = await _container({
-        'theme_mode': 'dark',
-        'reduce_motion_enabled': true,
-      });
+  group('Theme / Haptics', () {
+    test('تم از SharedPreferences خوانده و ذخیره می‌شود', () async {
+      final container = await _container({'theme_mode': 'dark'});
 
       expect(container.read(themeModeProvider), ThemeMode.dark);
-      expect(container.read(reduceMotionProvider), isTrue);
 
-      await container.read(reduceMotionProvider.notifier).setEnabled(false);
-      expect(container.read(reduceMotionProvider), isFalse);
+      await container
+          .read(themeModeProvider.notifier)
+          .setMode(ThemeMode.light);
+      expect(container.read(themeModeProvider), ThemeMode.light);
     });
 
     test('تنظیم هپتیک همهٔ تعامل‌های رابط را همگام می‌کند', () async {

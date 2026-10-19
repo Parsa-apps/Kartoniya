@@ -20,7 +20,7 @@ void main() {
       expect(service.favoriteIds, isEmpty);
     });
 
-    test('تم، پخش خودکار، کاهش حرکت و بازخورد لمسی پایدارند', () async {
+    test('تم، پخش خودکار و بازخورد لمسی پایدارند', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final service = AppPreferences(prefs);
@@ -32,10 +32,6 @@ void main() {
       expect(service.autoplayEnabled, isTrue);
       await service.saveAutoplayEnabled(false);
       expect(service.autoplayEnabled, isFalse);
-
-      expect(service.reduceMotionEnabled, isFalse);
-      await service.saveReduceMotionEnabled(true);
-      expect(service.reduceMotionEnabled, isTrue);
 
       expect(service.hapticsEnabled, isTrue);
       await service.saveHapticsEnabled(false);
