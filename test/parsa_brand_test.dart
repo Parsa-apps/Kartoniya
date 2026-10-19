@@ -65,6 +65,13 @@ void main() {
       await tester.pump(const Duration(milliseconds: 150));
     }
     expect(find.byType(HomePage), findsOneWidget);
+
+    // خروج اسپلش یک ترنزیشن محو است؛ تا پایان آن صبر می‌کنیم تا صفحه و
+    // نشان استودیو کاملاً از درخت حذف شوند.
+    bool splashGone() => find.byType(SplashPage).evaluate().isEmpty;
+    for (var i = 0; i < 8 && !splashGone(); i++) {
+      await tester.pump(const Duration(milliseconds: 150));
+    }
     expect(find.byType(SplashPage), findsNothing);
     expect(find.byType(ParsaBrandMark), findsNothing);
 
@@ -113,6 +120,10 @@ void main() {
     }
     // خانه با نمای خطا و «تلاش دوباره» باز می‌شود؛ اسپلش گیر نمی‌کند.
     expect(find.byType(HomePage), findsOneWidget);
+    bool splashGone() => find.byType(SplashPage).evaluate().isEmpty;
+    for (var i = 0; i < 8 && !splashGone(); i++) {
+      await tester.pump(const Duration(milliseconds: 150));
+    }
     expect(find.byType(SplashPage), findsNothing);
     expect(tester.takeException(), isNull);
   });
