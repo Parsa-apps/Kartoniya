@@ -76,6 +76,15 @@ jobs:
         timeout-minutes: 6
         run: flutter test --reporter expanded 2>&1 | tee /tmp/flutter-tests.log
 
+      - name: انتشار لاگ تست‌ها
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-tests-log
+          path: /tmp/flutter-tests.log
+          if-no-files-found: warn
+          retention-days: 7
+
       # رندر صفحه‌ها با فونت و assetهای واقعی برای بازبینی طراحی. خروجی
       # اسکرین‌شات گوشی واقعی نیست و شکست آن بیلد APK را متوقف نمی‌کند.
       - name: اسکرین‌شات‌های رندر‌شده
@@ -176,7 +185,7 @@ jobs:
               path = pathlib.Path(name)
               if path.exists():
                   log = path.read_text(errors='replace')
-                  parts.append(log)
+                  parts.append(log if len(log) <= 24000 else log[:12000] + '\n...\n' + log[-12000:])
           payload = {
               'name': 'Flutter diagnostics',
               'head_sha': os.environ['GITHUB_SHA'],
