@@ -27,7 +27,9 @@ class PlayerBrandOverlay extends StatefulWidget {
   static const double safePadding = 10;
 
   /// کمینه و بیشینهٔ اندازهٔ لوگو برای خوانایی
-  static const double minLogoSize = 28;
+  /// ۲۸ برای دسکتاپ بزرگ مناسب بود اما روی ۳۶۰px باعث clamp به ۲۸ و عدم تطابق با طراحی ۶٫۵٪ (۲۳٫۴) می‌شد.
+  /// برای حفظ نسبت واقعی و جلوگیری از overflow در صفحات کوچک، کمینه به ۲۰ کاهش یافت.
+  static const double minLogoSize = 20;
   static const double maxLogoSize = 52;
 
   @override
@@ -43,6 +45,8 @@ class _PlayerBrandOverlayState extends State<PlayerBrandOverlay>
   late final Animation<double> _entranceScale;
   late final Animation<double> _entranceHalo;
   Timer? _sheenTimer;
+  Timer? _entranceDelayTimer;
+  Timer? _firstSheenTimer;
 
   @override
   void initState() {
@@ -77,8 +81,8 @@ class _PlayerBrandOverlayState extends State<PlayerBrandOverlay>
       _entrance.value = 1;
       _pulse.value = 0.5;
     } else {
-      // entrance with slight delay for cinematic feel
-      Future.delayed(const Duration(milliseconds: 80), () {
+      // entrance with slight delay for cinematic feel — از Timer استفاده می‌کنیم تا در dispose قابل لغو باشد
+      _entranceDelayTimer = Timer(const Duration(milliseconds: 80), () {
         if (mounted) _entrance.forward();
       });
       _pulse.repeat(reverse: true);
@@ -91,7 +95,7 @@ class _PlayerBrandOverlayState extends State<PlayerBrandOverlay>
         });
       });
       // first sheen after 2.8s
-      Future.delayed(const Duration(milliseconds: 2800), () {
+      _firstSheenTimer = Timer(const Duration(milliseconds: 2800), () {
         if (mounted && !_sheen.isAnimating) {
           _sheen.forward(from: 0).then((_) {
             if (mounted) _sheen.value = 0;
@@ -116,6 +120,8 @@ class _PlayerBrandOverlayState extends State<PlayerBrandOverlay>
 
   @override
   void dispose() {
+    _entranceDelayTimer?.cancel();
+    _firstSheenTimer?.cancel();
     _sheenTimer?.cancel();
     _entrance.dispose();
     _pulse.dispose();

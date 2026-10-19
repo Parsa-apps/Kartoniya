@@ -70,11 +70,15 @@ jobs:
           fi
 
       - name: تحلیل Flutter
-        run: flutter analyze --no-pub 2>&1 | tee /tmp/flutter-analyze.log
+        run: |
+          set -o pipefail
+          flutter analyze --no-pub 2>&1 | tee /tmp/flutter-analyze.log
 
       - name: تست‌ها
         timeout-minutes: 6
-        run: flutter test --reporter compact 2>&1 | tee /tmp/flutter-tests.log
+        run: |
+          set -o pipefail
+          flutter test --reporter compact 2>&1 | tee /tmp/flutter-tests.log
 
       - name: انتشار لاگ تست‌ها
         if: always()
@@ -107,6 +111,7 @@ jobs:
       - name: بیلد release APK (تفکیک ABI)
         if: ${{ github.event.inputs.build_type != 'debug' }}
         run: |
+          set -o pipefail
           flutter build apk --release 2>&1 | tee /tmp/flutter-build.log
           flutter build apk --release --split-per-abi 2>&1 | tee -a /tmp/flutter-build.log
 

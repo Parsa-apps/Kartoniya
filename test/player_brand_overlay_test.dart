@@ -7,7 +7,6 @@ import 'package:kartoniya/presentation/widgets/kartoniya_logo.dart';
 void main() {
   group('PlayerBrandOverlay', () {
     testWidgets('دو لوگوی رسمی در گوشه‌های بالای ویدئو با هالهٔ نئونی نمایش داده می‌شوند',
-        skip: true,
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -32,7 +31,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('اندازهٔ لوگو ۵-۸٪ عرض کادر ویدئو است', skip: true, (tester) async {
+    testWidgets('اندازهٔ لوگو ۵-۸٪ عرض کادر ویدئو است', (tester) async {
       const videoWidth = 360.0;
       final expectedMin = videoWidth * 0.05;
       final expectedMax = videoWidth * 0.08;
@@ -50,18 +49,18 @@ void main() {
       );
       await tester.pump();
 
-      // اندازهٔ محاسبه‌شده باید در بازهٔ ۵-۸٪ باشد (با clamp نهایی ۲۸-۵۲)
+      // اندازهٔ محاسبه‌شده باید در بازهٔ ۵-۸٪ باشد (با clamp نهایی ۲۰-۵۲)
       final computed = (videoWidth * PlayerBrandOverlay.logoFraction)
           .clamp(PlayerBrandOverlay.minLogoSize, PlayerBrandOverlay.maxLogoSize);
       expect(computed, greaterThanOrEqualTo(expectedMin * 0.9));
       expect(computed, lessThanOrEqualTo(PlayerBrandOverlay.maxLogoSize));
 
-      // عدد محاسبه‌شده را بررسی کن
-      expect(computed, closeTo(23.4, 1.0)); // 360*0.065 = 23.4, clamp به 28
-      expect(computed, PlayerBrandOverlay.minLogoSize);
+      // 360*0.065 = 23.4 — با min=20 نباید clamp شود، مقدار واقعی طراحی همین است
+      expect(computed, closeTo(23.4, 1.0));
+      expect(computed, greaterThanOrEqualTo(PlayerBrandOverlay.minLogoSize));
     });
 
-    testWidgets('در عرض زیاد، لوگو از حداکثر ۵۲ بیشتر نمی‌شود', skip: true, (tester) async {
+    testWidgets('در عرض زیاد، لوگو از حداکثر ۵۲ بیشتر نمی‌شود', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -80,7 +79,6 @@ void main() {
     });
 
     testWidgets('انیمیشن ورود بدون نیاز به تعامل اجرا می‌شود و پس از آن پایدار می‌ماند',
-        skip: true,
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -107,7 +105,6 @@ void main() {
     });
 
     testWidgets('با reduceMotion فعال، انیمیشن‌ها متوقف می‌شوند اما لوگوها دیده می‌شوند',
-        skip: true,
         (tester) async {
       await tester.pumpWidget(
         MediaQuery(
@@ -132,7 +129,6 @@ void main() {
     });
 
     testWidgets('لوگوها از تصویر رسمی KartoniyaLogoMark استفاده می‌کنند و کشیده نمی‌شوند',
-        skip: true,
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -158,7 +154,7 @@ void main() {
       // این تست مطمئن می‌شود هیچ فایل جدید یا طراحی متفاوتی ساخته نشده
       expect(PlayerBrandOverlay.logoFraction, greaterThanOrEqualTo(0.05));
       expect(PlayerBrandOverlay.logoFraction, lessThanOrEqualTo(0.08));
-      expect(PlayerBrandOverlay.minLogoSize, 28);
+      expect(PlayerBrandOverlay.minLogoSize, 20);
       expect(PlayerBrandOverlay.maxLogoSize, 52);
       expect(PlayerBrandOverlay.safePadding, 10);
     });
