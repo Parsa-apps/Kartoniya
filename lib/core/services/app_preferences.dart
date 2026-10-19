@@ -16,7 +16,6 @@ class AppPreferences {
   static const _autoplayKey = 'autoplay_enabled';
   static const _legacyParentNameKey = 'parent_display_name';
   static const _watchProgressKey = 'watch_progress';
-  static const _reduceMotionKey = 'reduce_motion_enabled';
   static const _hapticsKey = 'haptics_enabled';
   static const _childProfileKey = 'child_profile';
 
@@ -48,11 +47,6 @@ class AppPreferences {
   bool get autoplayEnabled => _storage.getBool(_autoplayKey) ?? true;
   Future<bool> saveAutoplayEnabled(bool value) =>
       _storage.setBool(_autoplayKey, value);
-
-  /// کاهش حرکت؛ کنار flag سیستمی، والد می‌تواند دستی آن را فعال کند.
-  bool get reduceMotionEnabled => _storage.getBool(_reduceMotionKey) ?? false;
-  Future<bool> saveReduceMotionEnabled(bool value) =>
-      _storage.setBool(_reduceMotionKey, value);
 
   /// اختیاری‌بودن بازخورد لمسی؛ خاموش‌کردن آن همهٔ بازخوردهای رابط را
   /// غیرفعال می‌کند، درحالی‌که تنظیم هپتیک سیستم‌عامل همچنان مرجع نهایی است.

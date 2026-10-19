@@ -121,7 +121,7 @@ void main() {
 
   test('رویدادهای معرفی فقط در شمارنده‌های محلی ذخیره می‌شوند', () async {
     SharedPreferences.setMockInitialValues({});
-    final metrics = const FandoghiPromotionMetrics();
+    const metrics = FandoghiPromotionMetrics();
 
     await metrics.record(FandoghiPromotionEvent.impression);
     await metrics.record(FandoghiPromotionEvent.click);

@@ -164,12 +164,15 @@ void main() {
       ),
     );
     await tester.pump(const Duration(milliseconds: 700));
-    expect(find.text('کاهش حرکت'), findsOneWidget);
+    expect(find.text('کاهش حرکت'), findsNothing);
+    expect(find.text('بازخورد لمسی'), findsOneWidget);
   });
 
-  testWidgets('کاهش حرکت از تنظیمات والدین ذخیره می‌شود', (tester) async {
+  testWidgets('کنترل کاهش حرکت در تنظیمات والدین نمایش داده نمی‌شود',
+      (tester) async {
     usePhone(tester);
-    final prefs = await initPrefs();
+    // ترجیح نسخهٔ قدیمی نباید کنترل حذف‌شده را دوباره در رابط نشان دهد.
+    final prefs = await initPrefs({'reduce_motion_enabled': true});
     final container = ProviderContainer(
       overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
     );
@@ -183,14 +186,8 @@ void main() {
     );
     await tester.pump();
 
-    await tester.tap(find.byType(Switch).first);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-
-    expect(container.read(reduceMotionProvider), isTrue);
-    // Widget tests use a fake clock: pump flushes storage microtasks
-    // without waiting on an unadvanced Timer.
-    await tester.pump();
+    expect(find.text('کاهش حرکت'), findsNothing);
+    expect(find.text('بازخورد لمسی'), findsOneWidget);
     expect(prefs.getBool('reduce_motion_enabled'), isTrue);
   });
 

@@ -36,6 +36,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('system accessibility setting still reduces motion',
+      (tester) async {
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: MotionScope(
+            info: const MotionInfo(reduced: false),
+            child: Builder(
+              builder: (context) => Text(
+                context.motion.enabled ? 'motion-enabled' : 'motion-reduced',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('motion-reduced'), findsOneWidget);
+  });
+
   testWidgets('mascot reacts to touch and is exposed as a button',
       (tester) async {
     var taps = 0;

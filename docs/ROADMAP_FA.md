@@ -61,7 +61,7 @@
 | ۵۳ | skeleton loading | shimmer برای کارت/بنر | Shimmer widgets | loading بدون spinner خام باشد | انجام شد |
 | ۵۴ | motion splash | ورود لوگو و background ملایم | splash motion | animation سبک و کوتاه باشد | انجام شد |
 | ۵۵ | هاله طلایی | glow/shimmer لوگو و نام سازنده | GoldenGlowFrame | چرخه ۲٫۴ ثانیه و بدون asset سنگین باشد | انجام شد |
-| ۵۶ | preference کاهش motion | گزینه احترام به Reduce Motion دستگاه + سوئیچ والدین | motion setting + MotionScope | animationها در حالت کاهش‌یافته کوتاه شوند | انجام شد |
+| ۵۶ | احترام به کاهش حرکت سیستم | رعایت تنظیم دسترس‌پذیری Reduce Motion دستگاه؛ بدون کنترل والدین برای خاموش‌کردن انیمیشن‌ها | system MotionScope | انیمیشن‌ها فقط با تنظیم دسترس‌پذیری سیستم کاهش یابند | انجام شد |
 | ۵۷ | پروفایل player | frame/drop و rebuild player را اندازه بگیر | performance report | روی دستگاه ضعیف افت محسوس نداشته باشد | برنامه‌ریزی‌شده |
 | ۵۸ | layout تبلت | تمام breakpoints را روی تبلت تست کن | responsive matrix | grid و dialog overflow ندهند | برنامه‌ریزی‌شده |
 | ۵۹ | اندازه فونت | textScale 0.8 تا 1.5 را بررسی کن | typography QA | CTA و title قطع نشوند | برنامه‌ریزی‌شده |

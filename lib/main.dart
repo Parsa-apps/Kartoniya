@@ -58,7 +58,6 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final reduceMotion = ref.watch(reduceMotionProvider);
     // هم‌سازی داده‌های محلی با کاتالوگ: شناسه‌های نامعتبر (محتوای حذف‌شده)
     // نباید در شمارنده‌ها یا فهرست‌ها باقی بمانند.
     // valueOrNull: در حالت AsyncError دسترسی به .value همان خطا را دوباره
@@ -79,12 +78,11 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
       home: const SplashPage(),
       builder: (context, child) {
         final brightness = Theme.of(context).brightness;
-        // نسخهٔ ایستای «کاهش حرکت» تا ویجت‌ها در initState هم بتوانند
-        // بدون وابستگی به درخت، تصمیم درست بگیرند.
-        MotionScope.applyGlobal(
-          parentReduced: reduceMotion,
-          systemReduce: MediaQuery.maybeOf(context)?.disableAnimations ?? false,
-        );
+        final systemReduceMotion =
+            MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+        // فقط تنظیم دسترس‌پذیری سیستم بر حرکت اثر می‌گذارد. نسخهٔ ایستا برای
+        // کنترلرهایی است که هنگام initState به InheritedWidget دسترسی ندارند.
+        MotionScope.applyGlobal(systemReduce: systemReduceMotion);
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: brightness == Brightness.dark
               ? SystemUiOverlayStyle.light
@@ -93,7 +91,7 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
             textDirection: TextDirection.rtl,
             child: AppLifecycleTickerMode(
               child: MotionScope(
-                info: MotionInfo(reduced: reduceMotion),
+                info: MotionInfo(reduced: systemReduceMotion),
                 child: child ?? const SizedBox.shrink(),
               ),
             ),

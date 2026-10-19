@@ -34,7 +34,7 @@ Core (AppPreferences, theme, utilities)
 ## چرا این انتخاب‌ها؟
 
 ### Riverpod
-از قبل Riverpod در پروژه بوده و برای stateهای کوچک، قابل‌آزمون و مستقل از Widget مناسب است. stateهای persistence شامل علاقه‌مندی‌ها، تم، نام نمایشی کودک، سن فقط به سال، شمارهٔ آواتار برداری کودک، autoplay، کاهش حرکت، وضعیت onboarding و history هستند؛ نام والد ذخیره نمی‌شود.
+از قبل Riverpod در پروژه بوده و برای stateهای کوچک، قابل‌آزمون و مستقل از Widget مناسب است. stateهای persistence شامل علاقه‌مندی‌ها، تم، نام نمایشی کودک، سن فقط به سال، شمارهٔ آواتار برداری کودک، autoplay، وضعیت onboarding و history هستند؛ نام والد ذخیره نمی‌شود. کاهش حرکت از تنظیم دسترس‌پذیری سیستم گرفته می‌شود.
 
 ### SharedPreferences به‌جای Database
 نسخهٔ فعلی چند preference کوچک، شناسهٔ علاقه‌مندی و درصد پیشرفت را ذخیره می‌کند؛ SQLite/Hive در این مرحله پیچیدگی غیرضروری بود. با بزرگ‌شدن آفلاین‌کاتالوگ یا downloadها، migration به database لایهٔ data انجام می‌شود، بدون تغییر UI.
@@ -53,7 +53,7 @@ Core (AppPreferences, theme, utilities)
 - **Typography:** Vazirmatn 33.003 (OFL) با ۴ وزن به‌صورت **asset باندل‌شده**؛ `google_fonts` حذف شد تا اولین اجرا بدون شبکه باشد و render قطعی بماند. ارقام نمایشی با `toFaDigits()` فارسی می‌شوند
 - **Radius:** 12 / 18 / 24 / 32 / 42 — **Spacing:** 4 / 8 / 16 / 24 / 32، حاشیهٔ صفحه `AppTheme.pageMargin`
 - **Shadow:** soft/medium بر پایهٔ brightness + `AppTheme.glow(color)` برای دکمه‌های CTA
-- **Motion:** `AppMotion` تنها منبع duration/curve است (micro ۱۵۰ms تا entrance ۵۲۰ms، curve امضای `Cubic(.22,1,.36,1)`). `MotionScope` + `context.motion` با «کاهش حرکت» (flag سیستم یا تنظیم والدین) همهٔ انیمیشن‌ها را به صفر می‌رساند؛ داخل `initState` فقط `context.motionEnabledAtInit` (snapshot ایستا) خوانده می‌شود و `didChangeDependencies` آن را به‌روز می‌کند. بنرها پارالاکس دارند، کارت‌ها مقیاس لمسی، ورودی‌ها `StaggeredReveal`، و ترنزیشن صفحات از `app_routes` می‌آید.
+- **Motion:** `AppMotion` تنها منبع duration/curve است (micro ۱۵۰ms تا entrance ۵۲۰ms، curve امضای `Cubic(.22,1,.36,1)`). `MotionScope` + `context.motion` تنظیم کاهش حرکت دسترس‌پذیری سیستم را رعایت می‌کنند؛ تنظیمات والدین این حرکت را تغییر نمی‌دهند. داخل `initState` فقط `context.motionEnabledAtInit` (snapshot ایستا) خوانده می‌شود و `didChangeDependencies` آن را به‌روز می‌کند. بنرها پارالاکس دارند، کارت‌ها مقیاس لمسی، ورودی‌ها `StaggeredReveal`، و ترنزیشن صفحات از `app_routes` می‌آید.
 - **وضعیت‌های داده:** هر برگه از `AsyncValue.when` استفاده می‌کند؛ loading با skeleton/Shimmer، empty با `EmptyStateView` + بنر فِلَک، error با `ErrorStateView` و retry که provider کاتالوگ/دسته را invalidate می‌کند. جست‌وجو با debounce ۲۶۰ms روی `searchResultsProvider` می‌نشیند و فیلتر دسته حالت محلی صفحه است؛ قرارداد providerها تغییر نکرده است.
 - **تصویرسازی:** از فاز ۶ هر کارتون یک پوستر ۴:۳ محلی از طریق `CartoonModel.artworkAsset` دارد و `CartoonArtwork` آن را با `cacheWidth` محدودشده به اندازهٔ منطقی × DPR رندر می‌کند؛ در نبود تصویر یا خطای decode، `PosterScenePainter` برداریِ قطعی (seed از شناسهٔ کارتون) جایگزین می‌شود. `KartoniyaMascot` برداری برای حالت‌های احساسی حفظ شده است.
 - **کامپوننت‌های مشترک فاز ۶:** `PageIntro` (سربرگ برگه‌ها با مدالیون/تصویر)، `SectionHeader` + `MiniSectionLabel`، `CategoryPill`/`CategoryPillRow` و `CategoryTile`، `CartoonCard` یکپارچه برای گرید/ریل/نتایج، `KartoniyaLogoMark` برداری و `KartoniyaStoryBanner` با صحنهٔ از پیش‌رندرشده. خانه، دسته‌ها، جست‌وجو و علاقه‌مندی‌ها همین اجزا را به‌کار می‌برند تا رفتار و فاصله‌ها یکدست بماند.

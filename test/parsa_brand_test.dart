@@ -14,15 +14,15 @@ import 'package:kartoniya/presentation/widgets/parsa_brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// پوشش رگرسیون برای هویت استودیوی Parsa Apps: پردهٔ آغازین اسپلش،
-/// ورود یک‌باره به خانه، رفتار کاهش‌حرکت، خطای آماده‌سازی و صفحهٔ دربارهٔ ما.
+/// ورود یک‌باره به خانه، تنظیم قدیمی کاهش‌حرکت، خطای آماده‌سازی و صفحهٔ دربارهٔ ما.
 void main() {
   Future<SharedPreferences> initPrefs({
     bool onboarding = true,
-    bool reduceMotion = false,
+    bool legacyReduceMotion = false,
   }) async {
     SharedPreferences.setMockInitialValues({
       'onboarding_completed': onboarding,
-      'reduce_motion_enabled': reduceMotion,
+      'reduce_motion_enabled': legacyReduceMotion,
     });
     return SharedPreferences.getInstance();
   }
@@ -82,17 +82,18 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('با کاهش حرکت، اسپلش ثابت می‌ماند و سریع وارد می‌شود',
+  testWidgets('تنظیم قدیمی کاهش حرکت، انیمیشن اسپلش را غیرفعال نمی‌کند',
       (tester) async {
     usePhone(tester);
-    final prefs = await initPrefs(reduceMotion: true);
+    final prefs = await initPrefs(legacyReduceMotion: true);
 
     await tester.pumpWidget(app(prefs));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 150));
-    expect(find.byType(ParsaBrandMark), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 1200));
+    expect(find.byType(SplashPage), findsOneWidget);
+    expect(find.byType(HomePage), findsNothing);
 
-    for (var i = 0; i < 14 && find.byType(HomePage).evaluate().isEmpty; i++) {
+    for (var i = 0; i < 24 && find.byType(HomePage).evaluate().isEmpty; i++) {
       await tester.pump(const Duration(milliseconds: 150));
     }
     expect(find.byType(HomePage), findsOneWidget);
