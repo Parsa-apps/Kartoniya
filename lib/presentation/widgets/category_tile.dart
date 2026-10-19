@@ -342,25 +342,32 @@ class CategoryPillRow extends StatelessWidget {
         .toList(growable: false);
     return SizedBox(
       height: height,
-      child: ListView.separated(
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: AppTheme.pageMargin),
-        itemCount: visible.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final category = visible[index];
-          final isAll = category.id == 'all';
-          final selected =
-              isAll ? selectedName == null : selectedName == category.name;
-          return CategoryPill(
-            category: category,
-            selected: selected,
-            compact: compact,
-            count: counts == null ? null : counts![category.name] ?? 0,
-            onTap: () => onSelected(isAll ? null : category),
-          );
-        },
+        child: Row(
+          children: [
+            for (var i = 0; i < visible.length; i++) ...[
+              if (i > 0) const SizedBox(width: 8),
+              Builder(builder: (context) {
+                final category = visible[i];
+                final isAll = category.id == 'all';
+                final selected = isAll
+                    ? selectedName == null
+                    : selectedName == category.name;
+                return CategoryPill(
+                  category: category,
+                  selected: selected,
+                  compact: compact,
+                  count:
+                      counts == null ? null : counts![category.name] ?? 0,
+                  onTap: () => onSelected(isAll ? null : category),
+                );
+              }),
+            ],
+          ],
+        ),
       ),
     );
   }
