@@ -131,7 +131,7 @@ class ProfilePage extends ConsumerWidget {
                           icon: Icons.lock_outline_rounded,
                           color: AppColors.sky,
                           title: 'تنظیمات والدین',
-                          subtitle: 'ظاهر، پخش، کاهش حرکت و داده‌های محلی',
+                          subtitle: 'ظاهر، پخش و مدیریت داده‌های محلی',
                           onTap: () => _openSettings(context),
                         ),
                         const Divider(indent: 72, endIndent: 16),

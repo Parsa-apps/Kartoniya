@@ -4,7 +4,7 @@ import 'package:kartoniya/core/theme/app_motion.dart';
 import 'package:kartoniya/presentation/widgets/kartoniya_mascot.dart';
 
 /// نگهبان «زنده بودن» فندوقی: نفس/تاب برگ حتی بدون شناوری، و ایست کامل
-/// وقتی کاربر «کاهش حرکت» را روشن کرده است.
+/// وقتی تنظیم دسترس‌پذیری کاهش حرکت سیستم فعال است.
 void main() {
   Widget host({
     required bool reduced,

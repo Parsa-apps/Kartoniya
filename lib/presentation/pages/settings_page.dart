@@ -9,7 +9,7 @@ import '../../data/providers/cartoons_provider.dart';
 import '../widgets/app_feedback.dart';
 import '../widgets/kartoniya_story_banner.dart';
 
-/// تنظیمات والدین: ظاهر، حرکت، پخش و داده‌های محلی.
+/// تنظیمات والدین: ظاهر، بازخورد لمسی، پخش و داده‌های محلی.
 /// رسیدن به این صفحه خودش از قفل والدین می‌گذرد و عملیات حساس
 /// (پاک‌سازی داده) یک بار دیگر تأیید صریح می‌خواهد.
 class SettingsPage extends ConsumerWidget {
@@ -19,7 +19,6 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final autoplay = ref.watch(autoplayProvider);
-    final reduceMotion = ref.watch(reduceMotionProvider);
     final hapticsEnabled = ref.watch(hapticsProvider);
 
     return Scaffold(
@@ -77,40 +76,22 @@ class SettingsPage extends ConsumerWidget {
                 const SizedBox(height: 24),
                 const StaggeredReveal(
                   index: 2,
-                  child: _SectionLabel(label: 'حرکت و انیمیشن'),
+                  child: _SectionLabel(label: 'بازخورد و تعامل'),
                 ),
                 StaggeredReveal(
                   index: 3,
                   child: Card(
-                    child: Column(
-                      children: [
-                        SwitchListTile.adaptive(
-                          value: reduceMotion,
-                          onChanged: (value) => ref
-                              .read(reduceMotionProvider.notifier)
-                              .setEnabled(value),
-                          secondary:
-                              const Icon(Icons.motion_photos_on_outlined),
-                          title: const Text('کاهش حرکت'),
-                          subtitle: const Text(
-                            'انیمیشن‌های تزئینی خاموش یا خیلی کوتاه می‌شوند؛ '
-                            'مناسب گوشی‌های ضعیف‌تر یا کودکان حساس به حرکت',
-                          ),
-                        ),
-                        const Divider(indent: 72, endIndent: 16),
-                        SwitchListTile.adaptive(
-                          value: hapticsEnabled,
-                          onChanged: (value) => ref
-                              .read(hapticsProvider.notifier)
-                              .setEnabled(value),
-                          secondary: const Icon(Icons.vibration_rounded),
-                          title: const Text('بازخورد لمسی'),
-                          subtitle: const Text(
-                            'لرزش‌های ظریف هنگام لمس؛ تنظیم لرزش دستگاه '
-                            'همچنان رعایت می‌شود',
-                          ),
-                        ),
-                      ],
+                    child: SwitchListTile.adaptive(
+                      value: hapticsEnabled,
+                      onChanged: (value) => ref
+                          .read(hapticsProvider.notifier)
+                          .setEnabled(value),
+                      secondary: const Icon(Icons.vibration_rounded),
+                      title: const Text('بازخورد لمسی'),
+                      subtitle: const Text(
+                        'لرزش‌های ظریف هنگام لمس؛ تنظیم لرزش دستگاه '
+                        'همچنان رعایت می‌شود',
+                      ),
                     ),
                   ),
                 ),
