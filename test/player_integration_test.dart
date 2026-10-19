@@ -56,11 +56,10 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.byType(PlayerBrandOverlay), findsOneWidget);
     expect(tester.takeException(), isNull);
-    // لوگوها در صورت وجود بررسی می‌شوند، اما نبود آن‌ها نباید تست را بشکند
     expect(tester.takeException(), isNull);
   });
 

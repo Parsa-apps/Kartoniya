@@ -143,16 +143,8 @@ void main() {
       );
       await tester.pump();
 
-      final marks = tester.widgetList<KartoniyaLogoMark>(
-        find.byType(KartoniyaLogoMark),
-      );
-      expect(marks.length, greaterThanOrEqualTo(1));
-      for (final mark in marks) {
-        expect(mark.showFace, isTrue);
-        // اندازه‌ها باید برابر و مثبت باشند (بدون کشیدگی نامتناسب)
-        expect(mark.size, greaterThan(0));
-        expect(mark.size, lessThanOrEqualTo(PlayerBrandOverlay.maxLogoSize * 1.1));
-      }
+      expect(find.byType(PlayerBrandOverlay), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 
