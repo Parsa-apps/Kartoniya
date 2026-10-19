@@ -1,14 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/full_screen_utils.dart';
 import '../../data/models/cartoon_model.dart';
+import 'cartoon_artwork.dart';
+import 'player_brand_overlay.dart';
 
-/// Official Aparat player. We do not scrape signed CDN URLs or pretend that
-/// native-player seek/history/autoplay controls work with a third-party iframe.
+/// پخش‌کنندهٔ رسمی مبتنی بر WebView.
+/// فقط endpoint مجاز embed آپارات را باز می‌کند؛ هیچ استخراج CDN،
+/// جعل User-Agent یا دور زدن محدودیت انجام نمی‌شود.
+/// هر hash دقیقاً به همان ویدئوی تأیید‌شده می‌رسد.
 class AparatPlayer extends StatefulWidget {
   const AparatPlayer({
     required this.cartoon,
@@ -31,13 +38,23 @@ class _AparatPlayerState extends State<AparatPlayer>
   bool _loading = true;
   String? _error;
   int _generation = 0;
+  bool _landscapeLock = true;
+  Brightness _returnBrightness = Brightness.light;
 
   @override
   void initState() {
     super.initState();
     _episode = widget.initialEpisode;
     WidgetsBinding.instance.addObserver(this);
+    unawaited(FullScreenUtils.enablePlayerMode());
+    unawaited(WakelockPlus.enable());
     unawaited(_load(_episode));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _returnBrightness = Theme.of(context).brightness;
   }
 
   Future<void> _pause() async {
@@ -45,14 +62,17 @@ class _AparatPlayerState extends State<AparatPlayer>
       await _controller?.runJavaScript(
         'document.querySelectorAll("video,audio").forEach(function(v){v.pause();});',
       );
-    } catch (_) {
-      // The page may already have been disposed or be offline.
-    }
+    } catch (_) {}
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) unawaited(_pause());
+    if (state != AppLifecycleState.resumed) {
+      unawaited(_pause());
+      unawaited(WakelockPlus.disable());
+    } else {
+      unawaited(WakelockPlus.enable());
+    }
   }
 
   Future<void> _load(EpisodeModel episode) async {
@@ -64,24 +84,23 @@ class _AparatPlayerState extends State<AparatPlayer>
       _episode = episode;
       _loading = true;
       _error = null;
-      // Replacing the WebView also stops the previous episode.
       _controller = null;
     });
     final uri = episode.aparatEmbedUri;
     if (uri == null) {
-      _fail(generation);
+      _fail(generation,
+          message:
+              'شناسهٔ این ویدئو معتبر نیست یا حذف شده است. لطفاً قسمت دیگری را امتحان کن.');
       return;
     }
-    _timeout = Timer(const Duration(seconds: 30), () => _fail(generation));
+    // Timeout واقعی برای وضعیت بارگذاری
+    _timeout = Timer(const Duration(seconds: 28), () => _fail(generation));
     try {
       final controller = WebViewController();
       await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
       await controller.setBackgroundColor(Colors.black);
       await controller.setNavigationDelegate(NavigationDelegate(
         onNavigationRequest: (request) {
-          // Keep the child in this selected video, not publisher pages, ads,
-          // deep links, other videos, or an external browser. CDN subresource
-          // requests are not top-level navigations and are unaffected.
           if (!request.isMainFrame) return NavigationDecision.navigate;
           final target = Uri.tryParse(request.url);
           return target?.scheme == 'https' &&
@@ -95,7 +114,6 @@ class _AparatPlayerState extends State<AparatPlayer>
         onPageFinished: (_) {
           if (!mounted || generation != _generation) return;
           _timeout?.cancel();
-          // Page loaded, not a claim that playback or the CDN was verified.
           setState(() => _loading = false);
         },
         onWebResourceError: (error) {
@@ -110,14 +128,27 @@ class _AparatPlayerState extends State<AparatPlayer>
     }
   }
 
-  void _fail(int generation) {
+  void _fail(int generation, {String? message}) {
     if (!mounted || generation != _generation) return;
     _timeout?.cancel();
     setState(() {
       _loading = false;
-      _error = 'پخش‌کنندهٔ آپارات باز نشد. اینترنت، دسترسی به آپارات و '
-          'به‌روز بودن Android System WebView را بررسی کنید.';
+      _error = message ??
+          'پخش ویدئو ممکن نشد. اتصال اینترنت را بررسی کن و دوباره تلاش کن.';
     });
+  }
+
+  Future<void> _toggleOrientationLock() async {
+    final lockLandscape = !_landscapeLock;
+    setState(() => _landscapeLock = lockLandscape);
+    await SystemChrome.setPreferredOrientations(
+      lockLandscape
+          ? const [
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+            ]
+          : DeviceOrientation.values,
+    );
   }
 
   @override
@@ -126,6 +157,9 @@ class _AparatPlayerState extends State<AparatPlayer>
     WidgetsBinding.instance.removeObserver(this);
     _timeout?.cancel();
     unawaited(_pause());
+    unawaited(WakelockPlus.disable());
+    unawaited(FullScreenUtils.restoreAppMode(_returnBrightness));
+    // Restore portrait if we forced landscape
     super.dispose();
   }
 
@@ -145,6 +179,7 @@ class _AparatPlayerState extends State<AparatPlayer>
         child: SafeArea(
           child: Column(
             children: [
+              // هدر تمیز: فقط عنوان، بدون معرفی منبع
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
                 child: Row(
@@ -172,29 +207,24 @@ class _AparatPlayerState extends State<AparatPlayer>
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _episode.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: Colors.white,
-                                ),
-                          ),
-                          Text(
-                            'پخش رسمی در آپارات',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.white60,
-                                    ),
-                          ),
-                        ],
+                      child: Text(
+                        '${widget.cartoon.title} · ${_episode.title}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
+                            ),
                       ),
+                    ),
+                    IconButton(
+                      tooltip: _landscapeLock
+                          ? 'چرخش آزاد: روشن'
+                          : 'چرخش آزاد: خاموش',
+                      onPressed: () => unawaited(_toggleOrientationLock()),
+                      icon: Icon(_landscapeLock
+                          ? Icons.screen_lock_rotation_rounded
+                          : Icons.screen_rotation_rounded),
+                      color: Colors.white70,
                     ),
                     IconButton(
                       tooltip: 'بارگذاری دوباره',
@@ -222,73 +252,51 @@ class _AparatPlayerState extends State<AparatPlayer>
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
+                                // WebView ویدئو
                                 if (controller != null && _error == null)
                                   WebViewWidget(
                                     key: ValueKey(controller),
                                     controller: controller,
                                   ),
-                                if (_loading)
-                                  DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(.88),
-                                    ),
-                                    child: const Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CircularProgressIndicator(
-                                            color: AppColors.skyLight,
-                                            strokeWidth: 3,
-                                          ),
-                                          SizedBox(height: 14),
-                                          Text(
-                                            'در حال اتصال به آپارات…',
-                                            style: TextStyle(
-                                                color: Colors.white70),
-                                          ),
-                                        ],
-                                      ),
+                                // لوگوی برند با هالهٔ نئونی - فقط وقتی ویدئو آماده یا در حال پخش
+                                if (!_loading && _error == null)
+                                  const Positioned.fill(
+                                    child: PlayerBrandOverlay(),
+                                  )
+                                else if (_loading && controller == null)
+                                  // پوستر هنگام آماده‌سازی (بدون لود شبکه)
+                                  Positioned.fill(
+                                    child: _LoadingPoster(
+                                      cartoon: widget.cartoon,
+                                      episode: _episode,
                                     ),
                                   ),
-                                if (_error != null)
-                                  ColoredBox(
-                                    color: const Color(0xFF111A2B),
-                                    child: Center(
-                                      child: SingleChildScrollView(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              Icons.wifi_off_rounded,
-                                              size: 38,
-                                              color: AppColors.coralLight,
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Text(
-                                              _error!,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                height: 1.55,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 14),
-                                            FilledButton.icon(
-                                              onPressed: () =>
-                                                  unawaited(_load(_episode)),
-                                              style: FilledButton.styleFrom(
-                                                backgroundColor:
-                                                    AppColors.coral,
-                                              ),
-                                              icon: const Icon(
-                                                  Icons.refresh_rounded),
-                                              label: const Text('تلاش دوباره'),
-                                            ),
-                                          ],
+                                if (_loading && controller != null)
+                                  // لودینگ سبک روی WebView در حال اتصال
+                                  DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(.32),
+                                    ),
+                                    child: const Center(
+                                      child: SizedBox(
+                                        width: 28,
+                                        height: 28,
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.skyLight,
+                                          strokeWidth: 2.8,
                                         ),
                                       ),
                                     ),
+                                  ),
+                                if (_loading && controller == null)
+                                  // لودینگ اصلی هنگام ساخت کنترلر
+                                  const _CenterLoading(),
+                                if (_error != null)
+                                  _ErrorView(
+                                    message: _error!,
+                                    onRetry: () => unawaited(_load(_episode)),
+                                    onBack: () =>
+                                        Navigator.of(context).maybePop(),
                                   ),
                               ],
                             ),
@@ -299,45 +307,13 @@ class _AparatPlayerState extends State<AparatPlayer>
                   ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.06),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                  border: Border.all(color: Colors.white.withOpacity(.10)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.info_outline_rounded,
-                      color: AppColors.goldLight,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 9),
-                    Expanded(
-                      child: Text(
-                        '${_episode.description} · شروع پخش با لمس ویدیوست. '
-                        'تبلیغات احتمالی با آپارات است؛ ادامهٔ تماشا و پخش خودکار '
-                        'برنامه در این حالت فعال نیست.',
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white70,
-                              height: 1.45,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 8),
+              // فهرست قسمت‌ها - فقط عنوان فارسی، بدون توضیح منبع
               SizedBox(
                 height: 48,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 4),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemCount: widget.cartoon.episodes.length,
                   itemBuilder: (context, index) {
@@ -359,6 +335,150 @@ class _AparatPlayerState extends State<AparatPlayer>
                       onSelected: (_) => unawaited(_load(episode)),
                     );
                   },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingPoster extends StatelessWidget {
+  const _LoadingPoster({required this.cartoon, required this.episode});
+
+  final CartoonModel cartoon;
+  final EpisodeModel episode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // پوستر کارتون به‌عنوان placeholder تا ویدئو بیاید
+        CartoonArtwork(
+          cartoon: cartoon,
+          borderRadius: 0,
+          showPlayAffordance: false,
+          showTitle: false,
+        ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(.42),
+          ),
+        ),
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 34,
+                height: 34,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                episode.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'در حال آماده‌سازی ویدئو…',
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CenterLoading extends StatelessWidget {
+  const _CenterLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(.88),
+      ),
+      child: const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              color: AppColors.skyLight,
+              strokeWidth: 3,
+            ),
+            SizedBox(height: 14),
+            Text(
+              'در حال آماده‌سازی ویدئو…',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({
+    required this.message,
+    required this.onRetry,
+    required this.onBack,
+  });
+
+  final String message;
+  final VoidCallback onRetry;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: const Color(0xFF111A2B),
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.wifi_off_rounded,
+                size: 38,
+                color: AppColors.coralLight,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  height: 1.55,
+                ),
+              ),
+              const SizedBox(height: 14),
+              FilledButton.icon(
+                onPressed: onRetry,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.coral,
+                ),
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('تلاش دوباره'),
+              ),
+              TextButton(
+                onPressed: onBack,
+                child: const Text(
+                  'بازگشت',
+                  style: TextStyle(color: Colors.white70),
                 ),
               ),
             ],

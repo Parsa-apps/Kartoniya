@@ -14,13 +14,18 @@ class LocalCartoonRepository implements CartoonRepository {
 
   EpisodeModel _episode(String cartoonId, int number, String hash, String title,
       int seconds, String publisher) {
+    // توضیح فقط محتوایی؛ منابع و جزئیات قانونی در docs/aparat-content.md
+    // نگه‌داری می‌شوند و در پلیر نمایش داده نمی‌شوند تا تمرکز بر ویدئو بماند.
+    // publisher فقط برای مستندسازی داخلی نگه داشته شده و در UI نمایش داده نمی‌شود.
     return EpisodeModel(
       id: '$cartoonId-$number',
       title: title,
-      description: 'منبع: آپارات · منتشرکننده: $publisher',
+      description: title,
       durationSeconds: seconds,
       videoUrl: 'https://www.aparat.com/v/$hash',
       isNew: number == 1,
+      isActive: true,
+      sortOrder: number,
     );
   }
 
@@ -29,7 +34,7 @@ class LocalCartoonRepository implements CartoonRepository {
       id: 'felak',
       title: 'ماجراهای اسکار',
       description:
-          'دو ویدیوی کارتون اسکار مارمولک از آپارات؛ عنوان واقعی هر ویدیو در فهرست قسمت‌ها آمده است.',
+          'ماجراهای بامزهٔ اسکار مارمولک در دنیایی رنگارنگ؛ هر قسمت داستانی کوتاه و شیرین با دوستی و خنده دارد.',
       category: 'ماجراجویی',
       duration: 11,
       rating: 4.8,
@@ -39,6 +44,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkAsset: 'asset/images/posters/oscar.webp',
       isNew: true,
       isFeatured: true,
+      sortOrder: 1,
       tags: const ['دوستی', 'آسمان', 'ماجراجویی'],
       episodes: [
         _episode('felak', 1, 'vsb5i06', 'اسکار مارمولک', 677, 'آپارات نیوا'),
@@ -48,8 +54,7 @@ class LocalCartoonRepository implements CartoonRepository {
     CartoonModel(
       id: 'alefba',
       title: 'الفبای فارسی',
-      description:
-          'آموزش حروف فارسی با انیمیشن و ترانه از کوچکستان و سنجاقک آبی.',
+      description: 'آموزش حروف فارسی با انیمیشن و ترانه‌های شاد برای کودکان کنجکاو.',
       category: 'آموزشی',
       duration: 7,
       rating: 4.9,
@@ -58,6 +63,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkColorValue: 0xFF4DB9EE,
       artworkAsset: 'asset/images/posters/alphabet.webp',
       isFeatured: true,
+      sortOrder: 2,
       tags: const ['الفبا', 'فارسی', 'یادگیری'],
       episodes: [
         _episode('alefba', 1, 'ddy5427', 'الفبای فارسی با انیمیشن موزیکال', 420,
@@ -78,6 +84,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkColorValue: 0xFF53B86A,
       artworkAsset: 'asset/images/posters/counting.webp',
       isNew: true,
+      sortOrder: 3,
       tags: const ['اعداد', 'حل مسئله', 'ریاضی'],
       episodes: [
         _episode('math', 1, 'ymji038', 'آموزش اعداد ۱ تا ۲۰', 121, 'فیکولند'),
@@ -88,7 +95,7 @@ class LocalCartoonRepository implements CartoonRepository {
     CartoonModel(
       id: 'bedtime',
       title: 'قصه‌های تصویری',
-      description: 'دو داستان تصویری قوری و نور آبی از کانال deliha در آپارات.',
+      description: 'دو داستان تصویری آرامش‌بخش دربارهٔ قوری مهربان و نور آبی جادویی؛ مناسب برای لحظه‌های آرام شب.',
       category: 'سرگرمی',
       duration: 12,
       rating: 4.9,
@@ -97,6 +104,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkColorValue: 0xFF9B7CEB,
       artworkAsset: 'asset/images/posters/bedtime.webp',
       isFeatured: true,
+      sortOrder: 4,
       tags: const ['قصه', 'خواب', 'آرامش'],
       episodes: [
         _episode('bedtime', 1, 'wyz0s88', 'قصهٔ قوری', 734, 'deliha'),
@@ -115,6 +123,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkEmoji: '🍓',
       artworkColorValue: 0xFFFF8A50,
       artworkAsset: 'asset/images/posters/cooking.webp',
+      sortOrder: 5,
       tags: const ['خلاقیت', 'غذا', 'مهارت زندگی'],
       episodes: [
         _episode(
@@ -126,8 +135,7 @@ class LocalCartoonRepository implements CartoonRepository {
     CartoonModel(
       id: 'rainbow',
       title: 'آشنایی با حیوانات',
-      description:
-          'ویدیوهای آشنایی با حیوانات مزرعه، باغ وحش و حیوانات دیگر از آپارات.',
+      description: 'آشنایی با حیوانات مزرعه، باغ وحش و دنیای شگفت‌انگیز آن‌ها با تصاویری رنگارنگ.',
       category: 'سرگرمی',
       duration: 4,
       rating: 4.8,
@@ -136,6 +144,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkColorValue: 0xFFFFC83D,
       artworkAsset: 'asset/images/posters/animals.webp',
       isFeatured: true,
+      sortOrder: 6,
       tags: const ['طبیعت', 'حیوانات', 'دوستی'],
       episodes: [
         _episode('rainbow', 1, 'd1391q9', 'حیوانات مزرعه و باغ وحش', 214,
@@ -147,7 +156,7 @@ class LocalCartoonRepository implements CartoonRepository {
     CartoonModel(
       id: 'lab',
       title: 'کشف دنیای علم',
-      description: 'آموزش کارکرد گوش و آشنایی با آب‌و‌هوا از کانال فیکولند.',
+      description: 'کشف رازهای بدن انسان و آب‌وهوا با زبانی ساده برای کودکان کنجکاو.',
       category: 'علمی',
       duration: 4,
       rating: 4.7,
@@ -156,6 +165,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkColorValue: 0xFF53B86A,
       artworkAsset: 'asset/images/posters/science.webp',
       isNew: true,
+      sortOrder: 7,
       tags: const ['علم', 'آزمایش', 'کنجکاوی'],
       episodes: [
         _episode('lab', 1, 'ywrbs8s', 'گوش چطور کار می‌کند؟', 229, 'فیکولند'),
@@ -173,6 +183,7 @@ class LocalCartoonRepository implements CartoonRepository {
       artworkEmoji: '🎵',
       artworkColorValue: 0xFFFFC83D,
       artworkAsset: 'asset/images/posters/music.webp',
+      sortOrder: 8,
       tags: const ['موسیقی', 'ریتم', 'جنگل'],
       episodes: [
         _episode('melody', 1, 'a15fnfv', 'حیوانات جنگل (انگلیسی)', 195,

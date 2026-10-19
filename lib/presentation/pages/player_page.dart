@@ -16,8 +16,10 @@ import '../../data/models/cartoon_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/animated_progress.dart';
 import '../widgets/aparat_player.dart';
+import '../widgets/cartoon_artwork.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/kartoniya_story_banner.dart';
+import '../widgets/player_brand_overlay.dart';
 
 /// پخش‌کنندهٔ واقعی ویدئو کارتونیا.
 ///
@@ -459,10 +461,35 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                   aspectRatio: controller.value.aspectRatio <= 0
                       ? 16 / 9
                       : controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      VideoPlayer(controller),
+                      // لوگوی برند با هالهٔ نئونی در دو گوشهٔ ویدئو
+                      const PlayerBrandOverlay(),
+                    ],
+                  ),
                 ),
               ),
-            if (_isLoading) const _PlayerLoading(),
+            // تصویر بندانگشتی هنگام آماده‌سازی native
+            if (_isLoading && !ready)
+              Positioned.fill(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CartoonArtwork(
+                      cartoon: widget.cartoon,
+                      borderRadius: 0,
+                      showPlayAffordance: false,
+                    ),
+                    DecoratedBox(
+                      color: Colors.black.withOpacity(.45),
+                      child: const _PlayerLoading(),
+                    ),
+                  ],
+                ),
+              ),
+            if (_isLoading && ready) const SizedBox.shrink(),
             if (ready && controller.value.isBuffering && !_isLoading)
               const _BufferingBadge(),
             if (_errorMessage != null)

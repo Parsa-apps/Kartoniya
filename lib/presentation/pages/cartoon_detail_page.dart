@@ -565,15 +565,19 @@ class _EpisodeTile extends StatelessWidget {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        episode.description,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: context.secondaryTextColor,
-                            ),
-                      ),
+                      if (episode.description.isNotEmpty &&
+                          episode.description != episode.title) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          episode.description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
+                        ),
+                      ],
                       const SizedBox(height: 4),
                       Text(
                         toFaDigits(episode.durationLabel),

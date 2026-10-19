@@ -1,6 +1,11 @@
 import 'dart:ui';
 
 /// دادهٔ نمایشی یک قسمت. آدرس ویدئو باید فقط به محتوای دارای مجوز اشاره کند.
+///
+/// هر قسمت با شناسه یا هش رسمی آپارات مدیریت می‌شود؛ آدرس کامل صفحه
+/// فقط قالب کانونی https://www.aparat.com/v/{hash} را می‌پذیرد و همان
+/// hash به endpoint مجاز embed تبدیل می‌شود. هیچ استخراج CDN یا دور زدن
+/// محدودیت انجام نمی‌شود.
 class EpisodeModel {
   const EpisodeModel({
     required this.id,
@@ -9,6 +14,9 @@ class EpisodeModel {
     required this.videoUrl,
     this.description = '',
     this.isNew = false,
+    this.isActive = true,
+    this.sortOrder = 0,
+    this.thumbnailAsset,
   });
 
   final String id;
@@ -18,9 +26,19 @@ class EpisodeModel {
   final String videoUrl;
   final bool isNew;
 
-  /// Only canonical HTTPS Aparat watch pages can enter the embedded player.
+  /// آیا این قسمت فعال و قابل نمایش است؟
+  final bool isActive;
+
+  /// ترتیب نمایش در فهرست قسمت‌ها
+  final int sortOrder;
+
+  /// تصویر بندانگشتی اختیاری (پوستر محلی یا URL)
+  final String? thumbnailAsset;
+
+  /// هش رسمی ویدئوی آپارات (مثلاً ddy5427)، نه URL کامل.
+  /// فقط قالب کانونی HTTPS بدون query/fragment/port پذیرفته می‌شود.
   String? get aparatVideoHash {
-    final uri = Uri.tryParse(videoUrl);
+    final uri = Uri.tryParse(videoUrl.trim());
     if (uri == null ||
         uri.scheme != 'https' ||
         !const ['www.aparat.com', 'aparat.com'].contains(uri.host) ||
@@ -34,12 +52,23 @@ class EpisodeModel {
     return RegExp(r'^[a-zA-Z0-9]+$').hasMatch(hash) ? hash : null;
   }
 
+  /// حافظهٔ کوتاه‌مدت برای منابع موقت نیست؛ اما اگر روزی لازم شد،
+  /// این getter می‌تواند با AparatResolver هماهنگ شود.
   Uri? get aparatEmbedUri {
     final hash = aparatVideoHash;
     return hash == null
         ? null
         : Uri.https(
             'www.aparat.com', '/video/video/embed/videohash/$hash/vt/frame');
+  }
+
+  /// آیا این قسمت از طریق آپارات قابل پخش است؟
+  bool get isAparatSource => aparatVideoHash != null;
+
+  /// آیا hash قالبی معتبر دارد (بدون network)؟
+  bool get hasValidAparatHash {
+    final h = aparatVideoHash;
+    return h != null && h.isNotEmpty;
   }
 
   String get durationLabel {
@@ -54,23 +83,6 @@ class EpisodeModel {
 /// مدل محتوای کارتونیا. این مدل فقط متادیتا نگه می‌دارد؛ فایل ویدئو یا دادهٔ
 /// حساس کاربر در آن ذخیره نمی‌شود.
 class CartoonModel {
-  const CartoonModel({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.duration,
-    required this.rating,
-    required this.ageRange,
-    required this.artworkEmoji,
-    required this.artworkColorValue,
-    required this.episodes,
-    this.isNew = false,
-    this.isFeatured = false,
-    this.tags = const [],
-    this.artworkAsset,
-  });
-
   final String id;
   final String title;
   final String description;
@@ -92,10 +104,43 @@ class CartoonModel {
   /// When it is missing the UI keeps the deterministic vector poster.
   final String? artworkAsset;
 
+  /// آیا این کارتون فعال است؟ (غیرفعال‌ها در فهرست اصلی نشان داده نمی‌شوند)
+  final bool isActive;
+
+  /// ترتیب نمایش در گرید خانه / دسته‌بندی
+  final int sortOrder;
+
+  const CartoonModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.duration,
+    required this.rating,
+    required this.ageRange,
+    required this.artworkEmoji,
+    required this.artworkColorValue,
+    required this.episodes,
+    this.isNew = false,
+    this.isFeatured = false,
+    this.tags = const [],
+    this.artworkAsset,
+    this.isActive = true,
+    this.sortOrder = 0,
+  });
+
   Color get artworkColor => Color(artworkColorValue);
   int get episodeCount => episodes.length;
   String get durationLabel => '$duration دقیقه';
   EpisodeModel get firstEpisode => episodes.first;
+
+  /// فقط قسمت‌های فعال برای نمایش
+  List<EpisodeModel> get activeEpisodes =>
+      episodes.where((e) => e.isActive).toList(growable: false);
+
+  /// آیا همهٔ قسمت‌ها دارای hash معتبر آپارات هستند؟
+  bool get hasAllValidHashes =>
+      episodes.every((e) => e.aparatVideoHash != null);
 
   CartoonModel copyWith({
     String? title,
@@ -111,6 +156,8 @@ class CartoonModel {
     bool? isFeatured,
     List<String>? tags,
     String? artworkAsset,
+    bool? isActive,
+    int? sortOrder,
   }) {
     return CartoonModel(
       id: id,
@@ -127,6 +174,8 @@ class CartoonModel {
       isFeatured: isFeatured ?? this.isFeatured,
       tags: tags ?? this.tags,
       artworkAsset: artworkAsset ?? this.artworkAsset,
+      isActive: isActive ?? this.isActive,
+      sortOrder: sortOrder ?? this.sortOrder,
     );
   }
 }

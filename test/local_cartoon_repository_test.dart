@@ -33,9 +33,15 @@ void main() {
           episodes.every((episode) => episode.aparatEmbedUri != null), isTrue);
       expect(
           episodes.every((episode) => episode.durationSeconds >= 30), isTrue);
+      // توضیح هر قسمت باید محتوایی باشد؛ معرفی منبع در پلیر نمایش داده نمی‌شود
+      // جزئیات حقوقی/منبع در docs/aparat-content.md نگه‌داری می‌شود.
       expect(
-          episodes.every((episode) => episode.description.contains('آپارات')),
+          episodes.every((episode) => episode.description.isNotEmpty),
           isTrue);
+      // اطمینان از اینکه description دیگر برچسب منبع را در UI حمل نمی‌کند
+      expect(
+          episodes.any((episode) => episode.description.contains('منبع:')),
+          isFalse);
       expect(episodes.any((episode) => episode.videoUrl.contains('bee.mp4')),
           isFalse);
     });
