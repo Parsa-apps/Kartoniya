@@ -179,6 +179,20 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib, subprocess
           parts = []
+          # Extract failure snippets to survive truncation (the 4 hidden fails live in middle).
+          fail_snippet = ''
+          tlog = pathlib.Path('/tmp/flutter-tests.log')
+          if tlog.exists():
+              txt = tlog.read_text(errors='replace')
+              lines = txt.splitlines()
+              keep = []
+              for i,l in enumerate(lines):
+                  if '[E]' in l or 'EXCEPTION' in l or 'Expected:' in l or 'Actual:' in l or 'Some tests failed' in l:
+                      s = max(0,i-2); e = min(len(lines), i+8)
+                      keep.extend(lines[s:e])
+              if keep:
+                  fail_snippet = '\n'.join(keep)[:6000]
+                  parts.append('=== FAILURES EXTRACT ===\n' + fail_snippet)
           for name in (
               '/tmp/flutter-format.log', '/tmp/flutter-analyze.log',
               '/tmp/flutter-tests.log', '/tmp/flutter-build.log', '/tmp/api-delivery.json',
