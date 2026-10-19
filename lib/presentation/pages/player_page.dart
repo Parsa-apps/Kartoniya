@@ -62,6 +62,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   Brightness _returnBrightness = Brightness.light;
   late EpisodeModel _episode;
   late final WatchHistoryNotifier _historyNotifier;
+  double _volume = 1.0;
+  bool _isMuted = false;
 
   /// موقعیت «+۱۰/-۱۰» بعد از دابل‌تپ: انیمیشن حبابی موقت.
   final ValueNotifier<_SeekBurst?> _seekBurst =
@@ -196,6 +198,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
         resumedFrom = Duration(milliseconds: milliseconds);
         await controller.seekTo(resumedFrom);
       }
+      await controller.setVolume(_isMuted ? 0 : _volume);
       if (ref.read(autoplayProvider)) {
         await controller.play();
         unawaited(WakelockPlus.enable());
@@ -427,6 +430,28 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
     );
   }
 
+  Future<void> _toggleMute() async {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) return;
+    AppHaptics.selection();
+    final muted = !_isMuted;
+    setState(() {
+      _isMuted = muted;
+    });
+    await controller.setVolume(muted ? 0 : _volume);
+  }
+
+  Future<void> _setVolume(double value) async {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) return;
+    final v = value.clamp(0.0, 1.0);
+    setState(() {
+      _volume = v;
+      _isMuted = v == 0;
+    });
+    await controller.setVolume(v);
+  }
+
   // ——— UI ———
 
   @override
@@ -508,6 +533,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                 onBack: () => Navigator.of(context).maybePop(),
                 onToggleOrientation: () => unawaited(_toggleOrientationLock()),
                 orientationLocked: _landscapeLock,
+                isMuted: _isMuted,
+                onToggleMute: () => unawaited(_toggleMute()),
               ),
               _PlayerCenterControl(
                 isPlaying: controller.value.isPlaying,
@@ -518,12 +545,16 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                 controller: controller,
                 visible: _showControls,
                 episodeLabel: _current.title,
+                isMuted: _isMuted,
+                volume: _volume,
                 onTogglePlay: () => unawaited(_togglePlay()),
                 onSeekBack: () => unawaited(_seekBy(-10)),
                 onSeekForward: () => unawaited(_seekBy(10)),
                 onSeek: (value) => unawaited(_seekTo(value)),
                 onStartSeek: () => _controlsTimer?.cancel(),
                 onEndSeek: _scheduleControlsHide,
+                onToggleMute: () => unawaited(_toggleMute()),
+                onVolumeChanged: (v) => unawaited(_setVolume(v)),
               ),
               if (_nextEpisodeTimer != null)
                 _NextEpisodeOverlay(
@@ -745,6 +776,8 @@ class _PlayerTopBar extends StatelessWidget {
     required this.onBack,
     required this.onToggleOrientation,
     required this.orientationLocked,
+    required this.isMuted,
+    required this.onToggleMute,
   });
 
   final String title;
@@ -752,6 +785,8 @@ class _PlayerTopBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onToggleOrientation;
   final bool orientationLocked;
+  final bool isMuted;
+  final VoidCallback onToggleMute;
 
   @override
   Widget build(BuildContext context) {
@@ -780,6 +815,12 @@ class _PlayerTopBar extends StatelessWidget {
                   ),
                 ),
               ),
+              _PlayerIconButton(
+                tooltip: isMuted ? 'صدا: بی‌صدا' : 'صدا: روشن',
+                icon: isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                onPressed: onToggleMute,
+              ),
+              const SizedBox(width: 6),
               _PlayerIconButton(
                 tooltip:
                     orientationLocked ? 'چرخش آزاد: روشن' : 'چرخش آزاد: خاموش',
@@ -858,23 +899,31 @@ class _PlayerBottomControls extends StatelessWidget {
     required this.controller,
     required this.visible,
     required this.episodeLabel,
+    required this.isMuted,
+    required this.volume,
     required this.onTogglePlay,
     required this.onSeekBack,
     required this.onSeekForward,
     required this.onSeek,
     required this.onStartSeek,
     required this.onEndSeek,
+    required this.onToggleMute,
+    required this.onVolumeChanged,
   });
 
   final VideoPlayerController controller;
   final bool visible;
   final String episodeLabel;
+  final bool isMuted;
+  final double volume;
   final VoidCallback onTogglePlay;
   final VoidCallback onSeekBack;
   final VoidCallback onSeekForward;
   final ValueChanged<double> onSeek;
   final VoidCallback? onStartSeek;
   final VoidCallback onEndSeek;
+  final VoidCallback onToggleMute;
+  final ValueChanged<double> onVolumeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -954,7 +1003,14 @@ class _PlayerBottomControls extends StatelessWidget {
                         icon: Icons.replay_10_rounded,
                         onPressed: onSeekBack,
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 14),
+                      _PlayerIconButton(
+                        tooltip: isMuted ? 'بی‌صدا' : 'صدادار',
+                        icon:
+                            isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                        onPressed: onToggleMute,
+                      ),
+                      const SizedBox(width: 14),
                       _PlayerIconButton(
                         tooltip: controller.value.isPlaying ? 'توقف' : 'پخش',
                         icon: controller.value.isPlaying
@@ -963,7 +1019,7 @@ class _PlayerBottomControls extends StatelessWidget {
                         onPressed: onTogglePlay,
                         emphasized: true,
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 14),
                       _PlayerIconButton(
                         tooltip: '۱۰ ثانیه جلو',
                         icon: Icons.forward_10_rounded,
