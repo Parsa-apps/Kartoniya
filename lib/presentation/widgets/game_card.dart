@@ -71,29 +71,37 @@ class GameCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(game.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54, height: 1.3)),
             const Spacer(),
-            Row(
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 6,
+              runSpacing: 4,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                   decoration: BoxDecoration(color: game.category.color.withOpacity(.12), borderRadius: BorderRadius.circular(8)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(game.category.emoji, style: const TextStyle(fontSize: 12)),
-                      const SizedBox(width: 4),
-                      Text(game.category.labelFa, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
+                      Text(game.category.emoji, style: const TextStyle(fontSize: 11)),
+                      const SizedBox(width: 3),
+                      Flexible(child: Text(game.category.labelFa, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700))),
                     ],
                   ),
                 ),
-                const Spacer(),
-                Icon(Icons.timer_outlined, size: 14, color: Colors.black45),
-                const SizedBox(width: 3),
-                Text('${game.estimatedMinutes}د', style: const TextStyle(fontSize: 11, color: Colors.black54)),
-                const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                  child: Text(game.difficulty.labelFa, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.timer_outlined, size: 13, color: Colors.black45),
+                    const SizedBox(width: 2),
+                    Text('${game.estimatedMinutes}د', style: const TextStyle(fontSize: 10, color: Colors.black54)),
+                    const SizedBox(width: 5),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                      child: Text(game.difficulty.labelFa, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700)),
+                    ),
+                  ],
                 ),
               ],
             ),

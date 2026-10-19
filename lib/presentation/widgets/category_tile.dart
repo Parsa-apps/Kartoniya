@@ -18,6 +18,22 @@ IconData categoryIcon(CategoryModel category) {
       return Icons.auto_awesome_rounded;
     case 'adventure':
       return Icons.rocket_launch_rounded;
+    case 'comedy':
+      return Icons.sentiment_very_satisfied_rounded;
+    case 'animals':
+      return Icons.pets_rounded;
+    case 'educational':
+      return Icons.auto_stories_rounded;
+    case 'friendship':
+      return Icons.diversity_3_rounded;
+    case 'fantasy':
+      return Icons.auto_fix_high_rounded;
+    case 'short':
+      return Icons.movie_rounded;
+    case 'classic':
+      return Icons.history_edu_rounded;
+    case 'toddler':
+      return Icons.child_care_rounded;
     case 'education':
       return Icons.menu_book_rounded;
     case 'fun':
