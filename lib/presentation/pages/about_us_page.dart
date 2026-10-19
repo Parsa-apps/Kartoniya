@@ -3,16 +3,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/navigation/app_routes.dart';
 import '../../core/services/app_haptics.dart';
+import '../../core/services/fandoghi_promotion_metrics.dart';
+import '../../core/services/fandoghi_store_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
+import '../widgets/fandoghi_promotion_card.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import '../widgets/parsa_brand.dart';
 import 'privacy_page.dart';
 
-/// صفحهٔ رسمی Parsa Apps با تصویر محیط سه‌بعدی از پیش‌رندرشده.
-/// فقط لینک رسمی پشتیبانی موجود نمایش داده می‌شود و اطلاعات تماس تازه‌ای
-/// ساخته نمی‌شود.
+/// صفحهٔ معرفی کارتونیا و برند Parsa Apps با تصویر از پیش‌رندرشده.
+/// راه ارتباطی فقط از اطلاعات موجود پروژه گرفته می‌شود؛ اطلاعات تازه‌ای جعل نمی‌شود.
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key});
 
@@ -25,6 +27,32 @@ class _AboutUsPageState extends State<AboutUsPage>
   static const _telegramUri = 'https://t.me/Parsaappsadmin';
 
   late final AnimationController _glowController;
+  final _promotionCardKey = GlobalKey();
+  var _promotionImpressionRecorded = false;
+  var _visibilityCheckScheduled = false;
+
+  void _schedulePromotionVisibilityCheck() {
+    if (_promotionImpressionRecorded || _visibilityCheckScheduled) return;
+    _visibilityCheckScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _visibilityCheckScheduled = false;
+      if (!mounted || _promotionImpressionRecorded) return;
+      final renderObject = _promotionCardKey.currentContext?.findRenderObject();
+      if (renderObject is! RenderBox || !renderObject.hasSize) return;
+
+      final cardRect = renderObject.localToGlobal(Offset.zero) & renderObject.size;
+      final screenRect = Offset.zero & MediaQuery.sizeOf(context);
+      final visibleRect = cardRect.intersect(screenRect);
+      if (visibleRect.isEmpty) return;
+      final visibleArea = visibleRect.width * visibleRect.height;
+      final cardArea = cardRect.width * cardRect.height;
+      if (cardArea > 0 && visibleArea / cardArea >= .5) {
+        _promotionImpressionRecorded = true;
+        const FandoghiPromotionMetrics()
+            .record(FandoghiPromotionEvent.impression);
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -66,6 +94,7 @@ class _AboutUsPageState extends State<AboutUsPage>
 
   @override
   Widget build(BuildContext context) {
+    _schedulePromotionVisibilityCheck();
     return Scaffold(
       appBar: AppBar(
         title: const Text('دربارهٔ ما'),
@@ -80,11 +109,16 @@ class _AboutUsPageState extends State<AboutUsPage>
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 620),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(24, 14, 24, 40),
-              child: Column(
-                children: [
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (_) {
+                _schedulePromotionVisibilityCheck();
+                return false;
+              },
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(24, 14, 24, 40),
+                child: Column(
+                  children: [
                   const StaggeredReveal(
                     index: 0,
                     child: KartoniyaStoryBanner(
@@ -116,7 +150,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'سازندهٔ کارتونیَا؛ طراحی، توسعه و انتشار',
+                              'سازندهٔ کارتونیا؛ طراحی، توسعه و انتشار',
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
@@ -133,6 +167,21 @@ class _AboutUsPageState extends State<AboutUsPage>
                   const SizedBox(height: 14),
                   StaggeredReveal(
                     index: 2,
+                    child: FandoghiPromotionCard(
+                      key: _promotionCardKey,
+                      onLaunchStarted: () => const FandoghiPromotionMetrics()
+                          .record(FandoghiPromotionEvent.click),
+                      onLaunchResult: (result) => const FandoghiPromotionMetrics()
+                          .record(
+                        result == FandoghiStoreLaunchResult.opened
+                            ? FandoghiPromotionEvent.opened
+                            : FandoghiPromotionEvent.failed,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  StaggeredReveal(
+                    index: 3,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(18),
@@ -173,7 +222,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 14),
                   StaggeredReveal(
-                    index: 3,
+                    index: 4,
                     child: Card(
                       child: InkWell(
                         onTap: () {
@@ -232,7 +281,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 12),
                   StaggeredReveal(
-                    index: 4,
+                    index: 5,
                     child: Card(
                       child: ListTile(
                         leading: const Icon(
@@ -256,7 +305,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 14),
                   StaggeredReveal(
-                    index: 5,
+                    index: 6,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -309,11 +358,11 @@ class _AboutUsPageState extends State<AboutUsPage>
                   ),
                   const SizedBox(height: 22),
                   StaggeredReveal(
-                    index: 6,
+                    index: 7,
                     child: Column(
                       children: [
                         Text(
-                          'نسخهٔ ۱.۲.۱',
+                          'نسخهٔ ۱.۳.۰',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: context.secondaryTextColor,
@@ -330,7 +379,8 @@ class _AboutUsPageState extends State<AboutUsPage>
                       ],
                     ),
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

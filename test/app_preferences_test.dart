@@ -65,30 +65,39 @@ void main() {
       expect(service.watchProgress, isEmpty);
       expect(service.childProfileName, isNull);
       expect(service.childAvatarIndex, 0);
+      expect(service.childProfileAge, isNull);
     });
 
-    test('پروفایل کودک فقط نام نمایشی و ایندکس آواتار را نگه می‌دارد',
+    test('پروفایل کودک نام نمایشی، سن به سال و ایندکس آواتار را نگه می‌دارد',
         () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final service = AppPreferences(prefs);
 
-      await service.saveChildProfile(name: '  آرش  ', avatarIndex: 4);
+      await service.saveChildProfile(
+        name: '  آرش  ',
+        ageYears: 8,
+        avatarIndex: 4,
+      );
       expect(service.childProfileName, 'آرش');
+      expect(service.childProfileAge, 8);
       expect(service.childAvatarIndex, 4);
 
       final raw = prefs.getString('child_profile');
       final decoded = jsonDecode(raw!) as Map<String, dynamic>;
-      expect(decoded.keys, unorderedEquals(['name', 'avatar']));
+      expect(decoded.keys, unorderedEquals(['name', 'ageYears', 'avatar']));
     });
 
-    test('نام خالی والد به پیش‌فرض مهربان برمی‌گردد', () async {
-      SharedPreferences.setMockInitialValues({});
+    test('نام والدِ نسخهٔ قبلی پاک می‌شود و دیگر خوانده یا ذخیره نمی‌شود',
+        () async {
+      SharedPreferences.setMockInitialValues({
+        'parent_display_name': 'نام قدیمی والد',
+      });
       final prefs = await SharedPreferences.getInstance();
       final service = AppPreferences(prefs);
 
-      await service.saveParentName('   ');
-      expect(service.parentName, 'والد مهربان');
+      await service.clearLegacyParentName();
+      expect(prefs.containsKey('parent_display_name'), isFalse);
     });
   });
 }

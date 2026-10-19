@@ -34,7 +34,7 @@ Core (AppPreferences, theme, utilities)
 ## چرا این انتخاب‌ها؟
 
 ### Riverpod
-از قبل Riverpod در پروژه بوده و برای stateهای کوچک، قابل‌آزمون و مستقل از Widget مناسب است. stateهای persistence شامل علاقه‌مندی‌ها، تم، نام نمایشی والد/کودک، آواتار کودک، autoplay، وضعیت onboarding و history هستند.
+از قبل Riverpod در پروژه بوده و برای stateهای کوچک، قابل‌آزمون و مستقل از Widget مناسب است. stateهای persistence شامل علاقه‌مندی‌ها، تم، نام نمایشی کودک، سن فقط به سال، شمارهٔ آواتار برداری کودک، autoplay، وضعیت onboarding و history هستند؛ نام والد ذخیره نمی‌شود. کاهش حرکت از تنظیم دسترس‌پذیری سیستم گرفته می‌شود.
 
 ### SharedPreferences به‌جای Database
 نسخهٔ فعلی چند preference کوچک، شناسهٔ علاقه‌مندی و درصد پیشرفت را ذخیره می‌کند؛ SQLite/Hive در این مرحله پیچیدگی غیرضروری بود. با بزرگ‌شدن آفلاین‌کاتالوگ یا downloadها، migration به database لایهٔ data انجام می‌شود، بدون تغییر UI.
