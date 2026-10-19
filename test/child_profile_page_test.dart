@@ -64,9 +64,10 @@ void main() {
     final ageField = find.byType(DropdownButtonFormField<int>);
     await tester.ensureVisible(ageField);
     await tester.tap(ageField);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('۸ سال').last);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await tester.enterText(find.byType(TextField).last, 'آریا');
     await tester.pump();

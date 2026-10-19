@@ -225,7 +225,14 @@ void main() {
 
     expect(find.text('حریم خصوصی'), findsOneWidget);
     expect(find.text('چه چیزهایی روی همین دستگاه می‌ماند؟'), findsOneWidget);
-    expect(find.text('هنگام پخش چه ارتباطی برقرار می‌شود؟'), findsOneWidget);
+
+    final videoTitle = find.text('هنگام پخش چه ارتباطی برقرار می‌شود؟');
+    await tester.scrollUntilVisible(
+      videoTitle,
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(videoTitle, findsOneWidget);
     expect(find.textContaining('IP'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
