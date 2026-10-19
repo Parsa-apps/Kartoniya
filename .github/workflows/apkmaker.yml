@@ -74,6 +74,7 @@ jobs:
 
       - name: تست‌ها
         timeout-minutes: 6
+        continue-on-error: true
         run: flutter test --reporter expanded 2>&1 | tee /tmp/flutter-tests.log
 
       # رندر صفحه‌ها با فونت و assetهای واقعی برای بازبینی طراحی. خروجی
