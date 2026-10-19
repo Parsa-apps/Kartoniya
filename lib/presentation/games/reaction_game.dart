@@ -2,20 +2,22 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 import '../../core/theme/app_colors.dart';
 
-class ReactionGamePage extends StatefulWidget {
+class ReactionGamePage extends ConsumerStatefulWidget {
   const ReactionGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<ReactionGamePage> createState() => _ReactionGamePageState();
+  ConsumerState<ReactionGamePage> createState() => _ReactionGamePageState();
 }
 
-class _ReactionGamePageState extends State<ReactionGamePage> {
+class _ReactionGamePageState extends ConsumerState<ReactionGamePage> {
   bool _isGreen = false;
   int _score = 0;
   int _round = 0;
@@ -70,6 +72,7 @@ class _ReactionGamePageState extends State<ReactionGamePage> {
   }
 
   void _showEnd() {
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(
       context: context,
       barrierDismissible: false,

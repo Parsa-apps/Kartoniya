@@ -81,6 +81,13 @@ class RecentGamesNotifier extends StateNotifier<List<String>> {
     state = List.unmodifiable(next);
     unawaited(_prefs.saveRecentGameIds(next));
   }
+
+  void pruneTo(Set<String> valid) {
+    if (state.every(valid.contains)) return;
+    final next = state.where(valid.contains).toList();
+    state = List.unmodifiable(next);
+    unawaited(_prefs.saveRecentGameIds(next));
+  }
 }
 
 final gameScoresProvider =

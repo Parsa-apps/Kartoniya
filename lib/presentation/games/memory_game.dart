@@ -2,21 +2,23 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 
-class MemoryGamePage extends StatefulWidget {
+class MemoryGamePage extends ConsumerStatefulWidget {
   const MemoryGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<MemoryGamePage> createState() => _MemoryGamePageState();
+  ConsumerState<MemoryGamePage> createState() => _MemoryGamePageState();
 }
 
-class _MemoryGamePageState extends State<MemoryGamePage> {
+class _MemoryGamePageState extends ConsumerState<MemoryGamePage> {
   late List<String> _cards;
   late List<bool> _revealed;
   late List<bool> _matched;
@@ -100,13 +102,15 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
 
   void _showWin() {
     if (!mounted) return;
+    final computed = (100 - _moves * 2 - _elapsed).clamp(10, 100).toInt();
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, computed);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => GameResultDialog(
         title: 'آفرین!',
         message: 'همهٔ جفت‌ها را در $_moves حرکت و $_elapsed ثانیه پیدا کردی.',
-        score: (100 - _moves * 2 - _elapsed).clamp(10, 100).toInt(),
+        score: computed,
         isWin: true,
         onRestart: () {
           Navigator.of(context).pop();

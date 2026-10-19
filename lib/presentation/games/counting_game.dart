@@ -1,20 +1,22 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 import '../../core/theme/app_colors.dart';
 
-class CountingGamePage extends StatefulWidget {
+class CountingGamePage extends ConsumerStatefulWidget {
   const CountingGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<CountingGamePage> createState() => _CountingGamePageState();
+  ConsumerState<CountingGamePage> createState() => _CountingGamePageState();
 }
 
-class _CountingGamePageState extends State<CountingGamePage> {
+class _CountingGamePageState extends ConsumerState<CountingGamePage> {
   int _target = 0;
   late List<String> _display;
   int _score = 0;
@@ -59,6 +61,7 @@ class _CountingGamePageState extends State<CountingGamePage> {
   }
 
   void _showEnd() {
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(
       context: context,
       barrierDismissible: false,

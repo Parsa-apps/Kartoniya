@@ -106,13 +106,26 @@ class CartoonCard extends ConsumerWidget {
                             .toggle(cartoon.id),
                       ),
                     ),
+                    if (!cartoon.verification.isPlayable)
+                      PositionedDirectional(
+                        bottom: 8,
+                        start: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withOpacity(.95),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text('به‌زودی', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800)),
+                        ),
+                      ),
                     if (cartoon.ageRange.trim().isNotEmpty)
                       PositionedDirectional(
                         top: 9,
                         end: 9,
                         child: _AgeBadge(ageRange: cartoon.ageRange),
                       ),
-                    if (progress > 0)
+                    if (progress > 0 && cartoon.verification.isPlayable)
                       PositionedDirectional(
                         bottom: 0,
                         start: 0,

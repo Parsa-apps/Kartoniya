@@ -1,18 +1,20 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 import '../../core/theme/app_colors.dart';
 
-class SlidePuzzleGamePage extends StatefulWidget {
+class SlidePuzzleGamePage extends ConsumerStatefulWidget {
   const SlidePuzzleGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<SlidePuzzleGamePage> createState() => _SlidePuzzleGamePageState();
+  ConsumerState<SlidePuzzleGamePage> createState() => _SlidePuzzleGamePageState();
 }
 
-class _SlidePuzzleGamePageState extends State<SlidePuzzleGamePage> {
+class _SlidePuzzleGamePageState extends ConsumerState<SlidePuzzleGamePage> {
   late List<int> _board; // 0 = empty
   int _moves = 0;
   bool _won = false;
@@ -24,13 +26,28 @@ class _SlidePuzzleGamePageState extends State<SlidePuzzleGamePage> {
   }
 
   void _init() {
-    _board = List.generate(9, (i) => i);
-    // shuffle with valid moves to keep solvable
-    _board.shuffle();
-    // ensure not already solved
+    // Start from solved: [1..8,0] then apply 100 random valid moves — guarantees solvability
+    _board = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+    final rand = DateTime.now().microsecondsSinceEpoch % 91138233;
+    var r = rand;
+    int empty = 8;
+    for (var k = 0; k < 120; k++) {
+      r = (r * 1664525 + 1013904223) & 0x7fffffff;
+      final dir = r % 4;
+      int nr = empty ~/ 3, nc = empty % 3;
+      if (dir == 0) nr--;
+      if (dir == 1) nr++;
+      if (dir == 2) nc--;
+      if (dir == 3) nc++;
+      if (nr < 0 || nr >= 3 || nc < 0 || nc >= 3) continue;
+      final nxt = nr * 3 + nc;
+      _board[empty] = _board[nxt];
+      _board[nxt] = 0;
+      empty = nxt;
+    }
+    // ensure not solved (extremely rare after shuffle)
     if (_isSolved) {
-      _board[0] = 1;
-      _board[1] = 0;
+      _board[0] = 2; _board[1] = 1;
     }
     _moves = 0;
     _won = false;
@@ -66,13 +83,15 @@ class _SlidePuzzleGamePageState extends State<SlidePuzzleGamePage> {
 
   void _showWin() {
     if (!mounted) return;
+    final computed = (100 - _moves).clamp(20, 100).toInt();
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, computed);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => GameResultDialog(
         title: 'تبریک!',
         message: 'پازل را در $_moves حرکت حل کردی!',
-        score: (100 - _moves).clamp(20, 100).toInt(),
+        score: computed,
         isWin: true,
         onRestart: () {
           Navigator.of(context).pop();

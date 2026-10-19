@@ -1,19 +1,21 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 
-class DifferenceGamePage extends StatefulWidget {
+class DifferenceGamePage extends ConsumerStatefulWidget {
   const DifferenceGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<DifferenceGamePage> createState() => _DifferenceGamePageState();
+  ConsumerState<DifferenceGamePage> createState() => _DifferenceGamePageState();
 }
 
-class _DifferenceGamePageState extends State<DifferenceGamePage> {
+class _DifferenceGamePageState extends ConsumerState<DifferenceGamePage> {
   late List<bool> _found;
   late List<Offset> _positions;
   int _score = 0;
@@ -43,6 +45,7 @@ class _DifferenceGamePageState extends State<DifferenceGamePage> {
   }
 
   void _showWin() {
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(
       context: context,
       barrierDismissible: false,

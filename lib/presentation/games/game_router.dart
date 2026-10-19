@@ -11,6 +11,11 @@ import 'maze_game.dart';
 import 'odd_one_out_game.dart';
 import 'sorting_game.dart';
 import 'difference_game.dart';
+import 'pattern_game.dart';
+import 'guess_game.dart';
+import 'word_game.dart';
+import 'riddle_game.dart';
+import 'math_race_game.dart';
 
 /// نگاشت mechanics → ویجت قابل اجرا
 /// برای مکانیک‌های هنوز پیاده‌نشده، یک بازی تعمیم‌یافته یا پیام «به‌زودی» نمایش داده می‌شود.
@@ -27,7 +32,6 @@ Widget buildGameForMechanics(GameModel game) {
     case 'rotate_puzzle':
     case 'block_fit':
     case 'tangram':
-      // از همان slide puzzle با تنظیمات متفاوت استفاده می‌کنیم (موقتاً)
       return SlidePuzzleGamePage(game: game);
     case 'coloring':
     case 'color_by_number':
@@ -35,7 +39,7 @@ Widget buildGameForMechanics(GameModel game) {
     case 'spot_difference':
       return DifferenceGamePage(game: game);
     case 'hidden_objects':
-      return DifferenceGamePage(game: game); // موقتاً reuse
+      return DifferenceGamePage(game: game);
     case 'shadow_match':
     case 'shape_match':
     case 'shape_sort':
@@ -67,9 +71,37 @@ Widget buildGameForMechanics(GameModel game) {
     case 'size_sort':
     case 'color_sort':
     case 'sorting':
-    case 'word_build':
-    case 'letter_pick':
       return SortingGamePage(game: game);
+    // ——— ۵ موتور جدید ———
+    case 'pattern_complete':
+    case 'pattern_follow':
+    case 'logic_pick':
+    case 'logic_grid':
+      return PatternGamePage(game: game);
+    case 'guess_blur':
+    case 'silhouette_guess':
+    case 'partial_guess':
+    case 'sound_guess':
+    case 'emoji_guess':
+    case 'sound_match':
+      return GuessGamePage(game: game);
+    case 'word_build':
+    case 'missing_letter':
+    case 'letter_pick':
+    case 'letter_hunt':
+    case 'word_search':
+    case 'tracing':
+    case 'rhyme_match':
+      return WordGamePage(game: game);
+    case 'riddle_pick':
+    case 'mixed_challenge':
+      return RiddleGamePage(game: game);
+    case 'math_race':
+      return MathRaceGamePage(game: game);
+    // پوشش باقی‌مانده برای حذف کامل fallback
+    case 'color_match':
+    case 'shape_fit':
+      return ShadowMatchGamePage(game: game);
     default:
       return _GenericPlaceholderGame(game: game);
   }

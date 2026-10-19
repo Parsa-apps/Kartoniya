@@ -1,19 +1,21 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 
-class OddOneOutGamePage extends StatefulWidget {
+class OddOneOutGamePage extends ConsumerStatefulWidget {
   const OddOneOutGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<OddOneOutGamePage> createState() => _OddOneOutGamePageState();
+  ConsumerState<OddOneOutGamePage> createState() => _OddOneOutGamePageState();
 }
 
-class _OddOneOutGamePageState extends State<OddOneOutGamePage> {
+class _OddOneOutGamePageState extends ConsumerState<OddOneOutGamePage> {
   late List<String> _items;
   late int _oddIndex;
   int _score = 0;
@@ -58,6 +60,7 @@ class _OddOneOutGamePageState extends State<OddOneOutGamePage> {
   }
 
   void _showEnd([bool win = true]) {
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(
       context: context,
       barrierDismissible: false,

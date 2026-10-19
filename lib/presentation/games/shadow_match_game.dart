@@ -1,19 +1,21 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 
-class ShadowMatchGamePage extends StatefulWidget {
+class ShadowMatchGamePage extends ConsumerStatefulWidget {
   const ShadowMatchGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<ShadowMatchGamePage> createState() => _ShadowMatchGamePageState();
+  ConsumerState<ShadowMatchGamePage> createState() => _ShadowMatchGamePageState();
 }
 
-class _ShadowMatchGamePageState extends State<ShadowMatchGamePage> {
+class _ShadowMatchGamePageState extends ConsumerState<ShadowMatchGamePage> {
   late List<String> _items;
   late List<String> _shadows;
   int _score = 0;
@@ -60,6 +62,7 @@ class _ShadowMatchGamePageState extends State<ShadowMatchGamePage> {
   }
 
   void _showWin() {
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(
       context: context,
       barrierDismissible: false,

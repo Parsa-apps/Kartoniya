@@ -1,17 +1,19 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 
-class SortingGamePage extends StatefulWidget {
+class SortingGamePage extends ConsumerStatefulWidget {
   const SortingGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<SortingGamePage> createState() => _SortingGamePageState();
+  ConsumerState<SortingGamePage> createState() => _SortingGamePageState();
 }
 
-class _SortingGamePageState extends State<SortingGamePage> {
+class _SortingGamePageState extends ConsumerState<SortingGamePage> {
   late List<int> _numbers;
   int _score = 0;
   int _round = 1;
@@ -48,6 +50,7 @@ class _SortingGamePageState extends State<SortingGamePage> {
   }
 
   void _showEnd() {
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, _score);
     showDialog(
       context: context,
       barrierDismissible: false,

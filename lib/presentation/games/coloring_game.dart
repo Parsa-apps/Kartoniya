@@ -1,17 +1,19 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 
-class ColoringGamePage extends StatefulWidget {
+class ColoringGamePage extends ConsumerStatefulWidget {
   const ColoringGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<ColoringGamePage> createState() => _ColoringGamePageState();
+  ConsumerState<ColoringGamePage> createState() => _ColoringGamePageState();
 }
 
-class _ColoringGamePageState extends State<ColoringGamePage> {
+class _ColoringGamePageState extends ConsumerState<ColoringGamePage> {
   final List<Color> _palette = const [
     Color(0xFFFF5D6C),
     Color(0xFFFFC53D),
@@ -42,6 +44,7 @@ class _ColoringGamePageState extends State<ColoringGamePage> {
   }
 
   void _showDone() {
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, 50);
     showDialog(
       context: context,
       builder: (_) => GameResultDialog(

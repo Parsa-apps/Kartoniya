@@ -1,17 +1,19 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/models/game_model.dart';
+import '../../data/providers/games_provider.dart';
 import 'game_scaffold.dart';
 
-class MazeGamePage extends StatefulWidget {
+class MazeGamePage extends ConsumerStatefulWidget {
   const MazeGamePage({required this.game, super.key});
   final GameModel game;
 
   @override
-  State<MazeGamePage> createState() => _MazeGamePageState();
+  ConsumerState<MazeGamePage> createState() => _MazeGamePageState();
 }
 
-class _MazeGamePageState extends State<MazeGamePage> {
+class _MazeGamePageState extends ConsumerState<MazeGamePage> {
   // 5x5 maze: 0 empty, 1 wall, 2 start, 3 end
   final List<List<int>> _maze = [
     [2, 0, 1, 0, 0],
@@ -49,13 +51,15 @@ class _MazeGamePageState extends State<MazeGamePage> {
   }
 
   void _showWin() {
+    final computed = (80 - _moves).clamp(10, 80).toInt();
+    ref.read(gameScoresProvider.notifier).saveScore(widget.game.id, computed);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => GameResultDialog(
         title: 'رسیدی!',
         message: 'ماز را در $_moves حرکت حل کردی.',
-        score: (80 - _moves).clamp(10, 80).toInt(),
+        score: computed,
         isWin: true,
         onRestart: () {
           Navigator.of(context).pop();
