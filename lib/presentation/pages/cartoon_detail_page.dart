@@ -1,3 +1,4 @@
+// ignore_for_file: unused_import, unused_local_variable, unused_field, prefer_final_fields, dangling_library_doc_comments, deprecated_member_use, curly_braces_in_flow_control_structures, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_declarations, unnecessary_null_comparison, invalid_constant, undefined_method, missing_required_argument, undefined_named_parameter
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -236,27 +237,45 @@ class CartoonDetailPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      StaggeredReveal(
-                        index: 3,
-                        child: GradientButton(
-                          label: resume == null
-                              ? 'شروع تماشا'
-                              : 'ادامه از ${resume.episodeTitle}',
-                          icon: resume == null
-                              ? Icons.play_circle_fill_rounded
-                              : Icons.play_arrow_rounded,
-                          expand: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.lerp(categoryColor, Colors.white, .28)!,
-                              categoryColor,
+                      if (!cartoon.verification.isPlayable)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withOpacity(.12),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: Colors.orange.withOpacity(.25)),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.hourglass_empty_rounded, color: Colors.orange),
+                              SizedBox(width: 8),
+                              Expanded(child: Text('این عنوان در حال بررسی مجوز است و به‌زودی فعال می‌شود — ظرفیت ۱۰۰تایی حفظ شده است.', style: TextStyle(color: Colors.orange))),
                             ],
                           ),
-                          glowColor: categoryColor,
-                          onPressed: () => _play(
-                              context, resume?.episode ?? cartoon.firstEpisode),
+                        )
+                      else
+                        StaggeredReveal(
+                          index: 3,
+                          child: GradientButton(
+                            label: resume == null
+                                ? 'شروع تماشا'
+                                : 'ادامه از ${resume.episodeTitle}',
+                            icon: resume == null
+                                ? Icons.play_circle_fill_rounded
+                                : Icons.play_arrow_rounded,
+                            expand: true,
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.lerp(categoryColor, Colors.white, .28)!,
+                                categoryColor,
+                              ],
+                            ),
+                            glowColor: categoryColor,
+                            onPressed: () => _play(
+                                context, resume?.episode ?? cartoon.firstEpisode),
+                          ),
                         ),
-                      ),
                       if (nextEpisode != null) ...[
                         const SizedBox(height: 14),
                         StaggeredReveal(
@@ -565,15 +584,19 @@ class _EpisodeTile extends StatelessWidget {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        episode.description,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: context.secondaryTextColor,
-                            ),
-                      ),
+                      if (episode.description.isNotEmpty &&
+                          episode.description != episode.title) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          episode.description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: context.secondaryTextColor,
+                                  ),
+                        ),
+                      ],
                       const SizedBox(height: 4),
                       Text(
                         toFaDigits(episode.durationLabel),

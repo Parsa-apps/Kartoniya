@@ -70,11 +70,24 @@ jobs:
           fi
 
       - name: تحلیل Flutter
-        run: flutter analyze --no-pub 2>&1 | tee /tmp/flutter-analyze.log
+        run: |
+          set -o pipefail
+          flutter analyze --no-pub 2>&1 | tee /tmp/flutter-analyze.log
 
       - name: تست‌ها
         timeout-minutes: 6
-        run: flutter test --reporter expanded 2>&1 | tee /tmp/flutter-tests.log
+        run: |
+          set -o pipefail
+          flutter test --reporter compact 2>&1 | tee /tmp/flutter-tests.log
+
+      - name: انتشار لاگ تست‌ها
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-tests-log
+          path: /tmp/flutter-tests.log
+          if-no-files-found: warn
+          retention-days: 3
 
       # رندر صفحه‌ها با فونت و assetهای واقعی برای بازبینی طراحی. خروجی
       # اسکرین‌شات گوشی واقعی نیست و شکست آن بیلد APK را متوقف نمی‌کند.
@@ -98,6 +111,7 @@ jobs:
       - name: بیلد release APK (تفکیک ABI)
         if: ${{ github.event.inputs.build_type != 'debug' }}
         run: |
+          set -o pipefail
           flutter build apk --release 2>&1 | tee /tmp/flutter-build.log
           flutter build apk --release --split-per-abi 2>&1 | tee -a /tmp/flutter-build.log
 
@@ -169,6 +183,20 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib, subprocess
           parts = []
+          # Extract failure snippets to survive truncation (the 4 hidden fails live in middle).
+          fail_snippet = ''
+          tlog = pathlib.Path('/tmp/flutter-tests.log')
+          if tlog.exists():
+              txt = tlog.read_text(errors='replace')
+              lines = txt.splitlines()
+              keep = []
+              for i,l in enumerate(lines):
+                  if '[E]' in l or 'EXCEPTION' in l or 'Expected:' in l or 'Actual:' in l or 'Some tests failed' in l:
+                      s = max(0,i-2); e = min(len(lines), i+8)
+                      keep.extend(lines[s:e])
+              if keep:
+                  fail_snippet = '\n'.join(keep)[:6000]
+                  parts.append('=== FAILURES EXTRACT ===\n' + fail_snippet)
           for name in (
               '/tmp/flutter-format.log', '/tmp/flutter-analyze.log',
               '/tmp/flutter-tests.log', '/tmp/flutter-build.log', '/tmp/api-delivery.json',

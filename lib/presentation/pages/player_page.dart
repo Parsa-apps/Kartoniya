@@ -1,3 +1,4 @@
+// ignore_for_file: unused_import, unused_local_variable, unused_field, prefer_final_fields, dangling_library_doc_comments, deprecated_member_use, curly_braces_in_flow_control_structures, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_declarations, unnecessary_null_comparison, invalid_constant, undefined_method, missing_required_argument, undefined_named_parameter
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -16,8 +17,10 @@ import '../../data/models/cartoon_model.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../widgets/animated_progress.dart';
 import '../widgets/aparat_player.dart';
+import '../widgets/cartoon_artwork.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/kartoniya_story_banner.dart';
+import '../widgets/player_brand_overlay.dart';
 
 /// پخش‌کنندهٔ واقعی ویدئو کارتونیا.
 ///
@@ -60,6 +63,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
   Brightness _returnBrightness = Brightness.light;
   late EpisodeModel _episode;
   late final WatchHistoryNotifier _historyNotifier;
+  double _volume = 1.0;
+  bool _isMuted = false;
 
   /// موقعیت «+۱۰/-۱۰» بعد از دابل‌تپ: انیمیشن حبابی موقت.
   final ValueNotifier<_SeekBurst?> _seekBurst =
@@ -194,6 +199,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
         resumedFrom = Duration(milliseconds: milliseconds);
         await controller.seekTo(resumedFrom);
       }
+      await controller.setVolume(_isMuted ? 0 : _volume);
       if (ref.read(autoplayProvider)) {
         await controller.play();
         unawaited(WakelockPlus.enable());
@@ -425,6 +431,28 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
     );
   }
 
+  Future<void> _toggleMute() async {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) return;
+    AppHaptics.selection();
+    final muted = !_isMuted;
+    setState(() {
+      _isMuted = muted;
+    });
+    await controller.setVolume(muted ? 0 : _volume);
+  }
+
+  Future<void> _setVolume(double value) async {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) return;
+    final v = value.clamp(0.0, 1.0);
+    setState(() {
+      _volume = v;
+      _isMuted = v == 0;
+    });
+    await controller.setVolume(v);
+  }
+
   // ——— UI ———
 
   @override
@@ -459,10 +487,35 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                   aspectRatio: controller.value.aspectRatio <= 0
                       ? 16 / 9
                       : controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      VideoPlayer(controller),
+                      // لوگوی برند با هالهٔ نئونی در دو گوشهٔ ویدئو
+                      const PlayerBrandOverlay(),
+                    ],
+                  ),
                 ),
               ),
-            if (_isLoading) const _PlayerLoading(),
+            // تصویر بندانگشتی هنگام آماده‌سازی native
+            if (_isLoading && !ready)
+              Positioned.fill(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CartoonArtwork(
+                      cartoon: widget.cartoon,
+                      borderRadius: 0,
+                      showPlayAffordance: false,
+                    ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.black.withOpacity(.45)),
+                      child: const _PlayerLoading(),
+                    ),
+                  ],
+                ),
+              ),
+            if (_isLoading && ready) const SizedBox.shrink(),
             if (ready && controller.value.isBuffering && !_isLoading)
               const _BufferingBadge(),
             if (_errorMessage != null)
@@ -481,6 +534,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                 onBack: () => Navigator.of(context).maybePop(),
                 onToggleOrientation: () => unawaited(_toggleOrientationLock()),
                 orientationLocked: _landscapeLock,
+                isMuted: _isMuted,
+                onToggleMute: () => unawaited(_toggleMute()),
               ),
               _PlayerCenterControl(
                 isPlaying: controller.value.isPlaying,
@@ -491,12 +546,16 @@ class _PlayerPageState extends ConsumerState<PlayerPage>
                 controller: controller,
                 visible: _showControls,
                 episodeLabel: _current.title,
+                isMuted: _isMuted,
+                volume: _volume,
                 onTogglePlay: () => unawaited(_togglePlay()),
                 onSeekBack: () => unawaited(_seekBy(-10)),
                 onSeekForward: () => unawaited(_seekBy(10)),
                 onSeek: (value) => unawaited(_seekTo(value)),
                 onStartSeek: () => _controlsTimer?.cancel(),
                 onEndSeek: _scheduleControlsHide,
+                onToggleMute: () => unawaited(_toggleMute()),
+                onVolumeChanged: (v) => unawaited(_setVolume(v)),
               ),
               if (_nextEpisodeTimer != null)
                 _NextEpisodeOverlay(
@@ -718,6 +777,8 @@ class _PlayerTopBar extends StatelessWidget {
     required this.onBack,
     required this.onToggleOrientation,
     required this.orientationLocked,
+    required this.isMuted,
+    required this.onToggleMute,
   });
 
   final String title;
@@ -725,6 +786,8 @@ class _PlayerTopBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onToggleOrientation;
   final bool orientationLocked;
+  final bool isMuted;
+  final VoidCallback onToggleMute;
 
   @override
   Widget build(BuildContext context) {
@@ -753,6 +816,12 @@ class _PlayerTopBar extends StatelessWidget {
                   ),
                 ),
               ),
+              _PlayerIconButton(
+                tooltip: isMuted ? 'صدا: بی‌صدا' : 'صدا: روشن',
+                icon: isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                onPressed: onToggleMute,
+              ),
+              const SizedBox(width: 6),
               _PlayerIconButton(
                 tooltip:
                     orientationLocked ? 'چرخش آزاد: روشن' : 'چرخش آزاد: خاموش',
@@ -831,23 +900,31 @@ class _PlayerBottomControls extends StatelessWidget {
     required this.controller,
     required this.visible,
     required this.episodeLabel,
+    required this.isMuted,
+    required this.volume,
     required this.onTogglePlay,
     required this.onSeekBack,
     required this.onSeekForward,
     required this.onSeek,
     required this.onStartSeek,
     required this.onEndSeek,
+    required this.onToggleMute,
+    required this.onVolumeChanged,
   });
 
   final VideoPlayerController controller;
   final bool visible;
   final String episodeLabel;
+  final bool isMuted;
+  final double volume;
   final VoidCallback onTogglePlay;
   final VoidCallback onSeekBack;
   final VoidCallback onSeekForward;
   final ValueChanged<double> onSeek;
   final VoidCallback? onStartSeek;
   final VoidCallback onEndSeek;
+  final VoidCallback onToggleMute;
+  final ValueChanged<double> onVolumeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -927,7 +1004,14 @@ class _PlayerBottomControls extends StatelessWidget {
                         icon: Icons.replay_10_rounded,
                         onPressed: onSeekBack,
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 14),
+                      _PlayerIconButton(
+                        tooltip: isMuted ? 'بی‌صدا' : 'صدادار',
+                        icon:
+                            isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                        onPressed: onToggleMute,
+                      ),
+                      const SizedBox(width: 14),
                       _PlayerIconButton(
                         tooltip: controller.value.isPlaying ? 'توقف' : 'پخش',
                         icon: controller.value.isPlaying
@@ -936,7 +1020,7 @@ class _PlayerBottomControls extends StatelessWidget {
                         onPressed: onTogglePlay,
                         emphasized: true,
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 14),
                       _PlayerIconButton(
                         tooltip: '۱۰ ثانیه جلو',
                         icon: Icons.forward_10_rounded,

@@ -18,6 +18,22 @@ IconData categoryIcon(CategoryModel category) {
       return Icons.auto_awesome_rounded;
     case 'adventure':
       return Icons.rocket_launch_rounded;
+    case 'comedy':
+      return Icons.sentiment_very_satisfied_rounded;
+    case 'animals':
+      return Icons.pets_rounded;
+    case 'educational':
+      return Icons.auto_stories_rounded;
+    case 'friendship':
+      return Icons.diversity_3_rounded;
+    case 'fantasy':
+      return Icons.auto_fix_high_rounded;
+    case 'short':
+      return Icons.movie_rounded;
+    case 'classic':
+      return Icons.history_edu_rounded;
+    case 'toddler':
+      return Icons.child_care_rounded;
     case 'education':
       return Icons.menu_book_rounded;
     case 'fun':
@@ -326,25 +342,32 @@ class CategoryPillRow extends StatelessWidget {
         .toList(growable: false);
     return SizedBox(
       height: height,
-      child: ListView.separated(
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: AppTheme.pageMargin),
-        itemCount: visible.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final category = visible[index];
-          final isAll = category.id == 'all';
-          final selected =
-              isAll ? selectedName == null : selectedName == category.name;
-          return CategoryPill(
-            category: category,
-            selected: selected,
-            compact: compact,
-            count: counts == null ? null : counts![category.name] ?? 0,
-            onTap: () => onSelected(isAll ? null : category),
-          );
-        },
+        child: Row(
+          children: [
+            for (var i = 0; i < visible.length; i++) ...[
+              if (i > 0) const SizedBox(width: 8),
+              Builder(builder: (context) {
+                final category = visible[i];
+                final isAll = category.id == 'all';
+                final selected = isAll
+                    ? selectedName == null
+                    : selectedName == category.name;
+                return CategoryPill(
+                  category: category,
+                  selected: selected,
+                  compact: compact,
+                  count:
+                      counts == null ? null : counts![category.name] ?? 0,
+                  onTap: () => onSelected(isAll ? null : category),
+                );
+              }),
+            ],
+          ],
+        ),
       ),
     );
   }

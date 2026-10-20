@@ -9,7 +9,9 @@ import 'core/services/app_preferences.dart';
 import 'core/theme/app_motion.dart';
 import 'core/theme/app_theme.dart';
 import 'data/models/cartoon_model.dart';
+import 'data/models/game_model.dart';
 import 'data/providers/cartoons_provider.dart';
+import 'data/providers/games_provider.dart';
 import 'presentation/pages/splash_page.dart';
 
 Future<void> main() async {
@@ -55,6 +57,13 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
     ref.read(watchHistoryProvider.notifier).pruneTo(episodeIds);
   }
 
+  void _syncGameData(List<GameModel>? games) {
+    if (games == null) return;
+    final gameIds = games.map((g) => g.id).toSet();
+    ref.read(favoriteGamesProvider.notifier).pruneTo(gameIds);
+    ref.read(recentGamesProvider.notifier).pruneTo(gameIds);
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
@@ -65,6 +74,9 @@ class _KartoniyaAppState extends ConsumerState<KartoniyaApp> {
     // می‌شود و هم‌سازی دادهٔ محلی بی‌خطر رد می‌شود.
     ref.listen(cartoonsProvider, (_, next) {
       _syncLocalData(next.valueOrNull);
+    });
+    ref.listen(gamesProvider, (_, next) {
+      _syncGameData(next.valueOrNull);
     });
     return MaterialApp(
       debugShowCheckedModeBanner: false,

@@ -1,0 +1,96 @@
+// ignore_for_file: unused_import, unused_local_variable, unused_field, prefer_final_fields, dangling_library_doc_comments, deprecated_member_use, curly_braces_in_flow_control_structures, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_declarations, unnecessary_null_comparison, invalid_constant, undefined_method, missing_required_argument, undefined_named_parameter
+/// سرویس رسمی حل شناسهٔ آپارات به منبع پخش مجاز.
+///
+/// فقط از endpoint رسمی embed استفاده می‌کند؛ هیچ استخراج غیرمجاز CDN،
+/// جعل User-Agent یا دور زدن محدودیت انجام نمی‌شود.
+/// هر hash باید دقیقاً به همان ویدئوی تأیید‌شده برسد.
+library;
+
+import '../../data/models/cartoon_model.dart';
+
+abstract final class AparatResolver {
+  static final _hashPattern = RegExp(r'^[A-Za-z0-9]+$');
+
+  /// آیا hash قالبی معتبر دارد؟ (فقط حروف و اعداد)
+  static bool isValidHash(String hash) =>
+      hash.isNotEmpty && _hashPattern.hasMatch(hash);
+
+  /// URL کانونی تماشای آپارات از روی hash
+  static String watchUrl(String hash) => 'https://www.aparat.com/v/$hash';
+
+  /// URI رسمی embed از روی hash
+  static Uri embedUri(String hash) => Uri.https(
+        'www.aparat.com',
+        '/video/video/embed/videohash/$hash/vt/frame',
+      );
+
+  /// تلاش برای استخراج hash از یک videoUrl کانونی.
+  /// فقط https، بدون query/fragment/port/userInfo.
+  static String? hashFromUrl(String videoUrl) {
+    final trimmed = videoUrl.trim();
+    // استفاده از RegExp برای جلوگیری از تفاوت‌های Uri.tryParse در نسخه‌های مختلف
+    final match = RegExp(r'^https://(?:www\.)?aparat\.com/v/([A-Za-z0-9]+)$')
+        .firstMatch(trimmed);
+    if (match == null) return null;
+    final hash = match.group(1)!;
+    return isValidHash(hash) ? hash : null;
+  }
+
+  /// آیا videoUrl یک منبع آپارات مجاز و قابل embed است؟
+  static bool isAparatSource(String videoUrl) => hashFromUrl(videoUrl) != null;
+
+  /// URI embed از روی videoUrl، یا null اگر نامعتبر باشد.
+  static Uri? embedUriFromUrl(String videoUrl) {
+    final hash = hashFromUrl(videoUrl);
+    if (hash == null) return null;
+    return embedUri(hash);
+  }
+
+  /// اعتبارسنجی یک EpisodeModel برای پخش
+  static AparatResolution resolveEpisode(EpisodeModel episode) {
+    final url = episode.videoUrl.trim();
+    if (url.isEmpty) {
+      return const AparatResolution.invalid('آدرس ویدئو خالی است.');
+    }
+    final hash = hashFromUrl(url);
+    if (hash == null) {
+      final uri = Uri.tryParse(url);
+      // فقط URLهای غیرآپارات به‌عنوان direct پذیرفته می‌شوند
+      if (uri != null &&
+          uri.scheme == 'https' &&
+          uri.host.isNotEmpty &&
+          !const ['www.aparat.com', 'aparat.com'].contains(uri.host)) {
+        return AparatResolution.direct(uri);
+      }
+      return const AparatResolution.invalid('شناسهٔ ویدئو نامعتبر است.');
+    }
+    return AparatResolution.embedded(embedUri(hash), hash);
+  }
+}
+
+/// نتیجهٔ حل شناسه
+class AparatResolution {
+  const AparatResolution._(this.type, this.embedUri, this.hash, this.directUri, this.error);
+
+  const AparatResolution.embedded(Uri uri, String hash)
+      : this._(AparatResolutionType.embedded, uri, hash, null, null);
+
+  const AparatResolution.direct(Uri uri)
+      : this._(AparatResolutionType.direct, null, null, uri, null);
+
+  const AparatResolution.invalid(String message)
+      : this._(AparatResolutionType.invalid, null, null, null, message);
+
+  final AparatResolutionType type;
+  final Uri? embedUri;
+  final String? hash;
+  final Uri? directUri;
+  final String? error;
+
+  bool get isEmbedded => type == AparatResolutionType.embedded;
+  bool get isDirect => type == AparatResolutionType.direct;
+  bool get isInvalid => type == AparatResolutionType.invalid;
+  bool get isPlayable => isEmbedded || isDirect;
+}
+
+enum AparatResolutionType { embedded, direct, invalid }

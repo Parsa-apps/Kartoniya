@@ -1,6 +1,13 @@
 import 'dart:ui';
 
+import 'content_source.dart';
+
 /// دادهٔ نمایشی یک قسمت. آدرس ویدئو باید فقط به محتوای دارای مجوز اشاره کند.
+///
+/// هر قسمت با شناسه یا هش رسمی آپارات مدیریت می‌شود؛ آدرس کامل صفحه
+/// فقط قالب کانونی https://www.aparat.com/v/{hash} را می‌پذیرد و همان
+/// hash به endpoint مجاز embed تبدیل می‌شود. هیچ استخراج CDN یا دور زدن
+/// محدودیت انجام نمی‌شود.
 class EpisodeModel {
   const EpisodeModel({
     required this.id,
@@ -9,6 +16,12 @@ class EpisodeModel {
     required this.videoUrl,
     this.description = '',
     this.isNew = false,
+    this.isActive = true,
+    this.sortOrder = 0,
+    this.thumbnailAsset,
+    this.source = ContentSource.aparat,
+    this.verification = VerificationStatus.verified,
+    this.license = ContentLicense.licensed,
   });
 
   final String id;
@@ -18,28 +31,52 @@ class EpisodeModel {
   final String videoUrl;
   final bool isNew;
 
-  /// Only canonical HTTPS Aparat watch pages can enter the embedded player.
+  /// آیا این قسمت فعال و قابل نمایش است؟
+  final bool isActive;
+
+  /// ترتیب نمایش در فهرست قسمت‌ها
+  final int sortOrder;
+
+  /// تصویر بندانگشتی اختیاری (پوستر محلی یا URL)
+  final String? thumbnailAsset;
+
+  /// منبع تأمین این قسمت (برای مدیریت داخلی و عیب‌یابی؛ در UI نمایش داده نمی‌شود)
+  final ContentSource source;
+
+  /// وضعیت تأیید محتوا
+  final VerificationStatus verification;
+
+  /// مجوز
+  final ContentLicense license;
+
+  /// هش رسمی ویدئوی آپارات (مثلاً ddy5427)، نه URL کامل.
+  /// فقط قالب کانونی HTTPS بدون query/fragment/port پذیرفته می‌شود.
   String? get aparatVideoHash {
-    final uri = Uri.tryParse(videoUrl);
-    if (uri == null ||
-        uri.scheme != 'https' ||
-        !const ['www.aparat.com', 'aparat.com'].contains(uri.host) ||
-        uri.userInfo.isNotEmpty ||
-        uri.hasPort ||
-        uri.hasQuery ||
-        uri.hasFragment ||
-        uri.pathSegments.length != 2 ||
-        uri.pathSegments.first != 'v') return null;
-    final hash = uri.pathSegments.last;
+    final trimmed = videoUrl.trim();
+    final match = RegExp(r'^https://(?:www\.)?aparat\.com/v/([A-Za-z0-9]+)$')
+        .firstMatch(trimmed);
+    if (match == null) return null;
+    final hash = match.group(1)!;
     return RegExp(r'^[a-zA-Z0-9]+$').hasMatch(hash) ? hash : null;
   }
 
+  /// حافظهٔ کوتاه‌مدت برای منابع موقت نیست؛ اما اگر روزی لازم شد،
+  /// این getter می‌تواند با AparatResolver هماهنگ شود.
   Uri? get aparatEmbedUri {
     final hash = aparatVideoHash;
     return hash == null
         ? null
         : Uri.https(
             'www.aparat.com', '/video/video/embed/videohash/$hash/vt/frame');
+  }
+
+  /// آیا این قسمت از طریق آپارات قابل پخش است؟
+  bool get isAparatSource => aparatVideoHash != null;
+
+  /// آیا hash قالبی معتبر دارد (بدون network)؟
+  bool get hasValidAparatHash {
+    final h = aparatVideoHash;
+    return h != null && h.isNotEmpty;
   }
 
   String get durationLabel {
@@ -54,23 +91,6 @@ class EpisodeModel {
 /// مدل محتوای کارتونیا. این مدل فقط متادیتا نگه می‌دارد؛ فایل ویدئو یا دادهٔ
 /// حساس کاربر در آن ذخیره نمی‌شود.
 class CartoonModel {
-  const CartoonModel({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.duration,
-    required this.rating,
-    required this.ageRange,
-    required this.artworkEmoji,
-    required this.artworkColorValue,
-    required this.episodes,
-    this.isNew = false,
-    this.isFeatured = false,
-    this.tags = const [],
-    this.artworkAsset,
-  });
-
   final String id;
   final String title;
   final String description;
@@ -92,10 +112,59 @@ class CartoonModel {
   /// When it is missing the UI keeps the deterministic vector poster.
   final String? artworkAsset;
 
+  /// آیا این کارتون فعال است؟ (غیرفعال‌ها در فهرست اصلی نشان داده نمی‌شوند)
+  final bool isActive;
+
+  /// ترتیب نمایش در گرید خانه / دسته‌بندی
+  final int sortOrder;
+
+  /// عنوان اصلی (در صورت نیاز)
+  final String? originalTitle;
+
+  /// منبع تأمین برای مدیریت داخلی
+  final ContentSource source;
+
+  /// وضعیت تأیید
+  final VerificationStatus verification;
+
+  /// مجوز
+  final ContentLicense license;
+
+  const CartoonModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.duration,
+    required this.rating,
+    required this.ageRange,
+    required this.artworkEmoji,
+    required this.artworkColorValue,
+    required this.episodes,
+    this.isNew = false,
+    this.isFeatured = false,
+    this.tags = const [],
+    this.artworkAsset,
+    this.isActive = true,
+    this.sortOrder = 0,
+    this.originalTitle,
+    this.source = ContentSource.aparat,
+    this.verification = VerificationStatus.verified,
+    this.license = ContentLicense.licensed,
+  });
+
   Color get artworkColor => Color(artworkColorValue);
   int get episodeCount => episodes.length;
   String get durationLabel => '$duration دقیقه';
   EpisodeModel get firstEpisode => episodes.first;
+
+  /// فقط قسمت‌های فعال برای نمایش
+  List<EpisodeModel> get activeEpisodes =>
+      episodes.where((e) => e.isActive).toList(growable: false);
+
+  /// آیا همهٔ قسمت‌ها دارای hash معتبر آپارات هستند؟
+  bool get hasAllValidHashes =>
+      episodes.every((e) => e.aparatVideoHash != null);
 
   CartoonModel copyWith({
     String? title,
@@ -111,6 +180,11 @@ class CartoonModel {
     bool? isFeatured,
     List<String>? tags,
     String? artworkAsset,
+    bool? isActive,
+    int? sortOrder,
+    String? originalTitle,
+    ContentSource? source,
+    VerificationStatus? verification,
   }) {
     return CartoonModel(
       id: id,
@@ -127,6 +201,11 @@ class CartoonModel {
       isFeatured: isFeatured ?? this.isFeatured,
       tags: tags ?? this.tags,
       artworkAsset: artworkAsset ?? this.artworkAsset,
+      isActive: isActive ?? this.isActive,
+      sortOrder: sortOrder ?? this.sortOrder,
+      originalTitle: originalTitle ?? this.originalTitle,
+      source: source ?? this.source,
+      verification: verification ?? this.verification,
     );
   }
 }

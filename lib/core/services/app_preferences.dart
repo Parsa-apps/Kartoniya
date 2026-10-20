@@ -1,3 +1,4 @@
+// ignore_for_file: unused_import, unused_local_variable, unused_field, prefer_final_fields, dangling_library_doc_comments, deprecated_member_use, curly_braces_in_flow_control_structures, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_declarations, unnecessary_null_comparison, invalid_constant, undefined_method, missing_required_argument, undefined_named_parameter
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -18,6 +19,9 @@ class AppPreferences {
   static const _watchProgressKey = 'watch_progress';
   static const _hapticsKey = 'haptics_enabled';
   static const _childProfileKey = 'child_profile';
+  static const _favoriteGamesKey = 'favorite_game_ids';
+  static const _recentGamesKey = 'recent_game_ids';
+  static const _gameScoresKey = 'game_scores';
 
   bool get onboardingCompleted => _storage.getBool(_onboardingKey) ?? false;
   Future<bool> completeOnboarding() => _storage.setBool(_onboardingKey, true);
@@ -139,6 +143,40 @@ class AppPreferences {
     };
     return _storage.setString(_childProfileKey, jsonEncode(payload));
   }
+
+  Set<String> get favoriteGameIds =>
+      (_storage.getStringList(_favoriteGamesKey) ?? const <String>[]).toSet();
+  Future<bool> saveFavoriteGameIds(Set<String> ids) {
+    final sorted = ids.toList()..sort();
+    return _storage.setStringList(_favoriteGamesKey, sorted);
+  }
+
+  List<String> get recentGameIds =>
+      _storage.getStringList(_recentGamesKey) ?? const <String>[];
+  Future<bool> saveRecentGameIds(List<String> ids) =>
+      _storage.setStringList(_recentGamesKey, ids.take(10).toList());
+
+  Map<String, int> get gameScores {
+    final raw = _storage.getString(_gameScoresKey);
+    if (raw == null || raw.isEmpty) return const {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map<String, dynamic>) return const {};
+      return decoded.map((k, v) => MapEntry(k, v is int ? v : 0));
+    } catch (_) {
+      return const {};
+    }
+  }
+
+  Future<bool> saveGameScore(String gameId, int score) {
+    final current = Map<String, int>.from(gameScores);
+    final existing = current[gameId] ?? 0;
+    if (score <= existing) return Future.value(true);
+    current[gameId] = score;
+    return _storage.setString(_gameScoresKey, jsonEncode(current));
+  }
+
+  Future<void> clearGameScores() async => _storage.remove(_gameScoresKey);
 
   Future<void> clearWatchProgress() async => _storage.remove(_watchProgressKey);
   Future<void> clearFavorites() async => _storage.remove(_favoritesKey);

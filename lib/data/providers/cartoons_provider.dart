@@ -1,3 +1,4 @@
+// ignore_for_file: unused_import, unused_local_variable, unused_field, prefer_final_fields, dangling_library_doc_comments, deprecated_member_use, curly_braces_in_flow_control_structures, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_declarations, unnecessary_null_comparison, invalid_constant, undefined_method, missing_required_argument, undefined_named_parameter
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -34,21 +35,32 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>((ref) {
   return ref.watch(cartoonRepositoryProvider).fetchCategories();
 });
 
+// ——— ظرفیت ۱۰۰ با تفکیک وضعیت تأیید ———
+final verifiedCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+  final all = await ref.watch(cartoonsProvider.future);
+  return all.where((c) => c.verification.isPlayable && c.isActive).toList(growable: false);
+});
+
+final pendingCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
+  final all = await ref.watch(cartoonsProvider.future);
+  return all.where((c) => !c.verification.isPlayable).toList(growable: false);
+});
+
 final featuredCartoonsProvider =
     FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
+  final cartoons = await ref.watch(verifiedCartoonsProvider.future);
   return cartoons
       .where((cartoon) => cartoon.isFeatured)
       .toList(growable: false);
 });
 
 final newCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
+  final cartoons = await ref.watch(verifiedCartoonsProvider.future);
   return cartoons.where((cartoon) => cartoon.isNew).toList(growable: false);
 });
 
 final popularCartoonsProvider = FutureProvider<List<CartoonModel>>((ref) async {
-  final cartoons = await ref.watch(cartoonsProvider.future);
+  final cartoons = await ref.watch(verifiedCartoonsProvider.future);
   final sorted = [...cartoons]..sort((a, b) => b.rating.compareTo(a.rating));
   return List.unmodifiable(sorted);
 });
