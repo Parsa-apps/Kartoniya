@@ -65,6 +65,9 @@ class GameCard extends StatelessWidget {
           favoriteInk: favoriteInk,
           showDescription: showDescription,
           showMeta: showMeta,
+          // اگر ارتفاع نامحدود باشد (مثلاً کارت داخل ستون بدون ارتفاع)،
+          // Flexible در Column نامحدود خطا می‌دهد؛ آن‌جا متن ساده می‌گذاریم.
+          flexibleBody: height.isFinite,
         );
       },
     );
@@ -80,8 +83,19 @@ class GameCard extends StatelessWidget {
     required Color favoriteInk,
     required bool showDescription,
     required bool showMeta,
+    required bool flexibleBody,
   }) {
     final isDark = context.isDarkMode;
+    final description = Text(
+      game.description,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: context.appText.bodySmall?.copyWith(
+        color: secondary,
+        height: 1.25,
+        fontSize: 10,
+      ),
+    );
     return PressableScale(
       onTap: onTap,
       child: Semantics(
@@ -167,18 +181,10 @@ class GameCard extends StatelessWidget {
               ),
               if (showDescription) ...[
                 const SizedBox(height: 2),
-                Flexible(
-                  child: Text(
-                    game.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.appText.bodySmall?.copyWith(
-                      color: secondary,
-                      height: 1.25,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
+                if (flexibleBody)
+                  Flexible(child: description)
+                else
+                  description,
               ],
               if (showMeta) ...[
                 const SizedBox(height: 6),
