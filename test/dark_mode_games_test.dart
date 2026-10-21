@@ -158,7 +158,7 @@ void main() {
 
   for (final scale in <double>[1.0, 1.3]) {
     testWidgets(
-        'گرید بازی‌ها روی گوشی ۳۲۰px با متن ${scale}× سرریز نمی‌شود',
+        'گرید بازی‌ها روی گوشی ۳۲۰px با متن $scale× سرریز نمی‌شود',
         (tester) async {
       tester.view.physicalSize = const Size(320, 568);
       tester.view.devicePixelRatio = 1;
