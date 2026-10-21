@@ -12,7 +12,7 @@ import 'kartoniya_mascot.dart';
 ///
 /// فقط وقتی صدا زده می‌شود که فهرست نشان‌های باز قبل و بعد از یک بازی واقعاً
 /// تفاوت کرده باشد؛ هیچ وضعیت «دیده‌شده» ذخیره نمی‌شود و هیچ داده‌ای جابه‌جا
-/// نمی‌شود. اگر «کاهش حرکت» روشن باشد، ورود بدون انیمیشن و بی‌درنگ است.
+/// نمی‌شود. اگر «کاهش حرکت» روشن باشد، ورود بی‌درنگ است.
 Future<void> showAchievementCelebration(
   BuildContext context,
   List<GameAchievement> achievements,
@@ -25,8 +25,9 @@ Future<void> showAchievementCelebration(
     barrierLabel: 'بستن پیام دستاورد',
     barrierColor: Colors.black.withOpacity(.45),
     transitionDuration: context.motion.dur(AppMotion.soft),
-    pageBuilder: (dialogContext, _, __) =>
-        AchievementCelebrationCard(achievements: achievements),
+    pageBuilder: (dialogContext, _, __) => AchievementCelebrationCard(
+      achievements: achievements,
+    ),
     transitionBuilder: (context, animation, _, child) {
       final curved = CurvedAnimation(
         parent: animation,
@@ -44,6 +45,11 @@ Future<void> showAchievementCelebration(
   );
 }
 
+/// کارت جشن نشان‌های تازه‌بازشده.
+///
+/// رنگ‌ها از تم خوانده می‌شوند تا در حالت تاریک هم روی سطح تیره خوانا بماند و
+/// محتوا در `SingleChildScrollView` است تا با متن بزرگ‌تر از ۱٫۳× روی گوشی
+/// کوچک سرریز ندهد.
 class AchievementCelebrationCard extends StatelessWidget {
   const AchievementCelebrationCard({
     required this.achievements,
@@ -55,6 +61,7 @@ class AchievementCelebrationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stars = achievements.fold(0, (sum, item) => sum + item.stars);
+    final goldText = AppColors.readableOn(context.surfaceColor, AppColors.gold);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -67,97 +74,95 @@ class AchievementCelebrationCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(AppTheme.radiusXXLarge),
-                border: Border.all(
-                  color: AppColors.gold.withOpacity(.35),
-                ),
+                border: Border.all(color: AppColors.gold.withOpacity(.35)),
                 boxShadow: AppTheme.mediumShadow(context),
               ),
               child: SingleChildScrollView(
                 child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 104,
-                    height: 112,
-                    child: KartoniyaMascot(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
                       width: 104,
                       height: 112,
-                      mood: MascotMood.cheering,
-                      accent: AppColors.gold,
-                      float: false,
-                      entrance: true,
-                      semanticLabel: 'فندوقی برای نشان تازه جشن می‌گیرد',
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    achievements.length == 1 ? 'یک نشان تازه!' : 'نشان‌های تازه!',
-                    textAlign: TextAlign.center,
-                    style: context.appText.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    achievements.length == 1
-                        ? 'کارت عالی بود؛ یک نشان گرفتی.'
-                        : '${toFaDigits('${achievements.length}')} نشان با هم گرفتی.',
-                    textAlign: TextAlign.center,
-                    style: context.appText.bodySmall?.copyWith(
-                      color: context.secondaryTextColor,
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // حداکثر سه نشان نشان داده می‌شود تا کارت از صفحه بلندتر
-                  // نشود؛ بقیه با شمارش باقی‌مانده در پایین ذکر می‌شوند.
-                  for (final achievement in achievements.take(3))
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: _CelebrationRow(achievement: achievement),
-                    ),
-                  if (achievements.length > 3)
-                    Text(
-                      'و ${toFaDigits('${achievements.length - 3}')} نشان دیگر',
-                      style: context.appText.labelSmall?.copyWith(
-                        color: context.secondaryTextColor,
+                      child: KartoniyaMascot(
+                        width: 104,
+                        height: 112,
+                        mood: MascotMood.cheering,
+                        accent: AppColors.gold,
+                        float: false,
+                        entrance: true,
+                        semanticLabel: 'فندوقی برای نشان تازه جشن می‌گیرد',
                       ),
                     ),
-                  if (stars > 0) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      achievements.length == 1
+                          ? 'یک نشان تازه!'
+                          : 'نشان‌های تازه!',
+                      textAlign: TextAlign.center,
+                      style: context.appText.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.star_rounded,
-                          size: 18,
-                          color: AppColors.readableOn(
-                            context.surfaceColor,
-                            AppColors.gold,
-                          ),
+                    Text(
+                      achievements.length == 1
+                          ? 'کارت عالی بود؛ یک نشان گرفتی.'
+                          : '${toFaDigits('${achievements.length}')} نشان '
+                              'با هم گرفتی.',
+                      textAlign: TextAlign.center,
+                      style: context.appText.bodySmall?.copyWith(
+                        color: context.secondaryTextColor,
+                        height: 1.6,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // حداکثر سه نشان نمایش داده می‌شود تا کارت بلند نشود؛
+                    // بقیه با شمارش باقی‌مانده خلاصه می‌شوند.
+                    for (final achievement in achievements.take(3))
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: _CelebrationRow(achievement: achievement),
+                      ),
+                    if (achievements.length > 3)
+                      Text(
+                        'و ${toFaDigits('${achievements.length - 3}')} '
+                        'نشان دیگر',
+                        style: context.appText.labelSmall?.copyWith(
+                          color: context.secondaryTextColor,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${toFaDigits('$stars')} ستاره گرفتی',
-                          style: context.appText.labelLarge?.copyWith(
-                            color: AppColors.readableOn(
-                              context.surfaceColor,
-                              AppColors.gold,
+                      ),
+                    if (stars > 0) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.star_rounded,
+                            size: 18,
+                            color: goldText,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              '${toFaDigits('$stars')} ستاره گرفتی',
+                              style: context.appText.labelLarge?.copyWith(
+                                color: goldText,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        child: const Text('آفرین!'),
+                      ),
                     ),
                   ],
-                  const SizedBox(height: 14),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () => Navigator.of(context).maybePop(),
-                      child: const Text('آفرین!'),
-                    ),
-                  ),
-                ],
                 ),
               ),
             ),
