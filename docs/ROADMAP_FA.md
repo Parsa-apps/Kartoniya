@@ -82,7 +82,7 @@
 | ۷۴ | Android permission audit | فقط permission ضروری را نگه‌دار | manifest audit | Storage/legacy permission نباشد | انجام شد |
 | ۷۵ | storage migration | اگر download اضافه شد، Scoped Storage را طراحی کن | download ADR | permission flow قبل از درخواست داشته باشد | برنامه‌ریزی‌شده |
 | ۷۶ | RAM و cache | cache artwork/video و memory pressure را تست کن | memory report | باز/بسته شدن player leak نداشته باشد | برنامه‌ریزی‌شده |
-| ۷۷ | asset optimization | artwork/asset نهایی را WebP/vector کن | asset report | فایل بلااستفاده صفر باشد | برنامه‌ریزی‌شده |
+| ۷۷ | asset optimization | artwork/asset نهایی را WebP/vector کن | asset report | فایل بلااستفاده صفر باشد | انجام شد (فاز J: لوگو ۸۵۷→۲۳۱ KiB با آلفای دست‌نخورده، حذف ۳ فایل یتیم، بودجهٔ اجباری در `test/asset_budget_test.dart`) |
 | ۷۸ | startup profiling | زمان cold start را اندازه بگیر | startup metric | splash سنگین نباشد | برنامه‌ریزی‌شده |
 | ۷۹ | accessibility audit | TalkBack، focus order و contrast | a11y report | navigation اصلی قابل استفاده باشد | کنتراست تب بازی‌ها و هدف لمسی قلب کارت اصلاح شد؛ TalkBack روی دستگاه باقی است |
 | ۸۰ | child-safety audit | محتوا، link خارجی و parental flow را بازبینی کن | safety checklist | تایید مسئول محتوا/والد حاصل شود | برنامه‌ریزی‌شده |
