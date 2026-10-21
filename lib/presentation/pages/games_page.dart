@@ -8,12 +8,14 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
 import '../../data/models/game_model.dart';
+import '../../data/providers/achievements_provider.dart';
 import '../../data/providers/games_provider.dart';
 import '../widgets/game_card.dart';
 import '../widgets/kartoniya_mascot.dart';
 import '../widgets/page_intro.dart';
 import '../widgets/shimmer_loader.dart';
 import '../widgets/state_views.dart';
+import 'achievements_page.dart';
 import 'game_detail_page.dart';
 
 /// تب «بازی‌ها»: جست‌وجوی محلی، فیلتر دسته و گرید تطبیقی.
@@ -64,6 +66,7 @@ class _GamesPageState extends ConsumerState<GamesPage> {
   Widget build(BuildContext context) {
     final gamesAsync = ref.watch(playableGamesProvider);
     final favorites = ref.watch(favoriteGamesProvider);
+    final stars = ref.watch(earnedStarsProvider);
     final total = gamesAsync.maybeWhen(
       data: (games) => games.length,
       orElse: () => null,
@@ -82,6 +85,12 @@ class _GamesPageState extends ConsumerState<GamesPage> {
                   : '${toFaDigits('$total')} بازی تعاملی برای کودکان',
               icon: Icons.videogame_asset_rounded,
               gradient: AppColors.violetGradient,
+              // ورودی صفحهٔ دستاوردها: همیشه در دسترس کودک و بدون قفل والدین،
+              // چون فقط پیشرفت خودش را نشان می‌دهد و چیزی را تغییر نمی‌دهد.
+              trailing: _StarsChip(
+                stars: stars,
+                onTap: () => pushAppPage<void>(context, const AchievementsPage()),
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -271,6 +280,55 @@ class _GamesPageState extends ConsumerState<GamesPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// چیپ کوچک شمارش ستاره‌های دستاورد در سربرگ تب بازی‌ها.
+class _StarsChip extends StatelessWidget {
+  const _StarsChip({required this.stars, required this.onTap});
+
+  final int stars;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ink = AppColors.readableOn(context.surfaceColor, AppColors.gold);
+    return Semantics(
+      button: true,
+      label: 'دستاوردها؛ ${toFaDigits('$stars')} ستاره',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          AppHaptics.light();
+          onTap();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+          decoration: BoxDecoration(
+            color: Color.alphaBlend(
+              AppColors.gold.withOpacity(.18),
+              context.surfaceColor,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.gold.withOpacity(.35)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.star_rounded, size: 16, color: ink),
+              const SizedBox(width: 4),
+              Text(
+                toFaDigits('$stars'),
+                style: context.appText.labelLarge?.copyWith(
+                  fontSize: 12.5,
+                  color: ink,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
