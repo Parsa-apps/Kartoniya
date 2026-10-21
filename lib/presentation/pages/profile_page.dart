@@ -9,11 +9,13 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
 import '../../data/models/child_profile_model.dart';
+import '../../data/providers/achievements_provider.dart';
 import '../../data/providers/cartoons_provider.dart';
 import '../global_widgets/parental_gate_widget.dart';
 import '../widgets/child_avatar.dart';
 import '../widgets/kartoniya_story_banner.dart';
 import 'about_us_page.dart';
+import 'achievements_page.dart';
 import 'privacy_page.dart';
 import 'settings_page.dart';
 
@@ -27,6 +29,13 @@ class ProfilePage extends ConsumerWidget {
     final favorites = ref.watch(favoritesProvider);
     final history = ref.watch(watchHistoryProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final achievements = ref.watch(achievementsProvider);
+    final unlockedAchievements =
+        achievements.where((item) => item.unlocked).length;
+    final stars = ref.watch(earnedStarsProvider);
+    final achievementsSubtitle = unlockedAchievements == achievements.length
+        ? 'همهٔ ${toFaDigits('${achievements.length}')} نشان • ${toFaDigits('$stars')} ستاره'
+        : '${toFaDigits('$unlockedAchievements')} از ${toFaDigits('${achievements.length}')} نشان • ${toFaDigits('$stars')} ستاره';
 
     return Center(
       child: ConstrainedBox(
@@ -94,6 +103,29 @@ class ProfilePage extends ConsumerWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: StaggeredReveal(
+                index: 3,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppTheme.pageMargin,
+                    12,
+                    AppTheme.pageMargin,
+                    0,
+                  ),
+                  child: Card(
+                    child: _ActionTile(
+                      icon: Icons.emoji_events_rounded,
+                      color: AppColors.goldDark,
+                      title: 'دستاوردهای کودک',
+                      subtitle: achievementsSubtitle,
+                      onTap: () =>
+                          pushAppPage<void>(context, const AchievementsPage()),
+                    ),
                   ),
                 ),
               ),
