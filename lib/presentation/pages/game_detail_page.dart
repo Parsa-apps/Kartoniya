@@ -8,8 +8,10 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/fa_digits.dart';
 import '../../data/models/game_model.dart';
+import '../../data/providers/achievements_provider.dart';
 import '../../data/providers/games_provider.dart';
 import '../games/game_router.dart';
+import '../widgets/achievement_celebration.dart';
 
 /// صفحهٔ معرفی یک بازی: هدر رنگی، مشخصات، دستورالعمل و دکمهٔ شروع واقعی.
 ///
@@ -258,11 +260,7 @@ class GameDetailPage extends ConsumerWidget {
                     width: double.infinity,
                     height: 54,
                     child: FilledButton.icon(
-                      onPressed: () {
-                        AppHaptics.medium();
-                        ref.read(recentGamesProvider.notifier).add(game.id);
-                        pushAppPage(context, buildGameForMechanics(game));
-                      },
+                      onPressed: () => _startGame(context, ref),
                       icon: const Icon(Icons.play_arrow_rounded, size: 26),
                       label: const Text(
                         'شروع بازی',
@@ -300,6 +298,25 @@ class GameDetailPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// بازی را باز می‌کند و پس از بازگشت، نشان‌های تازه را جشن می‌گیرد.
+  ///
+  /// مقایسهٔ فهرست نشان‌های باز «قبل و بعد» انجام می‌شود؛ چون خودِ نشان‌ها
+  /// مشتق از رکوردهای ذخیره‌شده‌اند، بدون هیچ وضعیت تازه‌ای دقیقاً همان
+  /// نشان‌هایی که با همین بازی باز شده‌اند نمایش داده می‌شوند.
+  Future<void> _startGame(BuildContext context, WidgetRef ref) async {
+    final before = unlockedAchievementIds(ref.read(achievementsProvider));
+    AppHaptics.medium();
+    ref.read(recentGamesProvider.notifier).add(game.id);
+    await pushAppPage<void>(context, buildGameForMechanics(game));
+    if (!context.mounted) return;
+    final gained = newlyUnlockedAchievements(
+      before: before,
+      after: ref.read(achievementsProvider),
+    );
+    if (gained.isEmpty || !context.mounted) return;
+    await showAchievementCelebration(context, gained);
   }
 }
 

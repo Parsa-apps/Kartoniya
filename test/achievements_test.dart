@@ -13,6 +13,7 @@ import 'package:kartoniya/data/providers/cartoons_provider.dart';
 import 'package:kartoniya/data/providers/games_provider.dart';
 import 'package:kartoniya/data/repositories/local_game_repository.dart';
 import 'package:kartoniya/presentation/pages/achievements_page.dart';
+import 'package:kartoniya/presentation/widgets/achievement_celebration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// دستاوردها از دادهٔ محلی مشتق می‌شوند؛ این تست هم ریاضیِ آمار و هم صفحهٔ
@@ -299,6 +300,124 @@ void main() {
         await tester.pump(const Duration(milliseconds: 180));
         expect(tester.takeException(), isNull, reason: 'اسکرول $i');
       }
+    });
+  });
+
+  group('جشن نشان تازه', () {
+    List<AchievementProgress> progressFor(GameStats stats) => [
+          for (final achievement in kGameAchievements)
+            AchievementProgress(
+              achievement: achievement,
+              value: achievement.valueOf(stats),
+              progress: achievement.progressOf(stats),
+              unlocked: achievement.isUnlocked(stats),
+            ),
+        ];
+
+    test('فقط نشان‌های تازه باز شده برمی‌گردند', () {
+      final items = progressFor(
+        const GameStats(playedGames: 5, maxBestScore: 85),
+      );
+      final allUnlocked = unlockedAchievementIds(items);
+      expect(allUnlocked, contains('first_game'));
+      expect(allUnlocked, contains('five_games'));
+
+      final gained = newlyUnlockedAchievements(
+        before: {'first_game'},
+        after: items,
+      );
+      final gainedIds = gained.map((item) => item.id).toList();
+      expect(gainedIds, isNot(contains('first_game')));
+      expect(gainedIds, contains('five_games'));
+
+      expect(
+        newlyUnlockedAchievements(before: allUnlocked, after: items),
+        isEmpty,
+      );
+      expect(
+        newlyUnlockedAchievements(before: const {}, after: progressFor(const GameStats())),
+        isEmpty,
+      );
+    });
+
+    testWidgets('کارت جشن نشان و دکمه را نشان می‌دهد و بسته می‌شود',
+        (tester) async {
+      tester.view.physicalSize = const Size(360, 720);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      SharedPreferences.setMockInitialValues({'onboarding_completed': true});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        host(
+          prefs,
+          Scaffold(
+            body: Builder(
+              builder: (context) => Center(
+                child: ElevatedButton(
+                  onPressed: () => showAchievementCelebration(
+                    context,
+                    [kGameAchievements.first],
+                  ),
+                  child: const Text('باز کن'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('باز کن'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('یک نشان تازه!'), findsOneWidget);
+      expect(find.text('اولین قدم'), findsOneWidget);
+      expect(find.textContaining('ستاره گرفتی'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(find.text('آفرین!'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('یک نشان تازه!'), findsNothing);
+    });
+
+    testWidgets('کارت جشن روی ۳۲۰px با متن ۱٫۳× سرریز نمی‌کند',
+        (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      SharedPreferences.setMockInitialValues({'onboarding_completed': true});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        host(
+          prefs,
+          Scaffold(
+            body: Builder(
+              builder: (context) => Center(
+                child: ElevatedButton(
+                  onPressed: () => showAchievementCelebration(
+                    context,
+                    [kGameAchievements[0], kGameAchievements[1]],
+                  ),
+                  child: const Text('باز کن'),
+                ),
+              ),
+            ),
+          ),
+          dark: true,
+          textScale: 1.3,
+        ),
+      );
+
+      await tester.tap(find.text('باز کن'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('نشان‌های تازه!'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 }
