@@ -59,7 +59,23 @@
 
 ## ۵. نتیجهٔ CI
 
-_(بعد از اجرای GitHub Actions روی همین شاخه تکمیل می‌شود.)_
+روی commit `7a83068`، workflow `Build Android APK`
+(run [`39614113381`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39614113381))
+با وضعیت **success**:
+
+| بررسی | نتیجهٔ واقعی |
+|---|---|
+| `flutter analyze` | `No issues found! (ran in 14.7s)` |
+| `flutter test` | `00:41 +150 ~1: All tests passed!` (۳ تست تازه نسبت به ۱۴۷ فاز H) |
+| `flutter build apk --release` | موفق — `app-release.apk` ۲۸٬۰MB |
+
+| فایل | bytes | sha256 |
+|---|---|---|
+| `app-release.apk` | 29376545 | `fd2034517a9465bf7d0d80b185076f0d25604adec023841b80e1740ee1716a29` |
+| `app-arm64-v8a-release.apk` | 14230554 | `3aaf230b9a624120dfd1bb30021153821972b8f396032ce9e428b000266ea173` |
+
+اجرای میانی `fd40426` فقط دو لینت `prefer_const_constructors` در فایل کارت
+داشت (SizedBox و KartoniyaMascot قابل const بودند) و با `7a83068` برطرف شد.
 
 ## ۶. کارهای باز
 
