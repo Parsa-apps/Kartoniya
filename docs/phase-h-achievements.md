@@ -79,8 +79,23 @@
 
 ## ۵. نتیجهٔ واقعی CI
 
-_(پس از اجرای GitHub Actions روی همین شاخه تکمیل می‌شود؛ اگر قرمز شد، همین
-بخش باید اصلاح شود.)_
+روی commit `406dae1`، workflow `Build Android APK`
+(run [`39611334625`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39611334625))
+با وضعیت **success** تمام شد:
+
+| بررسی | نتیجهٔ واقعی |
+|---|---|
+| `flutter analyze --no-pub` | `No issues found! (ran in 10.2s)` |
+| `flutter test --reporter compact` | `00:30 +147 ~1: All tests passed!` (۹ تست تازه، ۰ شکست) |
+| `flutter build apk --release` | موفق — `app-release.apk` ۲۸٬۰ مگابایت |
+
+| فایل | bytes | sha256 |
+|---|---|---|
+| `app-release.apk` | 29363396 | `23027670f4579624c49ae2e61a207434181074182f2e6051db6f80d08881c519` |
+| `app-arm64-v8a-release.apk` | 14227284 | `aac69ba6d8e89db1b8edcb296ef8a790470f162d6ba0ba54554360d8ca21a94a` |
+
+شفاف: اجرای اول این فاز (`22d42e7`) در `flutter analyze` قرمز شد، چون تست
+تازه `games_provider` را import نکرده بود؛ رفع شد و اجرای بعدی سبز شد.
 
 ## ۶. آنچه انجام نشده
 
