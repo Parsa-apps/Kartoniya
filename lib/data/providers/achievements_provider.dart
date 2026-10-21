@@ -77,3 +77,25 @@ final nextAchievementProvider = Provider<AchievementProgress?>((ref) {
     (best, item) => item.progress > best.progress ? item : best,
   );
 });
+
+/// شناسهٔ نشان‌های بازشده؛ برای مقایسهٔ «قبل و بعد» یک بازی.
+Set<String> unlockedAchievementIds(List<AchievementProgress> items) => {
+      for (final item in items)
+        if (item.unlocked) item.achievement.id,
+    };
+
+/// نشان‌هایی که تازه باز شده‌اند.
+///
+/// [before] مجموعهٔ شناسه‌های باز پیش از بازی است؛ خروجی فقط نشان‌هایی است
+/// که بعد از بازی باز شده‌اند. این تابع هیچ وضعیتی ذخیره نمی‌کند و کاملاً
+/// مشتق است؛ بنابراین اگر دادهٔ بازی‌ها پاک شود، دیگر «نشان تازه»ی کاذب
+/// نمایش داده نمی‌شود.
+List<GameAchievement> newlyUnlockedAchievements({
+  required Set<String> before,
+  required List<AchievementProgress> after,
+}) =>
+    [
+      for (final item in after)
+        if (item.unlocked && !before.contains(item.achievement.id))
+          item.achievement,
+    ];
