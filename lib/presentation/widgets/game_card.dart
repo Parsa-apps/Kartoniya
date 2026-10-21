@@ -182,81 +182,91 @@ class GameCard extends StatelessWidget {
               ],
               if (showMeta) ...[
                 const SizedBox(height: 6),
+                // سه برچسب کوچک جدا در Wrap: هر کدام به‌تنهایی از عرض کاشی
+                // کوچک‌تر است، پس با متن بزرگ یا گوشی ۳۲۰px به‌جای سرریز
+                // به خط بعد می‌روند.
                 Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 4,
-                runSpacing: 3,
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: categoryChip,
-                      borderRadius: BorderRadius.circular(8),
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: categoryChip,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            game.category.emoji,
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                          const SizedBox(width: 2),
+                          Flexible(
+                            child: Text(
+                              game.category.labelFa,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                color: categoryText,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Row(
+                    Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          game.category.emoji,
-                          style: const TextStyle(fontSize: 10),
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 13,
+                          color: secondary,
                         ),
                         const SizedBox(width: 2),
                         Flexible(
                           child: Text(
-                            game.category.labelFa,
+                            '${game.estimatedMinutes}د',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              color: categoryText,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: secondary,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.timer_outlined,
-                        size: 13,
-                        color: secondary,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
                       ),
-                      const SizedBox(width: 2),
-                      Text(
-                        '${game.estimatedMinutes}د',
+                      decoration: BoxDecoration(
+                        color: context.surfaceAltColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        game.difficulty.labelFa,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: secondary,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: context.primaryTextColor,
                         ),
                       ),
-                      const SizedBox(width: 5),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: context.surfaceAltColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          game.difficulty.labelFa,
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
-                            color: context.primaryTextColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
                 ),
               ],
               if (!game.isPlayable) ...[
