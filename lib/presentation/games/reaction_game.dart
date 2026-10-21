@@ -148,7 +148,8 @@ class _ReactionGamePageState extends ConsumerState<ReactionGamePage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text('فقط وقتی سبز شد بزن — اگر زود بزنی امتیاز کم می‌شود',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54)),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant)),
             ),
           ],
         ),

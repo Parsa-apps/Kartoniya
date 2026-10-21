@@ -91,7 +91,11 @@ class _GuessGamePageState extends ConsumerState<GuessGamePage> {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 24),
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.black12)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outline.withOpacity(.25))),
             child: Text(_current.clue, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
           ),
           const SizedBox(height: 20),

@@ -161,7 +161,8 @@ class _SlidePuzzleGamePageState extends ConsumerState<SlidePuzzleGamePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text('کاشی را به خانهٔ خالی بکشان',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ),
         ],
       ),

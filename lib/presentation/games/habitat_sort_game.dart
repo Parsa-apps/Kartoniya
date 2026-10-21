@@ -81,7 +81,12 @@ class _HabitatSortGamePageState extends ConsumerState<HabitatSortGamePage> {
                         Text(emoji, style: const TextStyle(fontSize: 28)),
                         Text(name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
                         const Divider(),
-                        Expanded(child: Center(child: Text('بکش اینجا', style: TextStyle(color: Colors.black38, fontSize: 10)))),
+                        Expanded(child: Center(child: Text('بکش اینجا',
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                                fontSize: 10)))),
                       ]),
                     );
                   },

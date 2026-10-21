@@ -67,7 +67,9 @@ class _WordGamePageState extends ConsumerState<WordGamePage> {
               children: [
                 Text(_current.display, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: 6)),
                 const SizedBox(height: 8),
-                Text(_current.hint, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54)),
+                Text(_current.hint,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
