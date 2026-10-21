@@ -75,7 +75,30 @@
 
 ## ۴. نتیجهٔ CI
 
-_(بعد از اجرای GitHub Actions روی همین شاخه تکمیل می‌شود.)_
+روی commit `5931664`، workflow `Build Android APK`
+(run [`39615519558`](https://github.com/Parsa-apps/Kartoniya/actions/runs/39615519558))
+با وضعیت **success**:
+
+| بررسی | نتیجهٔ واقعی |
+|---|---|
+| `flutter analyze` | `No issues found! (ran in 9.4s)` |
+| `flutter test` | `00:28 +153 ~1: All tests passed!` (۳ تست تازه نسبت به ۱۵۰) |
+| `flutter build apk --release` | موفق |
+
+| فایل | قبل (فاز I) | بعد (فاز J) | تغییر |
+|---|---|---|---|
+| `app-release.apk` | 29,376,545 B | **28,631,067 B** | −۷۴۵٬۴۷۸ بایت (−۷۲۸ KiB) |
+| `app-arm64-v8a-release.apk` | 14,230,554 B | **13,485,077 B** | −۷۴۵٬۴۷۷ بایت |
+
+sha256 نسخهٔ جدید: `app-release.apk` =
+`18f0afde9ecdde8577a18658efac1d1b15514021f2bb2c6bc343f411df40ec8a`،
+`app-arm64-v8a-release.apk` =
+`e42ca8d9d9b68c3b289c63202f0db2c635a764a80d2b43ee50bc77175f42ea3d`.
+
+مقدار کاهش APK تقریباً برابر مجموع صرفه‌جویی دارایی‌ها (۶۴۱ KiB لوگو + ۱۰۱ KiB
+سه فایل یتیم) است؛ یعنی تغییر فقط در بسته اثر گذاشته و کد اضافه/حذف نشده است.
+اسکرین‌شات `00_studio_ident.png` هم بازسازی شد و اندازه‌اش از ۶۰۸٬۲۹۹ به
+۶۱۵٬۱۱۹ بایت رسید (همان صحنه، پیکسل‌های لوگوی دوباره‌کدگذاری‌شده).
 
 ## ۵. آنچه انجام نشد و چرا
 
