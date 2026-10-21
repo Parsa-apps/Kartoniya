@@ -131,7 +131,8 @@ void main() {
 
   test('نشان استودیو شفاف، در بودجهٔ حافظه و با تناسپ اصلی است', () async {
     final data = await rootBundle.load(ParsaBrandMark.assetPath);
-    expect(data.lengthInBytes, lessThan(950 * 1024));
+    // بودجهٔ فاز J: کیفیت ۹۰ با alpha بدون تغییر، ۲۳۱ KiB.
+    expect(data.lengthInBytes, lessThan(300 * 1024));
 
     final bytes = data.buffer.asUint8List(
       data.offsetInBytes,
