@@ -110,7 +110,7 @@
   | `00_studio_ident.png` | 608299 | `ea5db4276df69149f06a7eb43393d1c567f5c35ef75db2edb01e23c5465749b1` | `8bc0267fc3a08b93871c79772453512f92d8755a` |
   | `01_splash.png` | 1657374 | `141cdafa5bd11245566f0857c867fb4ec81ff3b035efd67227f3937daa820a27` | `daecf2270ab595227fe4771e9e3f3714688c8512` |
 - **دانلود برای کلاینت‌های محدود:** از طریق GitHub API blobs — `gh api repos/Parsa-apps/Kartoniya/git/blobs/<sha>` (بدون نیاز به دامنه blob.storage)
-- **applicationId:** `com.parsa.kartoniya` (`android/app/build.gradle`)
+- **applicationId:** `ir.parsaapps.kartoniya` (`android/app/build.gradle`) — مقدار واقعی؛ نسخهٔ اولیهٔ این گزارش اشتباه نوشته شده بود
 - **versionName/Code:** `1.3.0` / `5` (`pubspec.yaml`)
 - **امضا:** debug keystore (CI) — برای Play Store باید کلید release پروژه در `signingConfig` جایگزین شود.
 

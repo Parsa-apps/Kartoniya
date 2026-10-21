@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import, unused_local_variable, unused_field, prefer_final_fields, dangling_library_doc_comments, deprecated_member_use, curly_braces_in_flow_control_structures, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_declarations, unnecessary_null_comparison, invalid_constant, undefined_method, missing_required_argument, undefined_named_parameter
 import 'package:flutter/material.dart';
 
+import '../../core/navigation/app_routes.dart';
 import '../../data/models/game_model.dart';
 import 'memory_game.dart';
 import 'counting_game.dart';
@@ -158,9 +159,8 @@ class _GenericPlaceholderGame extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               FilledButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => CountingGamePage(game: game)),
-                ),
+                onPressed: () =>
+                  pushAppPage(context, CountingGamePage(game: game)),
                 child: const Text('اجرای نسخهٔ نمایشی (شمارش)'),
               ),
             ],

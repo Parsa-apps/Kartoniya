@@ -146,7 +146,8 @@ class _PatternGamePageState extends ConsumerState<PatternGamePage> {
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text('الگو را ببین و گزینهٔ درست را انتخاب کن', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
+            child: Text('الگو را ببین و گزینهٔ درست را انتخاب کن', style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ),
           const SizedBox(height: 12),
         ],

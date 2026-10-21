@@ -384,9 +384,8 @@ class _DiscoverTabState extends ConsumerState<_DiscoverTab> {
                                   game: game,
                                   onTap: () {
                                     ref.read(recentGamesProvider.notifier).add(game.id);
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (_) => GameDetailPage(game: game)),
-                                    );
+                                    pushAppPage(
+                                        context, GameDetailPage(game: game));
                                   },
                                 ),
                               );

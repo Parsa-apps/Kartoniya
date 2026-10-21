@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/fa_digits.dart';
 import '../../data/models/game_model.dart';
 import '../../data/providers/games_provider.dart';
 
@@ -92,7 +93,14 @@ class _GameScaffoldState extends ConsumerState<GameScaffold> {
                     icon: const Icon(Icons.replay_rounded),
                     label: const Text('دوباره'),
                     style: FilledButton.styleFrom(
-                      backgroundColor: widget.game.accentColor,
+                      // رنگ دکمهٔ هر بازی از لهجهٔ همان بازی می‌آید، اما
+                      // پرکننده/متن با هم انتخاب می‌شوند تا روی لهجه‌های روشن
+                      // (مثل طلایی) متن سفید ناخوانا نشود.
+                      backgroundColor:
+                          AppColors.fillAndText(widget.game.accentColor).fill,
+                      foregroundColor:
+                          AppColors.fillAndText(widget.game.accentColor)
+                              .foreground,
                     ),
                   ),
                 ),
@@ -210,10 +218,13 @@ class GameResultDialog extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.skySoft,
+              // سطح خنثیِ تم به‌جای آبیِ روشنِ ثابت: در حالت تاریک هم متنِ
+              // روشنِ تم روی این کارت خوانا می‌ماند.
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text('امتیاز شما: $score', textAlign: TextAlign.center,
+            child: Text('امتیاز شما: ${toFaDigits('$score')}',
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
           ),
         ],

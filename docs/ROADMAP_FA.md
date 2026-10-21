@@ -2,7 +2,7 @@
 
 ## جایگاه فعلی
 
-در شاخهٔ فعلی، پایهٔ محصول تا **فاز ۵۵** پیاده‌سازی شده است و بازطراحی UI فاز ۶ (اسپلش، خانه، دسته‌ها، جست‌وجو، کارت/بنر مشترک، پوسترهای واقعی) روی آن اضافه شده است. اسکرین‌شات‌های رندر‌شده و نتیجهٔ `flutter analyze`/`flutter test` در GitHub Actions گزارش می‌شوند، اما جای آزمون دستگاه واقعی را نمی‌گیرند:  ساختار لایه‌ای، design system، RTL، onboarding، صفحات اصلی، persistence محلی، قفل والدین، player واقعی و motion اصلی وجود دارند. فازهای ۵۶ تا ۱۰۰ برنامهٔ تکمیل، QA و انتشارند. «پیاده‌سازی‌شده» به معنی جایگزین‌شدن با تست release روی دستگاه واقعی نیست؛ آن بخش در فازهای QA باقی مانده است.
+در شاخهٔ فعلی، پایهٔ محصول تا **فاز ۵۵** پیاده‌سازی شده است (فاز G هم تب بازی‌ها را برای حالت تاریک/تبلت/متن بزرگ بازسازی کرد — [`docs/phase-g-games-dark-mode.md`](phase-g-games-dark-mode.md)) و بازطراحی UI فاز ۶ (اسپلش، خانه، دسته‌ها، جست‌وجو، کارت/بنر مشترک، پوسترهای واقعی) روی آن اضافه شده است. اسکرین‌شات‌های رندر‌شده و نتیجهٔ `flutter analyze`/`flutter test` در GitHub Actions گزارش می‌شوند، اما جای آزمون دستگاه واقعی را نمی‌گیرند:  ساختار لایه‌ای، design system، RTL، onboarding، صفحات اصلی، persistence محلی، قفل والدین، player واقعی و motion اصلی وجود دارند. فازهای ۵۶ تا ۱۰۰ برنامهٔ تکمیل، QA و انتشارند. «پیاده‌سازی‌شده» به معنی جایگزین‌شدن با تست release روی دستگاه واقعی نیست؛ آن بخش در فازهای QA باقی مانده است.
 
 | فاز | عنوان و هدف کوتاه | Task List | Deliverable | Definition of Done | وضعیت |
 |---:|---|---|---|---|---|
@@ -63,8 +63,8 @@
 | ۵۵ | هاله طلایی | glow/shimmer لوگو و نام سازنده | GoldenGlowFrame | چرخه ۲٫۴ ثانیه و بدون asset سنگین باشد | انجام شد |
 | ۵۶ | احترام به کاهش حرکت سیستم | رعایت تنظیم دسترس‌پذیری Reduce Motion دستگاه؛ بدون کنترل والدین برای خاموش‌کردن انیمیشن‌ها | system MotionScope | انیمیشن‌ها فقط با تنظیم دسترس‌پذیری سیستم کاهش یابند | انجام شد |
 | ۵۷ | پروفایل player | frame/drop و rebuild player را اندازه بگیر | performance report | روی دستگاه ضعیف افت محسوس نداشته باشد | برنامه‌ریزی‌شده |
-| ۵۸ | layout تبلت | تمام breakpoints را روی تبلت تست کن | responsive matrix | grid و dialog overflow ندهند | برنامه‌ریزی‌شده |
-| ۵۹ | اندازه فونت | textScale 0.8 تا 1.5 را بررسی کن | typography QA | CTA و title قطع نشوند | برنامه‌ریزی‌شده |
+| ۵۸ | layout تبلت | تمام breakpoints را روی تبلت تست کن | responsive matrix | grid و dialog overflow ندهند | تب بازی‌ها انجام شد (گرید `MaxCrossAxisExtent`)؛ بقیهٔ صفحه‌ها در دستگاه واقعی باقی است |
+| ۵۹ | اندازه فونت | textScale 0.8 تا 1.5 را بررسی کن | typography QA | CTA و title قطع نشوند | خانه/دسته‌ها/جست‌وجو و تب بازی‌ها تا ۱٫۳× تست شده؛ ۱٫۵× باقی است |
 | ۶۰ | audit motion | رفتار tap/back/rotate را مرور کن | motion QA list | انیمیشن مزاحم یا loop سنگین نباشد | برنامه‌ریزی‌شده |
 | ۶۱ | تصمیم monetization | رایگان/اشتراک/خرید را با مالک محصول نهایی کن | monetization ADR | هیچ SDK قبل از تأیید اضافه نشود | برنامه‌ریزی‌شده |
 | ۶۲ | مدل entitlement | اگر پولی شد، free/premium را مدل کن | entitlement model | وضعیت کاربر قابل بازیابی باشد | وابسته به ۶۱ |
@@ -84,7 +84,7 @@
 | ۷۶ | RAM و cache | cache artwork/video و memory pressure را تست کن | memory report | باز/بسته شدن player leak نداشته باشد | برنامه‌ریزی‌شده |
 | ۷۷ | asset optimization | artwork/asset نهایی را WebP/vector کن | asset report | فایل بلااستفاده صفر باشد | برنامه‌ریزی‌شده |
 | ۷۸ | startup profiling | زمان cold start را اندازه بگیر | startup metric | splash سنگین نباشد | برنامه‌ریزی‌شده |
-| ۷۹ | accessibility audit | TalkBack، focus order و contrast | a11y report | navigation اصلی قابل استفاده باشد | برنامه‌ریزی‌شده |
+| ۷۹ | accessibility audit | TalkBack، focus order و contrast | a11y report | navigation اصلی قابل استفاده باشد | کنتراست تب بازی‌ها و هدف لمسی قلب کارت اصلاح شد؛ TalkBack روی دستگاه باقی است |
 | ۸۰ | child-safety audit | محتوا، link خارجی و parental flow را بازبینی کن | safety checklist | تایید مسئول محتوا/والد حاصل شود | برنامه‌ریزی‌شده |
 | ۸۱ | Unit test گسترش | providerها، preference و repository API را تست کن | unit suite | منطق حیاتی پوشش داشته باشد | انجام شد (اولیه) |
 | ۸۲ | Widget test | onboarding، favorite، parental gate و مسیر اولین اجرا | widget suite | flowهای کلیدی با test پاس شوند | انجام شد (اولیه) |
