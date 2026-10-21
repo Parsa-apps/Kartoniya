@@ -25,7 +25,6 @@ ImageMagick, resized and compressed to WebP.
 
 | Asset | Used by | Content | Runtime classification |
 | --- | --- | --- | --- |
-| `cloud_night_splash.webp` | `SplashPage` background | Felak flying through a moonlit cloud world with hanging stars | Pre-rendered 3D still (splash backdrop) |
 | `posters/oscar.webp` | «ماجراهای اسکار» | Coral lizard hero in a cloud garden | Pre-rendered 3D still (poster) |
 | `posters/alphabet.webp` | «الفبای جادویی» | Letter blocks and a smiling sun | Pre-rendered 3D still (poster) |
 | `posters/counting.webp` | «شمارش شاد» | Number friends on a pastel hill | Pre-rendered 3D still (poster) |
@@ -37,8 +36,8 @@ ImageMagick, resized and compressed to WebP.
 
 Posters are 1080×810 WebP at quality 80 (35–86 KiB each, ~500 KiB total) and are
 decoded with `cacheWidth` capped at the logical size × device pixel ratio so
-large screens do not allocate full-resolution bitmaps. `cloud_night_splash.webp`
-is 900×1611 at quality 82 (87 KiB). `test/brand_visual_assets_test.dart` enforces
+large screens do not allocate full-resolution bitmaps. `fandaq_splash_night.webp`
+is the splash backdrop (107 KiB, quality 82). `test/brand_visual_assets_test.dart` enforces
 these budgets and checks that every catalogue entry resolves to a bundled file.
 
 ## Honesty notes
@@ -81,7 +80,11 @@ splash and poster images are opaque.
 Source & license: the original transparent PNG (1254x1254, RGBA, alpha already
 present) was provided by the brand owner (Parsa Apps studio) for this
 repository on 2026-10-19. No redrawing, recoloring or reshaping was applied:
-the pipeline only cropped the empty alpha margin (+6 px pad), resized to
-810x1024 with Lanczos and encoded to lossless WebP with alpha preserved. All
+the pipeline only cropped the empty alpha margin (+6 px pad) and resized to
+810x1024 with Lanczos. Phase J re-encoded the pixels at quality 90 with
+`alpha-quality=100`: dimensions, the aspect ratio and **every alpha value** are
+bit-identical to the previous lossless file (verified by comparing the alpha
+channel's min/max/mean and the transparent corner), while the file went from
+857 KiB to 231 KiB. No reshaping, recoloring or redrawing happened. All
 rights to the mark remain with its owner; it ships inside the app as a local
 asset and nothing is fetched at runtime.
